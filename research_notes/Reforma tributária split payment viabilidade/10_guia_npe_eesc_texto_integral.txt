@@ -1,0 +1,880 @@
+ Reforma Tributária – Guia de Estudo
+
+Núcleo de Private Equity – EESC Finance
+
+ Reforma Tributária e geração de valor
+ Um guia sobre como o novo IVA Dual (CBS e IBS) altera a carga tributária, o fluxo de caixa e o capital de giro das
+ empresas brasileiras: quais riscos operacionais surgem na transição de 2026 a 2033 e onde estão as
+ oportunidades de proteção e de criação de valor.
+
+ 1. Como funciona o sistema atual
+ 1.1 O mecanismo de débito e crédito
+ Antes de listar os tributos, é preciso entender um mecanismo que aparece o tempo todo: o débito e o crédito de
+ imposto.
+
+ Débito é o imposto que a empresa deve ao governo quando faz uma venda. Crédito é o imposto que ela já pagou
+ embutido numa compra e que pode abater depois. Atenção para quem vem da contabilidade: esses "débito" e
+ "crédito" não são os débito e crédito contábeis que movimentam ativo e passivo. Aqui, é só uma forma de dizer
+ "quanto eu devo" e "quanto eu posso abater".
+
+ Acompanhe uma mercadoria pela ótica do varejo, com alíquota de 10 por cento sobre o preço (o imposto já vem
+ embutido no preço, ninguém paga um valor à parte):
+
+ – O varejo compra da indústria por R$ 1.000. Esses R$ 1.000 já contêm R$ 100 de imposto. Quem vai recolher
+    esses R$ 100 ao governo é a indústria, porque foi ela quem vendeu. Do lado do varejo, esses R$ 100 viram
+    um crédito: um valor guardado para abater imposto depois.
+ – O varejo revende ao consumidor por R$ 1.500. Agora é o varejo quem vende, então é ele quem gera um
+   débito de R$ 150.
+ – O varejo acerta as contas. Pega o débito de R$ 150, abate o crédito de R$ 100, e recolhe apenas a diferença:
+    R$ 50. O imposto recaiu só sobre os R$ 500 que o varejo agregou.
+ O governo recebeu R$ 100 da indústria mais R$ 50 do varejo, totalizando R$ 150, exatamente o imposto sobre o
+ preço final. Cada empresa recolhe apenas o imposto da sua própria venda. O crédito existe para impedir que o
+ mesmo imposto seja cobrado duas vezes ao longo da cadeia.
+
+ Um ponto fecha o mecanismo, e é o mais importante de todos. Quando uma empresa acumula mais crédito do
+ que débito (comprou muito, vendeu pouco, ou vendeu com alíquota menor), o crédito sobra. No sistema atual,
+ esse saldo serve quase só para abater débito futuro, e transformá-lo em dinheiro é raro e burocrático. Ele fica
+ preso no balanço: imobiliza capital de giro e gera custo de oportunidade, e pode virar perda de verdade se não
+ for recuperável.
+
+ 1.2 Os cinco tributos sobre o consumo
+ Impostos federais
+ PIS (Programa de Integração Social) e Cofins (Contribuição para o Financiamento da Seguridade Social) são duas
+ contribuições que incidem sobre a receita bruta, com alíquota conjunta de 3,65 por cento ou 9,25 por cento,
+ conforme o regime. Empresas no Lucro Presumido pagam a alíquota menor mas não abatem crédito nenhum.
+ Empresas no Lucro Real pagam a maior e podem creditar certos gastos.
+
+ Esses dois tributos estão entre os mais judicializados do país, e o porquê está relacionado ao que é considerado
+ ou não crédito para ser abatido. O STJ considera que devem ser creditados gastos com insumos, que são itens
+ fundamentais para a atividade da empresa e totalmente ligados à produção, como a farinha para uma padaria.
+ Contudo, gastos com marketing, tecnologia da informação, logística ou segurança ficam numa zona cinzenta: a
+ empresa entende que são insumos e toma o crédito; a Receita Federal entende que não são e glosa (recusa) o
+ crédito, cobrando o imposto de volta com multa e juros. Daí nasce um processo administrativo e, muitas vezes,
+ uma ação judicial que se arrasta por anos. O efeito prático para a empresa é duplo: caixa (depósitos judiciais e
+
+EESC Finance                                                                                                          1
+ Reforma Tributária – Guia de Estudo
+
+Núcleo de Private Equity – EESC Finance
+ provisões) e incerteza (o crédito tomado hoje pode ser desfeito amanhã). Numa aquisição, esse contencioso é
+ passivo contingente e vai para a negociação de preço.
+
+ IPI (Imposto sobre Produtos Industrializados) incide sobre o produto industrializado quando sai da fábrica, com
+ alíquota variável conforme o item. É seletivo: essenciais têm alíquota baixa ou zero, supérfluos têm alíquota alta.
+ Quem não industrializa praticamente não o vê.
+
+ Imposto estadual
+ ICMS (Imposto sobre Circulação de Mercadorias e Serviços) incide a cada circulação da mercadoria, com alíquota
+ de 17 a 20 por cento conforme o estado e o produto. É o maior tributo sobre consumo do país. Como é estadual,
+ são 27 legislações distintas, cada uma com regras e alíquotas próprias, e uma empresa que opera em vários
+ estados precisa lidar com todas. A venda interestadual usa alíquota reduzida (em geral 7 ou 12 por cento
+ conforme a origem e o destino, e 4 por cento em certas operações com bens importados), o que faz empresas
+ que compram muito de fora acumularem crédito alto e gerarem poucos débitos para abater. Sobra crédito, que
+ fica preso naquele estado, sem virar caixa.
+
+ Imposto municipal
+ ISS (Imposto Sobre Serviços) incide sobre o serviço prestado, com alíquota de 2 a 5 por cento. É o espelho do
+ ICMS para o mundo dos serviços. Duas características o tornam problemático. Primeiro, é cumulativo: o
+ prestador não abate o ISS que pagou nos serviços que contratou, então o imposto incide sobre imposto ao longo
+ da cadeia. Segundo, sendo municipal, gera disputa sobre qual cidade tem o direito de cobrar, a da sede da
+ empresa ou a do local onde o serviço foi prestado.
+
+ Em síntese, o sistema atual acumula cinco tributos sobrepostos e com regras próprias, cumulatividade que faz
+ imposto incidir sobre imposto, crédito preso que imobiliza capital de giro, guerra fiscal entre estados e um
+ volume enorme de litígio. É esse conjunto de distorções que o novo modelo busca corrigir.
+
+
+ 2. O que muda com a reforma
+ 2.1 O IVA Dual: CBS, IBS e Imposto Seletivo
+ A Emenda Constitucional 132 de 2023 e a Lei Complementar 214 de 2025 substituem os cinco tributos por um
+ modelo de IVA Dual (Imposto sobre Valor Agregado, em duas esferas). Os cinco viram, essencialmente, dois:
+
+ – CBS (Contribuição sobre Bens e Serviços), federal, substitui PIS e Cofins. O IPI é reduzido a zero para quase
+    todos os produtos a partir de 2027, mas não é extinto: ele é mantido, com alíquotas positivas, apenas para
+    preservar a competitividade da Zona Franca de Manaus.
+ – IBS (Imposto sobre Bens e Serviços), de competência compartilhada entre estados e municípios, substitui ICMS
+    e ISS.
+ – IS (Imposto Seletivo), federal, incide sobre bens prejudiciais à saúde ou ao meio ambiente, como cigarro e
+    bebidas. Tem finalidade predominantemente extrafiscal: existe sobretudo para desestimular o consumo
+    desses bens, ainda que também gere arrecadação.
+ A razão do desenho "dual", em vez de um imposto único como na maior parte dos países, é federativa: União,
+ estados e municípios têm autonomia arrecadatória e nenhum deles abriria mão da sua fatia. Criou-se, então, um
+ par de tributos gêmeos, com as mesmas regras mas arrecadação separada.
+
+ Três mudanças estruturais decorrem disso, e cada uma merece um tópico próprio: o crédito passa a ser amplo, o
+ saldo credor passa a ser ressarcível em dinheiro, e a arrecadação passa a pertencer ao destino.
+
+
+
+
+EESC Finance                                                                                                           2
+ Reforma Tributária – Guia de Estudo
+
+Núcleo de Private Equity – EESC Finance
+ 2.2 Crédito amplo
+ Como funciona hoje. O direito ao crédito depende de uma lista de hipóteses cujo conceito de insumo é
+ controvertido (resolvido pela Justiça por essencialidade e relevância). Despesas administrativas, marketing e boa
+ parte dos serviços contratados frequentemente não geram crédito, ou geram sob litígio. O ISS não gera crédito
+ nenhum, porque é cumulativo.
+
+ O que muda. O critério deixa de ser uma lista e passa a ser a finalidade: em regra, todo bem ou serviço adquirido
+ para a atividade econômica gera crédito de CBS e IBS. A base creditável se amplia de forma relevante, incluindo
+ despesas que antes nunca geravam nada.
+
+ Impacto operacional. O volume de créditos a rastrear cresce muito. Cada nota de entrada passa a ser
+ potencialmente crédito, o que exige sistemas e escrituração à altura. Impacto financeiro. Para quem captura
+ bem, a carga efetiva cai; para quem captura mal, o crédito amplo é uma promessa que não se realiza.
+
+ Os limites do "quase tudo gera crédito". Três exceções importam. Primeira: bens e serviços de uso e consumo
+ pessoal (o exemplo clássico é o carro do sócio) estão expressamente fora. Segunda: é preciso distinguir dois
+ casos. Se a compra foi feita a alíquota zero, não há tributo embutido nela e, portanto, não há crédito a tomar. Já
+ quando a venda da empresa é a alíquota zero (como parte da cesta básica no varejo alimentar), a regra em geral
+ preserva os créditos das compras anteriores, salvo exceções expressas. São situações opostas que costumam ser
+ confundidas. Terceira, e a mais operacional: o crédito depende de o fornecedor ter efetivamente recolhido o
+ imposto, ponto tratado no Tópico 3.2. Crédito amplo não significa crédito automático.
+
+ 2.3 Ressarcimento do saldo credor
+ Como funciona hoje. Sobrou crédito, ele fica no balanço esperando débito futuro. Transformá-lo em dinheiro
+ exige processo administrativo lento, e no ICMS muitos saldos simplesmente nunca viram caixa. Na prática,
+ crédito preso é capital de giro imobilizado por tempo indeterminado.
+
+ O que muda. A LC 214/2025 cria um direito estruturado ao ressarcimento em dinheiro do saldo credor, com
+ prazos definidos para que o Fisco aprecie o pedido. Os prazos de apreciação são escalonados, e não universais:
+
+Prazo                 Quando se aplica
+
+30 dias               Contribuintes em programa de conformidade, desde que o pedido também se enquadre nas categorias abaixo
+                      (ativo imobilizado ou o limite de 150 por cento). Não basta participar do programa.
+
+60 dias               Créditos de bens do ativo imobilizado, ou pedidos de valor até 150 por cento da média mensal da diferença
+                      entre créditos e débitos.
+
+180 dias              Demais casos.
+
+ Apreciação não é a mesma coisa que pagamento, mas há prazo para pagar. Os prazos de 30, 60 e 180 dias são
+ para o Fisco apreciar o pedido. A regulamentação, porém, prevê que, uma vez vencido o prazo de apreciação sem
+ manifestação, concluída a fiscalização, ou atingido o limite de 360 dias, o ressarcimento seja efetuado em até 15
+ dias. Ou seja, existe disciplina de pagamento, mas ela depende de a apreciação se encerrar primeiro. Se for
+ iniciada fiscalização, o prazo de apreciação fica suspenso. Na prática, planejar caixa contando com ressarcimento
+ em 30 dias é otimista, e qualquer premissa de prazo de recuperação numa modelagem é premissa, não
+ consequência automática da lei.
+
+ 2.4 Tributação no destino
+ Como funciona hoje. O ICMS pertence majoritariamente ao estado de origem da mercadoria. Isso criou a guerra
+ fiscal: estados oferecem benefícios de ICMS para atrair fábricas e centros de distribuição. A empresa se instala
+ onde o incentivo está, não onde a logística faria sentido.
+
+ O que muda. A arrecadação do IBS passa a pertencer ao destino, o local onde está o consumidor. Um estado não
+ tem mais o que oferecer para atrair um galpão, porque o imposto não fica com ele. A guerra fiscal perde o objeto,
+ e o crédito acumulado nas travessias interestaduais deixa de existir.
+
+EESC Finance                                                                                                                      3
+ Reforma Tributária – Guia de Estudo
+
+Núcleo de Private Equity – EESC Finance
+ Implicação para análise. Empresas cuja localização de plantas e centros de distribuição foi decidida por incentivo
+ fiscal, e não por lógica operacional, podem ter uma pegada logística subótima que só fica visível quando o
+ incentivo acaba. Isso é tanto um risco (a margem cai) quanto uma oportunidade (há valor em reotimizar a malha).
+
+ 2.5 As alíquotas
+ A LC 214/2025 não fixa o percentual da CBS nem do IBS. Ela estabelece o mecanismo pelo qual o Senado
+ definirá as alíquotas de referência, com o critério de manter a carga total do sistema. O número mais citado no
+ debate público, cerca de 26,5 por cento somando CBS e IBS, é uma estimativa do Ministério da Fazenda,
+ dividida em aproximadamente 8,8 por cento de CBS (parcela federal) e 17,7 por cento de IBS (parcela estadual e
+ municipal). Essas são as premissas usadas no estudo de caso deste guia.
+
+ Esse patamar estaria entre os mais altos do mundo para um imposto desse tipo, e por isso concentra boa parte da
+ preocupação do mercado. Vale insistir num ponto: 26,5 por cento não é lei. A estimativa pode mudar conforme o
+ resultado da arrecadação na fase de teste, o desenho final dos regimes diferenciados e a calibragem do Senado.
+ Em qualquer modelo, a alíquota deve ser uma célula de premissa, exposta e sujeita a análise de sensibilidade,
+ nunca um número digitado dentro de uma fórmula.
+
+ Por que serviços intensivos em mão de obra são os mais afetados
+ O IVA tributa a venda e devolve crédito sobre as compras. Folha de pagamento não é uma compra: salário não
+ vem com imposto sobre consumo embutido, logo não gera crédito. Uma consultoria cujo custo é 90 por cento
+ gente tem quase nada a creditar, e portanto paga a alíquota quase cheia sobre a venda. Um supermercado, que
+ compra mercadoria (com imposto embutido) para revender, credita sobre a maior parte do seu custo e recolhe só
+ a diferença. É por isso que a mesma alíquota nominal produz cargas efetivas radicalmente diferentes por setor.
+
+ 2.6 O cronograma da transição
+ A transição dura oito anos. A CBS entra rápido; o IBS entra devagar, para dar tempo aos estados e municípios de
+ se ajustarem. O ponto que mais confunde, e que é essencial para qualquer modelagem, é que entre 2029 e 2032
+ três sistemas convivem: ICMS e ISS encolhendo, CBS cheia, e IBS crescendo. Não é uma troca instantânea.
+
+Ano                     O que acontece        Tributos vigentes     Efeito financeiro
+
+2026                    Ano de teste. CBS     Os cinco antigos,     Nulo. O contribuinte que cumpre as obrigações acessórias fica
+                        a 0,9% e IBS a 0,1%   integrais, mais CBS   dispensado do recolhimento.
+                        aparecem na nota,     e IBS simbólicos
+                        apenas para
+                        calibrar sistemas.
+
+2027                    CBS entra cheia.      ICMS e ISS            Primeiro choque de caixa.
+                        PIS e Cofins são      integrais, mais CBS
+                        extintos. IPI é       cheia
+                        reduzido a zero
+                        (exceto Zona
+                        Franca de Manaus).
+                        Começa o Imposto
+                        Seletivo. Começa a
+                        implantação do
+                        Split Payment.
+
+2028                    Consolidação da       ICMS e ISS            Estabilização. Auditar captura de créditos.
+                        CBS. IBS segue em     integrais, mais CBS
+                        teste.                cheia
+
+2029                    Começa a              ICMS/ISS a 90%,       Pico de complexidade operacional.
+                        substituição. IBS a   CBS cheia, IBS a
+                        10% do cheio;         10%
+                        ICMS e ISS a 90%.
+
+2030                    IBS a 20%; ICMS e     ICMS/ISS a 80%,       Benefícios fiscais estaduais encolhem junto.
+                        ISS a 80%.            CBS cheia, IBS a
+                                              20%
+
+
+EESC Finance                                                                                                                        4
+ Reforma Tributária – Guia de Estudo
+
+Núcleo de Private Equity – EESC Finance
+2031                    IBS a 30%; ICMS e      ICMS/ISS a 70%,      Revisar preços e contratos longos.
+                        ISS a 70%.             CBS cheia, IBS a
+                                               30%
+
+2032                    IBS a 40%; ICMS e      ICMS/ISS a 60%,      Fechar e homologar saldos credores.
+                        ISS a 60%. Último      CBS cheia, IBS a
+                        ano do ICMS.           40%
+
+2033                    ICMS e ISS             CBS, IBS e IS (IPI   Sistema novo completo.
+                        extintos. IBS          residual da ZFM)
+                        integral. IPI zerado
+                        (mantido apenas
+                        para a Zona Franca
+                        de Manaus).
+
+ Duas simplificações didáticas nesta tabela. Primeira: em 2027 e 2028 o IBS não é zero, ele permanece na
+ alíquota de teste de 0,1 por cento, com redução correspondente de 0,1 ponto na CBS para neutralizar o efeito. O
+ líquido é próximo de zero, e por isso o modelo do estudo de caso trata o IBS como zero nesses dois anos.
+ Segunda: em 2026, o modelo também não lança CBS nem IBS, porque quem cumpre as obrigações acessórias
+ fica dispensado do recolhimento nesse ano de teste (o destaque na nota é apenas informativo). Nos dois casos, a
+ simplificação não distorce o resultado, mas você precisa saber que ela existe.
+
+ Um detalhe de modelagem que importa. Quando se diz que o ICMS "cai para 90 por cento" em 2029, isso é uma
+ fração da alíquota, não um desconto em pontos. Um ICMS de 18 por cento passa a valer 16,2 por cento, depois
+ 14,4, 12,6, 10,8, até zerar. Numa planilha, o correto é manter a alíquota cheia numa célula fixa e multiplicá-la pela
+ fração de cada ano, nunca digitar cada valor à mão.
+
+
+ 3. Como a reforma afeta as empresas
+ 3.1 Split Payment e o fim do float tributário
+ Como funciona hoje. A empresa vende, recebe o valor cheio do cliente, e só recolhe o imposto semanas depois,
+ no vencimento. Nesse intervalo, o dinheiro do imposto fica no caixa dela e gira o negócio: paga fornecedor, folha,
+ estoque. Esse dinheiro em trânsito tem nome, float tributário, e é capital de giro gratuito que o sistema cede
+ todo mês.
+
+ Exemplo. Um supermercado vende R$ 100 milhões por mês e deve R$ 5 milhões de imposto. Ele recebe os R$
+ 100 milhões ao longo do mês e entrega os R$ 5 milhões só no mês seguinte. Durante esse tempo, os R$ 5
+ milhões trabalham de graça para ele. É sempre cerca de um mês de imposto parado a favor da empresa.
+
+ O que muda. No Split Payment (pagamento dividido), na hora em que o cliente paga, o próprio sistema de
+ pagamentos separa a parcela que é imposto e a envia direto ao governo. No procedimento padrão, essa parcela
+ corresponde ao débito real da operação; no simplificado, é um percentual estimado, com acerto posterior. A
+ empresa recebe apenas o valor líquido, que é de fato dela. O imposto nunca mais passa pelo caixa. O float
+ desaparece.
+
+ O Split Payment não aumenta o imposto devido. A empresa paga exatamente o mesmo valor de antes. O que
+ muda é o momento em que o dinheiro sai: sai na hora, e não mais semanas depois. Para um negócio de margem
+ estreita e giro alto, como varejo alimentar, perder um mês de fôlego de caixa é material.
+
+ A implantação é gradual. O mecanismo depende de regulamentação e da infraestrutura do sistema de
+ pagamentos, e não alcança todas as operações do mesmo jeito (pagamentos em dinheiro, por exemplo, não
+ passam pelo sistema bancário e não são divididos na origem).
+
+ Onde está a alavanca. A perda do float é igual para todo mundo: ninguém escapa, e a carga do imposto não
+ muda. O que diferencia as empresas é o que elas fizeram antes. Quem renegociou prazo com fornecedor,
+ reforçou caixa e ajustou sistemas atravessa a transição sem sobressalto. Quem não fez nada descobre o buraco
+ quando ele já existe, e o tapa com dívida de curto prazo, que é cara. Duas empresas idênticas na operação,
+
+EESC Finance                                                                                                             5
+  Reforma Tributária - Guia de Estudo
+
+Núcleo de Private Equity - EESC Finance
+
+ pagando o mesmo imposto, podem terminar com resultados financeiros diferentes apenas pela forma como se
+ prepararam.
+ DPO (Days Payable Outstanding, ou prazo médio de pagamento a fornecedores) mede quantos dias a empresa leva
+ para pagar quem lhe vendeu. Alongar o DPO significa segurar o dinheiro por mais tempo, o que libera capital de giro
+ e ajuda a compensar a perda do float. Mas não é almoço grátis: alongar prazo com fornecedor tem contrapartida
+ comercial e pode custar desconto perdido, preço pior ou prioridade menor no abastecimento. Um DPO que sobe
+ porque a empresa negociou de forma estruturada é uma coisa; um DPO que sobe porque a empresa está atrasando
+ pagamento é sinal de estresse de liquidez. Na due diligence, os dois se parecem no número e são opostos na
+ substância.
+
+ 3.2 Disciplina fiscal: por que o crédito amplo não é automático
+ O crédito amplo é uma oportunidade que só se materializa com disciplina operacional. Escrituração, sistemas e
+ documentação determinam se o benefício previsto na lei chega ao resultado e ao caixa.
+ Escrituração fiscal
+ Escrituração é o registro formal de cada operação nos livros e declarações que a empresa envia ao governo. Para
+ aproveitar um crédito, a compra precisa estar registrada com o código correto. Código errado, ausência de registro
+ ou cadastro incompatível deixam o valor fora da apuração e criam pendências que precisam ser regularizadas.
+ ERP preparado
+ ERP é o sistema de gestão integrado usado para operar a empresa. Com a reforma, ele precisa calcular CBS e IBS,
+ identificar aquisições elegíveis, separar créditos de mercadorias e de despesas operacionais e emitir documentos no
+ novo leiaute. Um sistema desatualizado pode deixar créditos parados sem que a administração perceba.
+ Nota fiscal idônea
+ Nota idônea é uma nota válida, emitida por fornecedor regular e compatível com a operação. O direito ao crédito
+ depende do cumprimento das condições legais e da documentação fiscal. Exigir nota correta vira política de compras:
+ revisar cadastros, validar documentos e acompanhar a regularidade da base de fornecedores.
+ O ciclo do crédito no modelo
+  Etapa                     O que significa                                                         Efeito no modelo
+
+  Potencial                 Valor teórico gerado por aquisições tributadas e elegíveis.             Base máxima que pode se converter em crédito.
+
+  Pendente / bloqueado      Há expectativa de recuperação, mas o valor ainda não está disponível.   Fica no ativo em regularização e consome capital
+                                                                                                    de giro.
+
+  Apropriado / disponível   Condições cumpridas; crédito reconhecido e pronto para uso.             Pode compensar débitos ou fundamentar
+                                                                                                    ressarcimento.
+
+  Utilizado                 Crédito compensado contra débitos das vendas.                           Reduz o ativo tributário e o IBS/CBS a recolher;
+                                                                                                    não gera novo ganho na DRE.
+
+  Ressarcido                Saldo apropriado convertido em dinheiro.                                Troca o ativo tributário por caixa.
+
+  Rejeitado                 Crédito pendente conclui-se definitivamente inválido.                   Sai do ativo e vira perda no CMV ou SG&A.;
+
+  Estornado                 Crédito já apropriado perde validade por fato posterior.                Reverte o ativo; se já utilizado, pode gerar débito
+                                                                                                    equivalente.
+ Sequência econômica: crédito potencial -> pendente ou bloqueado -> apropriado e disponível -> utilizado ou ressarcido. Rejeição ocorre antes
+ da apropriação; estorno ocorre depois de um crédito já ter sido apropriado.
+
+
+
+
+EESC Finance                                                                                                                                              6
+  Reforma Tributária - Guia de Estudo
+
+Núcleo de Private Equity - EESC Finance
+
+ 3.3 Os regimes tributários
+ A forma como uma empresa recolhe tributos sobre consumo depende do seu regime. A reforma afeta cada um de
+ maneira diferente, e isso importa tanto para avaliar a empresa-alvo quanto para avaliar a cadeia de fornecedores
+ dela.
+ Lucro Real
+ Já opera no regime não cumulativo de PIS e Cofins (9,25 por cento, com direito a crédito). A CBS mantém essa lógica,
+ então há continuidade conceitual. O desafio é operacional: com o crédito amplo, o volume de créditos a controlar
+ cresce, e entre 2029 e 2032 a empresa opera dois sistemas em paralelo.
+ Lucro Presumido
+ Aqui está o choque mais severo. Hoje a empresa paga PIS e Cofins pelo regime cumulativo: 3,65 por cento sobre o
+ faturamento, sem abater crédito nenhum. Em 2027, PIS e Cofins somem e a CBS entra a cerca de 8,8 por cento,
+ agora com direito a crédito. Para quem tem muitos insumos tributáveis, os créditos compensam o salto de alíquota.
+ Para quem tem poucos, tipicamente serviços intensivos em folha, a alíquota mais que dobra e não há crédito
+ suficiente para absorver. A carga efetiva sobe.
+ A partir de 2027, Lucro Real e Lucro Presumido recolhem CBS pela mesma lógica. A escolha entre os regimes passa a
+ ser orientada principalmente por IRPJ e CSLL.
+ Simples Nacional e o regime híbrido
+ O Simples Nacional é o regime simplificado para micro e pequenas empresas. A empresa paga seus tributos numa
+ guia única mensal, o DAS, com alíquota progressiva conforme a faixa de faturamento.
+ A reforma cria uma segunda opção, chamada de regime híbrido. A empresa continua no Simples, mas IBS e CBS saem
+ do DAS e passam a ser calculados e pagos separadamente pelas regras gerais. Os demais tributos permanecem no
+ DAS. Não há pagamento em duplicidade: existe uma separação entre as guias.
+
+                           Fornecedor 100% no DAS                                   Fornecedor no regime híbrido
+  Crédito destacado        Limitado à parcela de IBS e CBS efetivamente recolhida   Calculado pelas regras gerais aplicáveis ao IBS e à CBS.
+                           dentro do Simples.
+  Crédito do cliente B2B   Menor.                                                   Potencialmente integral, conforme o documento e a
+                                                                                    operação.
+  Custo efetivo            Pode ser maior para o comprador.                         Pode ser menor pela maior transferência de crédito.
+ Para vendas B2C, a distinção é menos relevante, pois o consumidor final não se credita. Para uma cadeia B2B,
+ mapear o regime tributário da base de fornecedores vira item de due diligence.
+ O sublimite de R$ 3,6 milhões. Acima desse patamar, o ICMS e o ISS já são recolhidos fora do DAS. Como o IBS
+ substitui esses tributos, a legislação estende o sublimite ao IBS. A CBS não segue necessariamente a mesma
+ dinâmica, tema que permanece relevante para análise do regime e da cadeia de fornecedores.
+ Implicação para análise. Uma cadeia B2B apoiada em fornecedores no Simples puro pode entregar menos crédito,
+ aumentando o custo efetivo do alvo. Em alguns casos, a correção depende de orientar fornecedores relevantes a
+ avaliar o regime híbrido.
+
+ 4. Estudo de caso: duas redes de supermercado
+ 4.1 Objetivo e desenho do caso
+ Acompanhamos duas redes de supermercado fictícias, criadas apenas para fins didáticos. Elas não existem. A
+ pergunta é deliberadamente estreita: se duas empresas tiverem a mesma operação, receita, preços, custos, estrutura
+ de capital e elegibilidade tributária, quanto a qualidade e o momento da preparação para a reforma alteram EBITDA,
+ capital de giro e caixa?
+
+
+
+
+EESC Finance                                                                                                                                   7
+  Reforma Tributária - Guia de Estudo
+
+Núcleo de Private Equity - EESC Finance
+
+ A Rede Meridiano é a early adopter. Ela começa a adaptar sistemas e processos em 2026, evita multas e perdas,
+ regulariza rapidamente os créditos pendentes, renegocia prazos com fornecedores mais cedo e converte o crédito
+ legado de ICMS em caixa em 2033. A Rede Aurora é a late adopter. Ela posterga a adaptação, incorre em retrabalho
+ e contingências, mantém mais créditos bloqueados, sofre rejeições definitivas, não replica a renegociação do DPO no
+ horizonte analisado e não conclui a monetização do legado.
+ As duas companhias estão sujeitas às mesmas alíquotas, ao mesmo Split Payment, ao mesmo percentual de despesas
+ operacionais elegíveis a crédito e ao mesmo payout de dividendos. O modelo não atribui à Meridiano uma lei
+ tributária melhor; atribui a ela execução melhor.
+
+  Variável                   Meridiano                   Aurora                        Leitura
+
+  Custos de adaptação        R$ 3.000 (2026-28)          R$ 4.300 (2028-32)            Antecipar reduz o custo total.
+
+  Multas e contingências     Zero                        R$ 3.300                      Execução tardia gera retrabalho.
+
+  Novos créditos pendentes   0,5%                        5,0%                          Mais pendência prende caixa.
+
+  Regularização              95%                         65%                           Velocidade de conversão em crédito
+                                                                                       disponível.
+
+  Rejeição definitiva        0%                          20%                           Crédito não recuperável vira perda.
+
+  DPO                        37 - 40 dias até 2028       Próximo de 37 dias até 2033   Vantagem de liquidez permanece no
+                                                                                       horizonte.
+
+  Legado de ICMS             Monetiza R$ 4.449 em 2033   Mantém R$ 4.449 no ativo      Conversão de ativo em caixa.
+ Premissas comuns. O modelo assume 40 por cento das despesas operacionais elegíveis a créditos de IBS/CBS, 15
+ por cento elegíveis no sistema antigo e Split Payment de 100 por cento como simplificação didática.
+ Base tributável durante a coexistência. Entre 2027 e 2032, o IBS/CBS é calculado sobre uma base líquida de ICMS,
+ PIS e Cofins. A correção reduz o IBS/CBS destacado e aumenta o ICMS da mesma operação, sem alterar o total de
+ impostos sobre o faturamento nem a receita líquida do caso.
+
+ 4.2 Evolução ano a ano
+ 2025 - Base comum. As empresas começam iguais: EBITDA de R$ 27.646 e caixa de R$ 25.000. O saldo legado de
+ ICMS já aparece no ativo pelo valor presente de R$ 4.449.
+ 2026 - A Meridiano investe antes. A Meridiano gasta R$ 1.200 em adaptação e aumenta o DPO em um dia. Seu
+ EBITDA fica em R$ 28.211, abaixo dos R$ 29.411 da Aurora. Apesar disso, o caixa termina R$ 393 acima pela
+ liberação de capital de giro.
+ 2027 - O sistema novo começa a produzir pendências. A Meridiano investe mais R$ 1.200. A Aurora passa a incorrer
+ em multas e perdas. O EBITDA da Meridiano permanece R$ 701 abaixo, mas o caixa já está R$ 1.541 acima.
+ 2028 - A vantagem operacional supera o investimento. A Meridiano conclui sua adaptação com R$ 600. A Aurora
+ inicia tarde, gasta R$ 400 e incorre em R$ 800 de multas e retrabalho. O EBITDA da Meridiano supera o da Aurora
+ em R$ 733, e o gap de caixa chega a R$ 3.272.
+ 2029 - Pico da diferença de execução. A Aurora desembolsa R$ 1.200 em adaptação e R$ 1.000 em contingências,
+ além das perdas definitivas. O gap anual de EBITDA sobe para R$ 2.372, e o caixa acumulado fica R$ 4.799 acima.
+
+
+
+
+EESC Finance                                                                                                                 8
+  Reforma Tributária - Guia de Estudo
+
+Núcleo de Private Equity - EESC Finance
+
+ 2030 - A Aurora absorve o maior custo anual. A Aurora gasta R$ 1.500 em adaptação e R$ 700 em multas e
+ retrabalho. O EBITDA da Meridiano supera o da Aurora em R$ 2.415. O gap de caixa chega a R$ 6.379.
+ 2031 e 2032 - O gap de liquidez se torna estrutural. A Aurora reduz os custos extraordinários, mas mantém o DPO
+ próximo de 37 dias, enquanto a Meridiano preserva aproximadamente 40 dias. O financiamento adicional de
+ fornecedores deixa de ser apenas antecipação e passa a permanecer no balanço. O gap de caixa sobe para R$ 7.473
+ em 2031 e R$ 8.224 em 2032.
+ 2033 - Sistema novo completo e monetização do legado. A diferença anual de EBITDA cai para R$ 519 e decorre das
+ perdas definitivas da Aurora. O EBITDA é de R$ 52.778 na Meridiano e R$ 52.259 na Aurora. A Meridiano monetiza
+ R$ 4.449 do legado; a Aurora mantém o ativo. O caixa final é de R$ 112.991 contra R$ 99.046, um gap de R$
+ 13.944.
+ Leitura da margem. As margens EBITDA de 2033 são próximas: 9,1 por cento na Meridiano e 9,0 por cento na
+ Aurora. O gap acumulado nasce de custos extraordinários, perdas evitadas, menor capital preso em créditos, maior
+ financiamento permanente de fornecedores e monetização do ativo legado.
+
+  Ano          EBITDA M      EBITDA A        Gap EBITDA        Caixa M          Caixa A           Gap caixa
+
+  2025         27.646        27.646          -                 25.000           25.000            -
+
+  2026         28.211        29.411          (1.200)           29.944           29.551            393
+
+  2027         32.348        33.049          (701)             37.339           35.798            1.541
+
+  2028         34.961        34.228          733               47.256           43.984            3.272
+
+  2029         38.221        35.850          2.372             57.259           52.460            4.799
+
+  2030         41.074        38.659          2.415             68.420           62.042            6.379
+
+  2031         43.717        42.255          1.462             80.552           73.079            7.473
+
+  2032         46.523        45.810          713               93.838           85.615            8.224
+
+  2033         52.778        52.259          519               112.991          99.046            13.944
+
+ 4.3 Decomposição dos gaps acumulados
+ EBITDA Bridge acumulado
+ O gráfico parte do EBITDA acumulado da Aurora, de R$ 339.168, e chega aos R$ 345.481 da Meridiano. O gap de
+ R$ 6.313 é explicado por quatro fatores: R$ 1.533 de menores perdas definitivas sobre mercadorias, R$ 180 de
+ menores perdas sobre despesas operacionais, R$ 1.300 de menor custo total de adaptação e R$ 3.300 de multas,
+ retrabalho e contingências evitados.
+ A leitura temporal importa. A Meridiano investe primeiro e apresenta EBITDA inferior em 2026 e 2027. A vantagem
+ só aparece depois, quando a Aurora precisa adaptar-se em condições mais caras e começa a reconhecer perdas e
+ contingências. O bridge acumulado evita a conclusão errada de avaliar o early adopter apenas pelo custo inicial.
+
+
+
+
+EESC Finance                                                                                                        9
+  Reforma Tributária - Guia de Estudo
+
+Núcleo de Private Equity - EESC Finance
+
+
+
+
+ Cash Bridge
+ O gráfico parte do caixa final da Aurora, de R$ 99.046, e chega aos R$ 112.991 da Meridiano. Os componentes de
+ EBITDA somam R$ 6.313. Como a Meridiano lucra mais, paga R$ 2.146 adicionais de IRPJ e CSLL. A gestão de
+ capital de giro acrescenta R$ 6.371, a monetização do legado adiciona R$ 4.449 e os dividendos adicionais
+ consomem R$ 1.042.
+ O efeito de capital de giro tem duas origens. A Aurora encerra 2033 com R$ 2.076 em créditos de IBS/CBS em
+ regularização, contra apenas R$ 32 na Meridiano, gerando aproximadamente R$ 2.044 de capital preso. Além disso, a
+ Meridiano mantém cerca de 40 dias de DPO, enquanto a Aurora permanece próxima de 37 dias. O prazo adicional
+ sustenta aproximadamente R$ 4.327 a mais de contas a pagar e, portanto, de financiamento operacional.
+ Diferentemente do cenário anterior, o benefício do DPO não é revertido até 2033. Ele permanece no caixa final
+ porque a Aurora não replica a renegociação dentro do horizonte do modelo. A premissa representa prazo
+ contratualmente negociado, e não atraso de pagamento.
+ A monetização do legado converte um ativo já reconhecido a valor presente em caixa; não aumenta EBITDA e não
+ pode ser contada duas vezes como criação de valor. A Aurora ainda carrega R$ 4.449 no balanço, mas não realizou o
+ ativo dentro do horizonte do caso.
+
+
+
+
+EESC Finance                                                                                                      10
+  Reforma Tributária - Guia de Estudo
+
+Núcleo de Private Equity - EESC Finance
+
+
+
+
+ 5. Implicações para Private Equity
+ 5.1 Riscos de destruição de valor
+  - Benefícios fiscais estaduais com data de validade. Incentivos de ICMS encolhem com a transição. Verificar
+    mecanismos de compensação é item obrigatório de due diligence.
+  - Mudança de mecanismos antigos. A redução da substituição tributária altera preços, margens, créditos e processos
+    no varejo.
+  - Serviços intensivos em mão de obra. Folha não gera crédito de consumo; empresas com poucos insumos
+    tributáveis podem enfrentar carga efetiva maior.
+  - Contratos plurianuais sem cláusula tributária. Contratos com vigência além da transição podem transferir a
+    mudança de carga para uma das partes.
+  - Cadeia de fornecedores no Simples puro em negócios B2B. Menos crédito transferido pode elevar o custo efetivo
+    do alvo.
+  - Contencioso herdado. A extinção de PIS, Cofins, ICMS e ISS não extingue processos relativos a períodos
+    anteriores.
+  - Créditos bloqueados sem trilha de regularização. Um ativo tributário elevado pode mascarar caixa preso e risco de
+    perda definitiva.
+
+
+
+
+EESC Finance                                                                                                        11
+  Reforma Tributária - Guia de Estudo
+
+Núcleo de Private Equity - EESC Finance
+
+ 5.2 Proteção de valor
+ Captura e regularização dos créditos
+ ERP configurado, escrituração correta e documentação consistente reduzem o tempo em que o crédito permanece
+ bloqueado. No caso, a Aurora termina 2033 com aproximadamente R$ 2.044 a mais de capital preso em créditos
+ pendentes.
+ Prevenção de perdas e contingências
+ No bridge acumulado, perdas evitadas, multas e retrabalho explicam R$ 5.013 dos R$ 6.313 de gap de EBITDA.
+ Gestão de capital de giro contra o Split Payment
+ Renegociar DPO e reforçar liquidez antes do choque evita que a perda do float se transforme em dívida de curto
+ prazo. No caso, a Meridiano sustenta cerca de três dias adicionais de prazo até 2033, o que mantém
+ aproximadamente R$ 4.327 de financiamento operacional a mais no balanço.
+ Normalização da base de comparação
+ Como CBS e IBS são cobrados por fora, receita e margens reportadas mudam de patamar. Durante a transição, a base
+ do IBS/CBS também precisa excluir ICMS, PIS e Cofins; comparar períodos sem normalizar a base pode gerar
+ conclusões erradas.
+
+ 5.3 Criação de valor
+ Monetização do estoque legado de ICMS
+ O saldo precisa ser documentado, homologado e avaliado a valor presente. No caso, R$ 10.000 de valor de face
+ equivalem a R$ 4.449 a valor presente, considerando 240 parcelas e taxa real de 10 por cento ao ano. A Meridiano
+ converte o ativo em caixa; a Aurora mantém o saldo.
+ Arbitragem de preço na aquisição
+ Um alvo com perdas recorrentes, créditos bloqueados e contingências pode ter EBITDA e caixa abaixo do potencial.
+ Um comprador que saiba corrigir processos pode capturar a normalização.
+ Outras alavancas
+  - Reotimização da malha logística. Com o fim da guerra fiscal, centros de distribuição podem ser reposicionados por
+    eficiência operacional.
+  - Reorganizações societárias. A gestão dos saldos credores homologados dentro do grupo pode acelerar uso ou
+    monetização, observadas as regras.
+  - Orientação da cadeia de fornecedores. Ajudar fornecedores-chave a corrigir documentos, cadastros ou avaliar o
+    regime híbrido protege o crédito do comprador.
+
+
+
+
+EESC Finance                                                                                                        12
+  Reforma Tributária - Guia de Estudo
+
+Núcleo de Private Equity - EESC Finance
+
+ 5.4 Checklist de due diligence tributária
+  Área                  O que verificar                                                       Por que importa
+
+  Ciclo do crédito      Potencial, pendente, apropriado, utilizado, ressarcido, rejeitado e   Separa ativo líquido de caixa preso e perda
+                        estornado.                                                            provável.
+
+  Sistemas              ERP calcula CBS/IBS e despesas elegíveis?                             Erro de sistema deixa crédito parado
+                                                                                              silenciosamente.
+
+  Fornecedores          Regime, documentos e regularidade fiscal.                             Afeta crédito transferido e risco de bloqueio.
+
+  Legado                Valor de face, homologação, prazo e VP.                               Ativo de longa duração pode estar
+                                                                                              superavaliado.
+
+  Capital de giro       DPO, perda do float, créditos bloqueados e revolver.                  Determina o choque de liquidez da transição.
+
+  Base tributável       IBS/CBS exclui ICMS, PIS e Cofins durante a coexistência?             Evita distorcer a composição dos tributos e
+                                                                                              os créditos.
+
+  Contratos             Cláusulas de revisão tributária.                                      Evita absorver sozinho mudança de carga.
+
+ 5.5 Conclusão
+ A reforma foi desenhada para perseguir neutralidade de arrecadação agregada, mas isso não produz neutralidade
+ entre empresas. O resultado depende de sistemas, documentação, contratos, fornecedores e decisões de liquidez.
+ O estudo de caso atualizado mostra uma diferença realista e menos concentrada em uma única premissa. A
+ Meridiano não recebe uma taxa de crédito superior por definição. Ela investe antes, regulariza mais rápido, evita
+ perdas e multas, renegocia prazos com antecedência e monetiza o ativo legado. A Aurora chega ao mesmo sistema,
+ mas paga mais pela transição, mantém o DPO original e deixa mais capital preso no caminho.
+ Entre 2025 e 2033, o EBITDA acumulado da Meridiano supera o da Aurora em R$ 6.313. Após impostos, capital de
+ giro, monetização do legado e dividendos, o caixa final é R$ 13.944 maior. O resultado não vem de vender mais,
+ aumentar preço ou alterar a estrutura de capital; vem da qualidade de execução durante a transição.
+ Para Private Equity, a implicação é direta: diligência tributária não pode limitar-se a confirmar alíquotas e
+ contingências. É preciso entender o ciclo dos créditos, o timing da preparação, a capacidade de absorver a perda do
+ float, a sustentabilidade dos prazos com fornecedores, a correta construção das bases tributáveis e a qualidade do
+ ativo tributário registrado no balanço.
+ Disclaimer do estudo de caso. Para fins didáticos, considera-se que as empresas não atuam em setor concorrente de
+ produtos fabricados na Zona Franca de Manaus. Assim, o modelo assume IPI igual a zero a partir de 2027. A premissa
+ não deve ser generalizada para empresas sujeitas ao tratamento específico da ZFM.
+
+
+
+
+EESC Finance                                                                                                                                   13
+  Reforma Tributária - Guia de Estudo
+
+Núcleo de Private Equity - EESC Finance
+
+
+Anexo A - Rede Meridiano
+Demonstração do Resultado (DRE), 2025 a 2033. Valores em R$ mil. A rede que se prepara com antecedência.
+DEMONSTRAÇÃO DO RESULTADO (DRE)                         2025           2026          2027          2028        2029        2030        2031        2032        2033
+Faturamento (preço ao cliente)                          470.000        500.000       530.000       561.800     595.508     631.238     662.800     695.940     730.737
+Crescimento A/A                                         -              6,4%          6,0%          6,0%        6,0%        6,0%        5,0%        5,0%        5,0%
+(-) CBS e IBS destacados                                -              -             (35.151)      (37.261)    (47.706)    (59.354)    (71.630)    (85.070)    (153.079)
+Base tributável CBS/IBS líquida de tributos antigos     470.000        500.000       399.449       423.415     451.330     480.986     507.657     535.708     577.658
+Receita Bruta                                           470.000        500.000       494.849       524.539     547.802     571.885     591.170     610.870     577.658
+(-) ICMS                                                (84.600)       (90.000)      (95.400)      (101.124)   (96.472)    (90.898)    (83.513)    (75.162)    -
+(-) PIS + Cofins                                        (43.475)       (46.250)      -             -           -           -           -           -           -
+Total de impostos sobre o faturamento                   (128.075)      (136.250)     (130.551)     (138.385)   (144.178)   (150.252)   (155.143)   (160.232)   (153.079)
+Receita Líquida                                         341.925        363.750       399.449       423.415     451.330     480.986     507.657     535.708     577.658
+(-) CMV bruto antes dos créditos                        (338.400)      (360.000)     (381.600)     (404.496)   (428.766)   (454.492)   (477.216)   (501.077)   (526.131)
+(+) Créditos tributários sobre mercadorias              92.214         98.100        93.997        99.637      103.808     108.181     111.703     115.367     110.217
+IBS + CBS                                               -              -             25.309        26.828      34.348      42.735      51.574      61.251      110.217
+PIS + Cofins + ICMS                                     92.214         98.100        68.688        72.809      69.460      65.447      60.129      54.116      -
+(-) Perdas definitivas - mercadorias                    -              -             -             -           -           -           -           -           -
+(-) CMV líquido                                         (246.186)      (261.900)     (287.603)     (304.859)   (324.958)   (346.310)   (365.513)   (385.710)   (415.914)
+Lucro Bruto                                             95.739         101.850       111.846       118.556     126.372     134.676     142.144     149.998     161.744
+Margem Bruta                                            28,0%          28,0%         28,0%         28,0%       28,0%       28,0%       28,0%       28,0%       28,0%
+(-) Despesas operacionais recorrentes                   (72.146)       (76.751)      (84.284)      (89.341)    (95.231)    (101.488)   (107.116)   (113.034)   (121.886)
+(+) Créditos sobre despesas operacionais                4.054          4.312         5.986         6.345       7.080       7.886       8.689       9.559       12.920
+IBS + CBS - despesas                                    -              -             2.967         3.145       4.026       5.009       6.046       7.180       12.920
+PIS + Cofins + ICMS - despesas                          4.054          4.312         3.019         3.201       3.053       2.877       2.643       2.379       -
+(-) Perdas definitivas - despesas operacionais          -              -             -             -           -           -           -           -           -
+(-) Custos de adaptação                                 -              (1.200)       (1.200)       (600)       -           -           -           -           -
+(-) Multas, retrabalho e contingências                  -              -             -             -           -           -           -           -           -
+(-) SG&A; líquido                                       (68.093)       (73.639)      (79.497)      (83.595)    (88.151)    (93.602)    (98.427)    (103.476)   (108.966)
+EBITDA                                                  27.646         28.211        32.348        34.961      38.221      41.074      43.717      46.523      52.778
+Margem EBITDA                                           8,1%           7,8%          8,1%          8,3%        8,5%        8,5%        8,6%        8,7%        9,1%
+(-) Depreciação e amortização                           (7.050)        (7.500)       (7.950)       (8.427)     (8.933)     (9.469)     (9.942)     (10.439)    (10.961)
+EBIT                                                    20.596         20.711        24.398        26.534      29.289      31.606      33.775      36.084      41.817
+Resultado Financeiro                                    (9.780)        (9.780)       (9.780)       (9.780)     (9.780)     (9.780)     (9.780)     (9.780)     (9.780)
+EBT                                                     10.816         10.931        14.618        16.754      19.509      21.826      23.995      26.304      32.037
+(-) IRPJ e CSLL                                         (3.678)        (3.717)       (4.970)       (5.696)     (6.633)     (7.421)     (8.158)     (8.943)     (10.893)
+Lucro Líquido                                           7.139          7.215         9.648         11.058      12.876      14.405      15.837      17.360      21.145
+Margem Líquida                                          2,1%           2,0%          2,4%          2,6%        2,9%        3,0%        3,1%        3,2%        3,7%
+
+
+
+
+EESC Finance                                                                                                                                                               14
+                                                                                                                                                                            13
+  Reforma Tributária - Guia de Estudo
+
+Núcleo de Private Equity - EESC Finance
+
+
+Anexo A - Rede Meridiano (continuação)
+Balanço Patrimonial e Fluxo de Caixa, 2025 a 2033. Valores em R$ mil. A rede que se prepara com antecedência.
+BALANÇO PATRIMONIAL                                       2025          2026           2027          2028       2029      2030      2031      2032       2033
+Ativo Total                                               107.829       114.584        124.792       136.690    148.974   162.557   176.864   192.437    210.448
+Ativos circulantes                                        57.829        64.584         74.792        86.690     98.974    112.557   126.864   142.437    160.448
+Caixa e equivalentes                                      25.000        29.944         37.339        47.256     57.259    68.420    80.552    93.838     112.991
+Contas a receber                                          3.863         4.110          4.356         4.618      4.895     5.188     5.448     5.720      6.006
+Estoque                                                   24.517        26.082         28.642        30.360     32.362    34.488    36.400    38.412     41.420
+Créditos antigos / legado                                 4.449         4.449          4.449         4.449      4.449     4.449     4.449     4.449      -
+Créditos IBS/CBS em regularização                         -             -              7             8          10        12        15        18         32
+Ativos não circulantes                                    50.000        50.000         50.000        50.000     50.000    50.000    50.000    50.000     50.000
+Imobilizado (PP&E;)                                       50.000        50.000         50.000        50.000     50.000    50.000    50.000    50.000     50.000
+Passivo Total                                             97.278        98.622         101.595       105.200    107.827   110.606   113.035   115.587    117.741
+Passivos circulantes                                      37.278        38.622         41.595        45.200     47.827    50.606    53.035    55.587     57.741
+Contas a pagar                                            34.331        37.544         40.840        44.399     47.063    49.886    52.374    54.992     57.741
+ICMS/PIS/Cofins a recolher                                2.947         1.078          755           801        764       720       661       595        -
+IBS/CBS a recolher                                        -             -              -             -          -         -         -         -          -
+Revolver                                                  -             -              -             -          -         -         -         -          -
+Dívida de longo prazo                                     60.000        60.000         60.000        60.000     60.000    60.000    60.000    60.000     60.000
+Patrimônio Líquido                                        10.551        15.961         23.197        31.491     41.148    51.951    63.829    76.849     92.708
+
+
+DEMONSTRAÇÃO DO FLUXO DE CAIXA                            2025          2026           2027          2028       2029      2030      2031      2032       2033
+(+) Lucro Líquido                                         -             7.215          9.648         11.058     12.876    14.405    15.837    17.360     21.145
+(+) Depreciação e amortização                             -             7.500          7.950         8.427      8.933     9.469     9.942     10.439     10.961
+(-) Δ Capital de Giro                                     -             (467)          159           1.624      346       357       255       266        (1.155)
+(+) Monetização do crédito legado de ICMS                 -             -              -             -          -         -         -         -          4.449
+Fluxo de Caixa Operacional                                -             14.247         17.757        21.109     22.155    24.231    26.033    28.065     35.400
+(-) Capex                                                 -             (7.500)        (7.950)       (8.427)    (8.933)   (9.469)   (9.942)   (10.439)   (10.961)
+Fluxo de Caixa de Investimento                            -             (7.500)        (7.950)       (8.427)    (8.933)   (9.469)   (9.942)   (10.439)   (10.961)
+(+/-) Variação da dívida                                  -             -              -             -          -         -         -         -          -
+(+/-) Variação do revolver                                -             -              -             -          -         -         -         -          -
+(-) Pagamento de dividendos                               -             (1.804)        (2.412)       (2.764)    (3.219)   (3.601)   (3.959)   (4.340)    (5.286)
+Fluxo de Caixa de Financiamento                           -             (1.804)        (2.412)       (2.764)    (3.219)   (3.601)   (3.959)   (4.340)    (5.286)
+Caixa no início do período                                -             25.000         29.944        37.339     47.256    57.259    68.420    80.552     93.838
+Mudança líquida no caixa                                  -             4.944          7.395         9.917      10.003    11.161    12.132    13.286     19.152
+Caixa no fim do período                                   25.000        29.944         37.339        47.256     57.259    68.420    80.552    93.838     112.991
+
+
+
+
+EESC Finance                                                                                                                                                        15
+                                                                                                                                                                     14
+  Reforma Tributária - Guia de Estudo
+
+Núcleo de Private Equity - EESC Finance
+
+
+Anexo B - Rede Aurora
+Demonstração do Resultado (DRE), 2025 a 2033. Valores em R$ mil. A rede que reage tarde.
+DEMONSTRAÇÃO DO RESULTADO (DRE)                          2025          2026          2027        2028        2029        2030        2031        2032        2033
+Faturamento (preço ao cliente)                           470.000       500.000       530.000     561.800     595.508     631.238     662.800     695.940     730.737
+Crescimento A/A                                          -             6,4%          6,0%        6,0%        6,0%        6,0%        5,0%        5,0%        5,0%
+(-) CBS e IBS destacados                                 -             -             (35.151)    (37.261)    (47.706)    (59.354)    (71.630)    (85.070)    (153.079)
+Base tributável CBS/IBS líquida de tributos antigos      470.000       500.000       399.449     423.415     451.330     480.986     507.657     535.708     577.658
+Receita Bruta                                            470.000       500.000       494.849     524.539     547.802     571.885     591.170     610.870     577.658
+(-) ICMS                                                 (84.600)      (90.000)      (95.400)    (101.124)   (96.472)    (90.898)    (83.513)    (75.162)    -
+(-) PIS + Cofins                                         (43.475)      (46.250)      -           -           -           -           -           -           -
+Total de impostos sobre o faturamento                    (128.075)     (136.250)     (130.551)   (138.385)   (144.178)   (150.252)   (155.143)   (160.232)   (153.079)
+Receita Líquida                                          341.925       363.750       399.449     423.415     451.330     480.986     507.657     535.708     577.658
+(-) CMV bruto antes dos créditos                         (338.400)     (360.000)     (381.600)   (404.496)   (428.766)   (454.492)   (477.216)   (501.077)   (526.131)
+(+) Créditos tributários sobre mercadorias               92.214        98.100        93.997      99.637      103.808     108.181     111.703     115.367     110.217
+IBS + CBS                                                -             -             2.967       3.145       4.026       5.009       6.046       7.180       12.920
+PIS + Cofins + ICMS                                      4.054         4.312         3.019       3.201       3.053       2.877       2.643       2.379       -
+(-) Perdas definitivas - mercadorias                     -             -             (89)        (119)       (154)       (193)       (235)       (280)       (464)
+(-) CMV líquido                                          (246.186)     (261.900)     (287.692)   (304.978)   (325.111)   (346.503)   (365.748)   (385.990)   (416.378)
+Lucro Bruto                                              95.739        101.850       111.757     118.438     126.219     134.483     141.909     149.718     161.280
+Margem Bruta                                             28,0%         28,0%         28,0%       28,0%       28,0%       28,0%       28,0%       27,9%       27,9%
+(-) Despesas operacionais recorrentes                    (72.146)      (76.751)      (84.284)    (89.341)    (95.231)    (101.488)   (107.116)   (113.034)   (121.886)
+(+) Créditos sobre despesas operacionais                 4.054         4.312         5.986       6.345       7.080       7.886       8.689       9.559       12.920
+IBS + CBS - despesas                                     -             -             2.967       3.145       4.026       5.009       6.046       7.180       12.920
+PIS + Cofins + ICMS - despesas                           4.054         4.312         3.019       3.201       3.053       2.877       2.643       2.379       -
+(-) Perdas definitivas - despesas operacionais           -             -             (10)        (14)        (18)        (23)        (27)        (33)        (54)
+(-) Custos de adaptação                                  -             -             -           (400)       (1.200)     (1.500)     (900)       (300)       -
+(-) Multas, retrabalho e contingências                   -             -             (400)       (800)       (1.000)     (700)       (300)       (100)       -
+(-) SG&A; líquido                                        (68.093)      (72.439)      (78.708)    (84.209)    (90.369)    (95.824)    (99.654)    (103.908)   (109.020)
+EBITDA                                                   27.646        29.411        33.049      34.228      35.850      38.659      42.255      45.810      52.259
+Margem EBITDA                                            8,1%          8,1%          8,3%        8,1%        7,9%        8,0%        8,3%        8,6%        9,0%
+(-) Depreciação e amortização                            (7.050)       (7.500)       (7.950)     (8.427)     (8.933)     (9.469)     (9.942)     (10.439)    (10.961)
+EBIT                                                     20.596        21.911        25.099      25.801      26.917      29.191      32.313      35.371      41.298
+Resultado Financeiro                                     (9.780)       (9.780)       (9.780)     (9.780)     (9.780)     (9.780)     (9.780)     (9.780)     (9.780)
+EBT                                                      10.816        12.131        15.319      16.021      17.137      19.411      22.533      25.591      31.518
+(-) IRPJ e CSLL                                          (3.678)       (4.125)       (5.208)     (5.447)     (5.827)     (6.600)     (7.661)     (8.701)     (10.716)
+Lucro Líquido                                            7.139         8.007         10.111      10.574      11.311      12.811      14.872      16.890      20.802
+Margem Líquida                                           2,1%          2,2%          2,5%        2,5%        2,5%        2,7%        2,9%        3,2%        3,6%
+
+
+
+
+EESC Finance                                                                                                                                                             16
+                                                                                                                                                                          15
+  Reforma Tributária - Guia de Estudo
+
+Núcleo de Private Equity - EESC Finance
+
+
+Anexo B - Rede Aurora (continuação)
+Balanço Patrimonial e Fluxo de Caixa, 2025 a 2033. Valores em R$ mil. A rede que reage tarde.
+BALANÇO PATRIMONIAL                                       2025           2026           2027      2028      2029      2030      2031      2032       2033
+Ativo Total                                               107.829        114.191        123.641   133.941   144.851   157.027   170.424   185.447    202.996
+Ativos circulantes                                        57.829         64.191         73.641    83.941    94.851    107.027   120.424   135.447    152.996
+Caixa e equivalentes                                      25.000         29.551         35.798    43.984    52.460    62.042    73.079    85.615     99.046
+Contas a receber                                          3.863          4.110          4.356     4.618     4.895     5.188     5.448     5.720      6.006
+Estoque                                                   24.517         26.082         28.642    30.360    32.362    34.488    36.400    38.412     41.420
+Créditos antigos / legado                                 4.449          4.449          4.449     4.449     4.449     4.449     4.449     4.449      4.449
+Créditos IBS/CBS em regularização                         -              -              396       531       686       861       1.048     1.252      2.076
+Ativos não circulantes                                    50.000         50.000         50.000    50.000    50.000    50.000    50.000    50.000     50.000
+Imobilizado (PP&E;)                                       50.000         50.000         50.000    50.000    50.000    50.000    50.000    50.000     50.000
+Passivo Total                                             97.278         97.635         99.502    101.872   104.300   106.867   109.110   111.466    113.413
+Passivos circulantes                                      37.278         37.635         39.502    41.872    44.300    46.867    49.110    51.466     53.413
+Contas a pagar                                            34.331         36.557         38.747    41.072    43.536    46.148    48.448    50.871     53.413
+ICMS/PIS/Cofins a recolher                                2.947          1.078          755       801       764       720       661       595        -
+IBS/CBS a recolher                                        -              -              -         -         -         -         -         -          -
+Revolver                                                  -              -              -         -         -         -         -         -          -
+Dívida de longo prazo                                     60.000         60.000         60.000    60.000    60.000    60.000    60.000    60.000     60.000
+Patrimônio Líquido                                        10.551         16.555         24.138    32.069    40.552    50.160    61.314    73.981     89.583
+
+
+DEMONSTRAÇÃO DO FLUXO DE CAIXA                            2025           2026           2027      2028      2029      2030      2031      2032       2033
+(+) Lucro Líquido                                         -              8.007          10.111    10.574    11.311    12.811    14.872    16.890     20.802
+(+) Depreciação e amortização                             -              7.500          7.950     8.427     8.933     9.469     9.942     10.439     10.961
+(-) Δ Capital de Giro                                     -              (1.454)        (1.335)   256       (7)       (27)      (116)     (132)      (2.170)
+(+) Monetização do crédito legado de ICMS                 -              -              -         -         -         -         -         -          -
+Fluxo de Caixa Operacional                                -              14.052         16.725    19.257    20.236    22.252    24.697    27.197     29.593
+(-) Capex                                                 -              (7.500)        (7.950)   (8.427)   (8.933)   (9.469)   (9.942)   (10.439)   (10.961)
+Fluxo de Caixa de Investimento                            -              (7.500)        (7.950)   (8.427)   (8.933)   (9.469)   (9.942)   (10.439)   (10.961)
+(+/-) Variação da dívida                                  -              -              -         -         -         -         -         -          -
+(+/-) Variação do revolver                                -              -              -         -         -         -         -         -          -
+(-) Pagamento de dividendos                               -              (2.002)        (2.528)   (2.644)   (2.828)   (3.203)   (3.718)   (4.222)    (5.201)
+Fluxo de Caixa de Financiamento                           -              (2.002)        (2.528)   (2.644)   (2.828)   (3.203)   (3.718)   (4.222)    (5.201)
+Caixa no início do período                                -              25.000         29.551    35.798    43.984    52.460    62.042    73.079     85.615
+Mudança líquida no caixa                                  -              4.551          6.248     8.186     8.476     9.581     11.037    12.536     13.431
+Caixa no fim do período                                   25.000         29.551         35.798    43.984    52.460    62.042    73.079    85.615     99.046
+
+
+
+
+EESC Finance                                                                                                                                                    17
+                                                                                                                                                                 16
+  Reforma Tributária - Guia de Estudo
+
+Núcleo de Private Equity - EESC Finance
+
+ Fontes
+ Legislação e atos normativos
+  - Emenda Constitucional 132/2023. Institui a reforma da tributação sobre consumo. Art. 149-B e Art. 134 do
+    ADCT.
+  - Lei Complementar 214/2025. Institui CBS, IBS e Imposto Seletivo; disciplina créditos e ressarcimentos.
+  - Lei Complementar 123/2006. Estatuto do Simples Nacional.
+  - Lei Complementar 227/2026. Normas de administração do IBS e regras do saldo credor legado de ICMS.
+  - Decreto 12.955/2026 e Resolução CGIBS 6/2026. Regulamentação da CBS e do IBS, incluindo Split Payment.
+ Estimativas e dados
+  - Ministério da Fazenda. Estimativa de alíquota de referência do IVA Dual, usada como premissa didática.
+  - Planilha “Reforma tributária e geração de valor(5).xlsx”. Premissas e demonstrativos do estudo de caso.
+ Glossário de siglas e termos
+ Tributos e termos legais: PIS, Cofins, IPI, ICMS, ISS, CBS, IBS, IS, DAS, ADCT, IRPJ, CSLL, CONFAZ, CGIBS e ZFM.
+ Termos financeiros: DRE, EBITDA, EBIT, EBT, CMV, SG&A;, DPO, FCO, FCF, VP, BoP e EoP.
+ Crédito potencial: valor teórico gerado por aquisições elegíveis.
+ Crédito pendente ou bloqueado: expectativa ainda indisponível para compensação ou ressarcimento.
+ Crédito apropriado e disponível: crédito reconhecido e pronto para uso ou pedido de ressarcimento.
+ Crédito utilizado: valor compensado contra débitos de IBS e CBS.
+ Crédito ressarcido: crédito convertido em caixa.
+ Crédito rejeitado: valor pendente que não se torna apropriável.
+ Crédito estornado: crédito já apropriado que perde validade por fato posterior.
+ ERP: sistema de gestão integrado da empresa.
+
+
+
+
+EESC Finance                                                                                                        18
+
