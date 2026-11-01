@@ -1,0 +1,5 @@
+produto;preco;custo_direto_horas_ou_infra;tributo_simples;taxa_pgto;provisao;contribuicao
+Retainer PME;1500.00;540.00;121.20;3.00;45.00;790.80
+Diagnóstico;4000.00;2250.00;323.20;3;120.00;1303.80
+Projeto média empresa;25000.00;7200.00;2020.00;3;0;15777.00
+Software por CNPJ (mês, líquido do desconto ao contador);140.00;8.00;11.31;1.40;0;119.29

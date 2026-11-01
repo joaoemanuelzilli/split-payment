@@ -1,0 +1,6 @@
+alternativa;taxa_bruta;valor_bruto_5a;valor_liquido_5a;taxa_liquida;renda_5a_capitalizada;patrimonio_total_5a
+CDI pela curva DI (DI jan/32 15,25% a.a.);0.1525;203331.50;187831.78;0.1344;901447.26;1089279.04
+"CDI pelo Focus (Selic 13,25%→11,75%→10%; média ~11,0% a.a.)";0.1100;168505.82;158229.94;0.0961;822002.56;980232.51
+Tesouro Prefixado 2032 (15,38% a.a.);0.1538;204480.86;188808.74;0.1355;904000.78;1092809.52
+Tesouro IPCA+ 2029 (7,80% + IPCA ~4,0% ≈ 12,1% a.a.);0.1210;177022.33;165468.98;0.1060;841826.38;1007295.36
+CDI 13,65% a.a. constante;0.1365;189603.87;176163.29;0.1199;870627.78;1046791.07
