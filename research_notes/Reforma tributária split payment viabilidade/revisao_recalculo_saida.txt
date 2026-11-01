@@ -1,0 +1,168 @@
+
+====================================================================================================
+A) TAM / SAM / SOM (recálculo com os insumos das notas 03 e 09)
+====================================================================================================
+TAM pontual acumulado 2026-29: LR 5,76 bi + LP 9,09 bi + Simples B2B 7,72 bi = 22,56 bi -> 5,64 bi/ano  (relatório: 5,76 + 9,09 + 7,72 = 22,6 bi; 5,6 bi/ano)
+TAM recorrente teórico: 12,83 bi/ano (relatório 12,8)
+Top-down: setor contábil 60 bi (2018) x 1,513 = 90,8 bi; 10% = 9,1 bi/ano (relatório 91 / 9); checagem 71.000 x 93 x 1.142 x 12 = 90,5 bi
+Top-down adequação: 689 x 9,1 mi = 6,27 bi/ano (relatório 6,3)
+SAM: alvo 6.808.533 empresas; consultoria 0,26-0,51 bi/ano; recorrente 144-165 mi/ano; total 0,40-0,68 bi/ano (relatório 0,4-0,7)
+Uberlândia: ME/EPP 32.628; LP 6.727; LR 1.022; não-MEI 40.377; alvo 30.588 (relatório 32.628 / 6.727 / 1.022 / 40.377 / 30.588)
+SAM local: consultoria 1,72 mi/ano + recorrente 0,73 mi/ano = 2,45 mi/ano; escritórios 350 a 434 (relatório 1,7 + 0,7; 350 a 430)
+Triângulo (9 cidades): ME/EPP 72.443; não-MEI 89.648; alvo 67.915 (relatório 67.915); SAM regional total ~5,4 mi/ano
+SOM local bottom-up: 0,36 a 1,04 mi/ano (relatório 0,4 a 0,9)
+Coerência: SOM 0,5-3 mi = 0,07% a 0,75% do SAM; SAM/TAM = 6,7% a 14,0%  (relatório 0,1-0,7% e 7-14%)
+ACHADO: a receita do modelo-base em 2033 (R$ 4,0 mi) supera o SAM local de Uberlândia (~R$ 2,4 mi/ano) e equivale a ~74% do SAM regional (~R$ 5,4 mi/ano). Só é coerente com venda remota (canal contador) fora do Triângulo, o que o texto da seção 2.7 limita a R$ 1-3 mi/ano nos anos 1-3 e não explicita para 2030-2036.
+
+====================================================================================================
+B) Unit economics (R$ de 2027)
+====================================================================================================
+Custo analista fiscal pleno: 6.000 x 1,2744 + 1.400 = 9.046 (nota 05: 9.046); custo-hora a 100 h = 90,5; a 75 h = 120,6
+  RBT12    200.000: Anexo III  6.52% | Anexo V 15.75%
+  RBT12    300.000: Anexo III  8.08% | Anexo V 16.50%
+  RBT12    600.000: Anexo III 10.56% | Anexo V 17.85%
+  RBT12    800.000: Anexo III 11.54% | Anexo V 18.36%
+  RBT12  1.500.000: Anexo III 13.62% | Anexo V 19.36%
+  RBT12  3.000.000: Anexo III 16.81% | Anexo V 20.93%
+  RBT12  4.000.000: Anexo III 16.80% | Anexo V 17.00%
+  (relatório, tabela 5.4: 800 mil Anexo V = 18,26% -> correto é 18,36%)
+-- RBT12 300.000 (Anexo III 8.08%)
+   Retainer PME (6 h)                                   contribuição     791 (  53%)
+   Diagnóstico (25 h)                                   contribuição   1.304 (  33%)
+   Projeto média (80 h)                                 contribuição  15.777 (  63%)
+   Software líquido R$ 140 (revenda c/ desconto)        contribuição     119 (  85%)
+   Software lista R$ 199 c/ comissão 20% ao contador    contribuição     133 (  67%)
+   Software lista R$ 199 c/ comissão 30% ao contador    contribuição     113 (  57%)
+   Software lista R$ 199 c/ comissão 30% + API R$ 15    contribuição      98 (  49%)
+-- RBT12 720.000 (Anexo III 11.05%)
+   Retainer PME (6 h)                                   contribuição     746 (  50%)
+   Diagnóstico (25 h)                                   contribuição   1.185 (  30%)
+   Projeto média (80 h)                                 contribuição  15.034 (  60%)
+   Software líquido R$ 140 (revenda c/ desconto)        contribuição     115 (  82%)
+   Software lista R$ 199 c/ comissão 20% ao contador    contribuição     127 (  64%)
+   Software lista R$ 199 c/ comissão 30% ao contador    contribuição     107 (  54%)
+   Software lista R$ 199 c/ comissão 30% + API R$ 15    contribuição      92 (  46%)
+-- RBT12 1.800.000 (Anexo III 14.02%)
+   Retainer PME (6 h)                                   contribuição     702 (  47%)
+   Diagnóstico (25 h)                                   contribuição   1.066 (  27%)
+   Projeto média (80 h)                                 contribuição  14.292 (  57%)
+   Software líquido R$ 140 (revenda c/ desconto)        contribuição     111 (  79%)
+   Software lista R$ 199 c/ comissão 20% ao contador    contribuição     121 (  61%)
+   Software lista R$ 199 c/ comissão 30% ao contador    contribuição     101 (  51%)
+   Software lista R$ 199 c/ comissão 30% + API R$ 15    contribuição      86 (  43%)
+  Relatório (RBT12 300 mil, 8,08%): retainer 791 (53%), diagnóstico 1.304 (33%), projeto 15.777 (63%), software 119 (85%) -> batem.
+  Comissão explícita de 20-30% sobre R$ 199 deixa R$ 115-135 de contribuição: equivalente ao modelo de revenda a R$ 140 líquidos.
+  churn 1.0%/mês: LTV retainer 79.080 (CAC 1.800 -> 43.9x); LTV software 11.929 (CAC 300 -> 39.8x)
+  churn 1.5%/mês: LTV retainer 52.720 (CAC 1.800 -> 29.3x); LTV software 7.953 (CAC 300 -> 26.5x)
+  churn 2.5%/mês: LTV retainer 31.632 (CAC 1.800 -> 17.6x); LTV software 4.772 (CAC 300 -> 15.9x)
+  churn 3.5%/mês: LTV retainer 22.594 (CAC 1.800 -> 12.6x); LTV software 3.408 (CAC 300 -> 11.4x)
+  (relatório: 52.720 / 29,3x e 7.953 / 26,5x a 1,5% -> batem)
+
+====================================================================================================
+C) Ponto de equilíbrio em clientes e em meses
+====================================================================================================
+  sócios sem pró-labore, sem CLT (overhead 3 mil + mkt 1,5 mil): retainer 1500 -> 4 clientes (horas dos sócios) | 6 clientes (horas de analista a R$ 90)
+  sócios sem pró-labore, sem CLT (overhead 3 mil + mkt 1,5 mil): retainer 2000 -> 3 clientes (horas dos sócios) | 4 clientes (horas de analista a R$ 90)
+  pró-labore 8 mil + 4 mil, sem CLT, overhead 5 mil + mkt 1,5 mil: retainer 1500 -> 14 clientes (horas dos sócios) | 24 clientes (horas de analista a R$ 90)
+  pró-labore 8 mil + 4 mil, sem CLT, overhead 5 mil + mkt 1,5 mil: retainer 2000 -> 11 clientes (horas dos sócios) | 15 clientes (horas de analista a R$ 90)
+  pró-labore 12 mil + 1 analista + overhead 5,8 mil + mkt 1,5 mil: retainer 1500 -> 22 clientes (horas dos sócios) | 36 clientes (horas de analista a R$ 90)
+  pró-labore 12 mil + 1 analista + overhead 5,8 mil + mkt 1,5 mil: retainer 2000 -> 16 clientes (horas dos sócios) | 23 clientes (horas de analista a R$ 90)
+  Relatório (4.6): 8 retainers de 2 mil sem pró-labore; 15 com; 20 a 22 de 1.500 com pró-labore cheio -> ordem de grandeza compatível (a nota 05 usa fixo de 27 mil com analista; aqui 18,5 mil sem analista).
+  1 retainer(s)/mês de R$ 1.500, sem pró-labore: equilíbrio no mês 6 com 3.9 clientes
+  1 retainer(s)/mês de R$ 1.500, com pró-labore 12 mil: equilíbrio no mês 18 com 14.3 clientes
+  2 retainer(s)/mês de R$ 1.500, sem pró-labore: equilíbrio no mês 4 com 4.0 clientes
+  2 retainer(s)/mês de R$ 1.500, com pró-labore 12 mil: equilíbrio no mês 10 com 15.2 clientes
+  Leitura: o 'break-even de EBITDA no mês 4' do modelo só existe porque o pró-labore do fundador é 30% da receita (R$ 2,4 a 5,5 mil) e não há CLT; com pró-labore de 12 mil o equilíbrio por retainers vem no mês 10-17.
+
+====================================================================================================
+D) Modelo mensal próprio (regras simplificadas; ver 'DIFERE' no código)
+====================================================================================================
+Mensal (24 meses): mês | retainers | cnpjs | receita | fixo | EBITDA | caixa | analistas | horas/cap | alíq | FatorR(legal)
+   1 nov/26 |   0.0 |   0.0 |        0 |   3.500 |  -11.500 |   80.500 | 0 |    0/ 50 |  6.0% | 1.00
+   2 dez/26 |   0.0 |   0.0 |    8.000 |   5.900 |      574 |   77.074 | 0 |   50/ 50 |  6.0% | 0.30
+   3 jan/27 |   0.8 |   0.0 |   16.167 |  19.196 |   -5.998 |   65.042 | 1 |   78/150 |  6.0% | 0.30
+   4 fev/27 |   1.8 |   0.0 |   17.500 |  19.596 |   -5.340 |   57.619 | 1 |   83/210 |  6.0% | 0.64
+   5 mar/27 |   2.7 |   0.0 |   20.756 |  20.573 |   -3.538 |   53.181 | 1 |  100/210 |  6.0% | 0.69
+   6 abr/27 |   4.4 |   0.0 |   18.200 |   9.960 |    4.655 |   60.086 | 0 |   80/110 |  6.0% | 0.69
+   7 mai/27 |   5.5 |   0.0 |   20.288 |  18.500 |   -1.630 |   58.456 | 0 |   88/110 |  6.0% | 0.60
+   8 jun/27 |   6.7 |   0.0 |   22.006 |  18.500 |      -96 |   58.360 | 0 |   95/110 |  6.1% | 0.60
+   9 jul/27 |   7.8 |   0.0 |   23.699 |  18.500 |    1.370 |   59.730 | 0 |  102/110 |  6.4% | 0.59
+  10 ago/27 |   8.9 |   0.0 |   27.167 |  28.346 |   -5.601 |   50.229 | 1 |  120/210 |  6.7% | 0.58
+  11 set/27 |  10.2 |   0.4 |   30.776 |  28.346 |   -2.898 |   46.400 | 1 |  139/210 |  7.0% | 0.60
+  12 out/27 |  11.6 |   1.3 |   32.886 |  28.346 |   -1.348 |   44.963 | 1 |  149/210 |  7.3% | 0.61
+  13 nov/27 |  13.0 |   2.5 |   33.353 |  28.346 |   -1.034 |   44.688 | 1 |  147/210 |  7.7% | 0.61
+  14 dez/27 |  14.2 |   4.0 |   34.605 |  28.346 |       86 |   45.030 | 1 |  151/210 |  8.1% | 0.61
+  15 jan/28 |  15.3 |   6.4 |   51.343 |  32.082 |   10.252 |   43.885 | 1 |  204/210 |  8.4% | 0.62
+  16 fev/28 |  17.0 |   9.2 |   53.930 |  42.466 |    1.295 |   38.336 | 2 |  214/310 |  8.7% | 0.58
+  17 mar/28 |  18.7 |  12.3 |   59.819 |  42.648 |    5.618 |   42.142 | 2 |  240/310 |  9.2% | 0.57
+  18 abr/28 |  20.7 |  15.7 |   56.217 |  42.844 |    2.390 |   47.524 | 2 |  219/310 |  9.5% | 0.56
+  19 mai/28 |  21.9 |  19.5 |   59.241 |  43.034 |    5.071 |   52.073 | 2 |  231/310 |  9.9% | 0.57
+  20 jun/28 |  23.2 |  23.5 |   61.755 |  43.228 |    6.756 |   58.261 | 2 |  240/310 | 10.1% | 0.57
+  21 jul/28 |  24.4 |  27.9 |   64.284 |  43.427 |    8.457 |   66.105 | 2 |  250/310 | 10.4% | 0.56
+  22 ago/28 |  25.6 |  32.5 |   69.602 |  43.630 |   12.285 |   76.346 | 2 |  273/310 | 10.6% | 0.56
+  23 set/28 |  27.1 |  37.5 |   75.142 |  43.842 |   16.064 |   90.323 | 2 |  296/310 | 10.8% | 0.54
+  24 out/28 |  28.7 |  42.7 |   78.337 |  43.938 |   18.215 |  107.796 | 2 |  308/310 | 11.0% | 0.52
+Anual: ano | receita | EBITDA | FCF | dividendos | caixa fim | retainers | cnpjs | headcount
+  2026 |      8.000 |   -10.926 |   -22.926 |         0 |   77.074 |   0.0 |    0.0 | 0
+  2027 |    297.403 |   -21.372 |   -32.044 |         0 |   45.030 |  14.2 |    4.0 | 1
+  2028 |    789.427 |   115.076 |    88.773 |         0 |  133.803 |  31.8 |   54.1 | 3
+  2029 |  1.518.164 |   233.479 |   187.134 |    40.975 |  279.963 |  53.6 |  188.8 | 6
+  2030 |  2.109.929 |   350.001 |   313.353 |   298.955 |  294.361 |  62.0 |  378.7 | 6
+  2031 |  2.820.676 |   482.721 |   415.437 |   293.724 |  416.075 |  66.7 |  593.4 | 9
+  2032 |  3.459.206 |   817.806 |   776.249 |   755.729 |  436.595 |  70.3 |  713.5 | 9
+  2033 |  3.998.638 |   839.992 |   803.819 |   736.676 |  503.737 |  73.7 |  787.6 | 10
+  2034 |  3.847.092 |   808.813 |   815.407 |   840.528 |  478.616 |  60.5 |  765.9 | 9
+  2035 |  3.580.289 |   737.484 |   732.436 |   753.414 |  457.638 |  49.3 |  748.3 | 8
+  2036 |  3.404.700 |   462.777 |   453.622 |   436.674 |  474.586 |  40.4 |  734.0 | 8
+Valor terminal base: perpetuidade 2.686.316 | múltiplo 6.224.745 | usado 2.686.316 (relatório 2.685.679 / 5.441.214)
+
+Cenário | VPL emp (rel.) | TIR emp (rel.) | VPL fund (rel.) | TIR fund (rel.) | payback fund s/d (rel.) | caixa mín (rel.) | BE (rel.)
+  fracasso   |   -144.450 (-144.450) |  -99.9% (nan%) |   -127.821 (-127.821) |  -87.8% (nan%) | None/None (-/-) | 42.169 em ago/27 (42.169) | None (-) | mudanças de sinal VPL: emp 1, fund 1
+  pessimista |     12.328 (53.616) |  -21.4% (nan%) |   -100.127 (-94.687) |   10.6% (nan%) | 86/None (86/-) | -8.909 em fev/28 (39.475) | 21 (-) | mudanças de sinal VPL: emp 2, fund 1
+  base       |  1.214.138 (1.241.844) |   93.6% (103%) |    644.323 (652.026) |   56.1% (56.4%) | 50/74 (50/74) | 38.336 em fev/28 (77.074) | 16 (4) | mudanças de sinal VPL: emp 1, fund 1
+  otimista   |  6.547.628 (6.283.384) |  166.9% (nan%) |  4.143.208 (3.952.816) |  103.5% (nan%) | 38/50 (38/50) | 50.185 em jun/27 (60.031) | 11 (-) | mudanças de sinal VPL: emp 1, fund 1
+Valor esperado ponderado: empresa 911.438 (relatório 904.327) | fundador 500.626 (relatório 485.145)
+IRRF 10% s/ dividendos > 50 mil/mês, modo 'timing': VPL fundador 637.634 (Δ -6.688); retido nominal acumulado 288.099; payback 52/74
+IRRF 10% s/ dividendos > 50 mil/mês, modo 'custo': VPL fundador 588.587 (Δ -55.736); retido nominal acumulado 288.099; payback 52/74
+Sensibilidade: fundador com 30 h faturáveis (em vez de 50) o tempo todo -> VPL fund 592.142, VPL emp 1.112.840, caixa mín -18.183 em fev/28
+
+====================================================================================================
+E) Re-desconto dos fluxos do modelo ORIGINAL (modelo_financeiro_v1.py) com VPL/TIR próprios
+====================================================================================================
+  base      : VPL emp próprio 1.241.844 vs modelo 1.241.844 | VPL fund próprio 652.026 vs 652.026 | TIR emp  103.0% vs  103.0% (mudanças de sinal: 1) | TIR fund   56.4% vs   56.4% (1)
+  fator de desconto fim/2036 = 0.1126 (relatório 0,1126); VP do valor terminal = 302.486 (relatório 302.486)
+  payback fundador recomputado: 50 simples / 74 descontado (relatório 50 / 74)
+  pessimista: VPL emp próprio 53.616 vs modelo 53.616 | VPL fund próprio -94.687 vs -94.687 | TIR emp  -23.7% vs  -23.7% (mudanças de sinal: 2) | TIR fund   11.6% vs   11.6% (1)
+  otimista  : VPL emp próprio 6.283.384 vs modelo 6.283.384 | VPL fund próprio 3.952.816 vs 3.952.816 | TIR emp  174.2% vs  174.2% (mudanças de sinal: 1) | TIR fund  104.1% vs  104.1% (1)
+  fracasso  : VPL emp próprio -144.450 vs modelo -144.450 | VPL fund próprio -127.821 vs -127.821 | TIR emp  -99.9% vs  -99.9% (mudanças de sinal: 1) | TIR fund  -87.8% vs  -87.8% (1)
+
+====================================================================================================
+F) Diagnósticos de auditoria sobre o modelo original (cenário-base)
+====================================================================================================
+F1) Carga do fundador = horas de venda (reuniões + propostas + prospecção) + 50 h faturáveis + excesso de entrega não coberto:
+   nov/26: vendas    20 h + entrega   0 h + excesso   0 h =    20 h; devs 0; software ativo desde set/27
+   fev/27: vendas    63 h + entrega  50 h + excesso   0 h =   113 h; devs 0; software ativo desde set/27
+   mai/27: vendas    60 h + entrega  50 h + excesso   0 h =   110 h; devs 0; software ativo desde set/27
+   ago/27: vendas    67 h + entrega  50 h + excesso  10 h =   127 h; devs 0; software ativo desde set/27
+   nov/27: vendas    67 h + entrega  50 h + excesso   0 h =   117 h; devs 0; software ativo desde set/27
+   fev/28: vendas    86 h + entrega  50 h + excesso   4 h =   140 h; devs 0; software ativo desde set/27
+   mai/28: vendas    72 h + entrega  50 h + excesso   0 h =   122 h; devs 0; software ativo desde set/27
+   ago/28: vendas    81 h + entrega  50 h + excesso   0 h =   131 h; devs 0; software ativo desde set/27
+   nov/28: vendas    81 h + entrega  50 h + excesso   0 h =   131 h; devs 1; software ativo desde set/27
+   fev/29: vendas    98 h + entrega  50 h + excesso   0 h =   148 h; devs 1; software ativo desde set/27
+   mai/29: vendas    82 h + entrega  50 h + excesso   0 h =   132 h; devs 1; software ativo desde set/27
+   ago/29: vendas    93 h + entrega  50 h + excesso   6 h =   149 h; devs 1; software ativo desde set/27
+   Nenhuma hora de desenvolvimento de produto está reservada ao fundador entre set/2027 (lançamento) e out/2028 (1º dev).
+F2) Fator R legal (12 meses anteriores) muda o Anexo em 0 mês(es): []
+    Fator R mínimo do modelo de jan/27 em diante: 0.30 (limite 0,28). Folga confortável; sem efeito material.
+F3) Dividendos pagos de uma vez em dezembro: do fundador (70%) superam R$ 50 mil em 7 anos (de dez/30, dez/31, dez/32, dez/33, dez/34, dez/35, dez/36); do sócio CRC em 7 anos.
+    Retenção nominal acumulada (fundador): 292.535; valor presente se fosse custo definitivo: 56.911 (8.7% do VPL do fundador de 652.026).
+    Se a retenção for restituída na DIRPF do ano seguinte (ajuste do IRPFM; renda anual do fundador fica abaixo de R$ 1,2 mi), o custo é só de prazo: ~6.839 a valor presente (1.0% do VPL). Alternativa operacional: distribuir em parcelas mensais <= R$ 50 mil por sócio.
+    O relatório (5.4) diz que os dividendos do fundador 'só passam de R$ 600 mil em 2032 e 2033': errado nos dois sentidos (máximo anual 588.370 em dez/34; e o teste legal é mensal, R$ 50 mil, não anual).
+F4) Break-even de EBITDA contábil: mês 4 (fev/27). Com o custo de oportunidade do fundador (R$ 10 mil menos o pró-labore recebido) lançado como custo: mês 17 (mar/28).
+    Pró-labore do fundador nos meses 2 a 6: 2.400, 4.850, 1.250, 2.227, 1.460 (30% da receita). O 'break-even no mês 4' é um resultado do fundador quase não se pagar, não de a operação se sustentar.
+F5) Pessimista, fluxo da empresa: mudanças de sinal do VPL na grade = 2; primeira raiz anualizada = -23.7% (CSV: −23,7%; relatório: 'indefinida'). Com mais de uma raiz, dizer 'indefinida' é defensável; o CSV deveria dizer o mesmo.
+F6) ARR 2036 no múltiplo de saída: modelo 1.755.109 (preço R$ 140 de 2027); correto 2.068.522 (preço R$ 165 em R$ de 2027). No base não muda nada (a perpetuidade é o menor valor); no otimista o múltiplo é o que vale e fica subestimado.
+    Otimista: TV usado 17.088.631 -> corrigido 19.795.991; ΔVPL empresa +304.928; ΔVPL fundador +213.449; Δ valor esperado (10%): +30.493 (empresa) / +21.345 (fundador).
+F7) jan/27: demanda 78 h > capacidade 50 h (sócio CRC só entra em fev/27; o veredito exige o sócio antes do primeiro contrato).
+F7) ago/27: demanda 120 h > capacidade 110 h (sócio CRC só entra em fev/27; o veredito exige o sócio antes do primeiro contrato).

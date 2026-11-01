@@ -9,6 +9,13 @@ Saídas: CSVs na mesma pasta (prefixo modelo_). Depende só de numpy e da biblio
 
 Marcação das premissas (ver tabela no relatório): [F] fato com fonte nas notas; [E] estimativa
 com conta aberta; [H] hipótese a validar em campo.
+
+Versão 2 (revisão independente, 01/11/2026). A v1 está preservada em modelo_financeiro_v1.py. Mudanças, todas
+marcadas "[v2, revisão]" no código: (1) ARR do múltiplo de saída usa o preço de software de 2036, não o de 2027;
+(2) o sócio CRC entrega horas desde dez/2026 (antes do 1º contrato), com pró-labore só a partir de fev/2027;
+(3) IRRF de 10% sobre dividendos > R$ 50 mil/mês por sócio (Lei 15.270/2025), modelado como retenção em dezembro
+restituída 9 meses depois (parâmetro irrf_dividendos_modo); (4) TIR devolve n/d quando há mais de uma raiz;
+(5) duas linhas novas no tornado (horas faturáveis do fundador; IRRF como custo definitivo).
 """
 import csv
 import math
@@ -54,7 +61,16 @@ class P:
     pro_labore_socio_crc_por_ano: Dict[int, float] = field(default_factory=lambda: {
         2026: 0, 2027: 4_000, 2028: 7_000, 2029: 9_000, 2030: 9_000, 2031: 10_000, 2032: 10_000,
         2033: 12_000, 2034: 12_000, 2035: 12_000, 2036: 12_000})
-    socio_crc_mes_inicio: int = 3               # t=3 => fev/2027 (depois de 3 meses de pré-venda)
+    socio_crc_mes_inicio: int = 3               # t=3 => fev/2027: início do pró-labore do sócio CRC (depois de 3 meses de pré-venda)
+    socio_crc_mes_inicio_capacidade: int = 1    # [v2, revisão] t=1 => dez/2026: o sócio CRC entra antes do primeiro contrato (condição 1 do
+                                                # veredito) e já entrega horas; só começa a receber pró-labore em fev/2027
+    # [v2, revisão] IRRF de 10% sobre dividendos > R$ 50 mil no mês por sócio (Lei 15.270/2025, art. 6º-A da Lei 9.250/95).
+    # "timing": retido em dezembro e restituído na DIRPF do ano seguinte (renda anual do fundador fica abaixo de R$ 1,2 mi,
+    # logo o IRPFM é menor que o retido e a diferença é restituível); "custo": 10% perdidos (limite superior); "nenhum".
+    irrf_dividendos_modo: str = "timing"
+    irrf_limite_mes: float = 50_000.0
+    irrf_aliquota: float = 0.10
+    irrf_meses_restituicao: int = 9
     custo_abertura: float = 8_000.0             # [E] JUCEMG, e-CNPJ, marca INPI, site, acordo de sócios (nota 06: R$ 1,2–3 mil + advogado R$ 3–10 mil)
     capex_inicial: float = 8_000.0              # [H] notebooks/equipamentos
     capex_anual_base: float = 4_000.0           # [H] reposição anual a partir de 2028
@@ -314,7 +330,7 @@ def simulate(p: P) -> Dict[str, np.ndarray]:
         if cs == 0:
             horas += suporte_h
         cap_fund = p.horas_fundador
-        cap_socio = p.horas_socio_crc if t >= p.socio_crc_mes_inicio else 0.0
+        cap_socio = p.horas_socio_crc if t >= p.socio_crc_mes_inicio_capacidade else 0.0  # [v2] capacidade desde dez/2026
         req_analistas = max(0, math.ceil((horas - cap_fund - cap_socio) / p.horas_analista)) if not stopped else 0
         # contratação com 1 mês de confirmação; redução com 3 meses de folga
         if req_analistas > analistas:
@@ -534,7 +550,9 @@ def terminal_values(p: P, out: Dict[str, np.ndarray], an: Dict[int, Dict[str, fl
     reinvest = p.g_perpetuidade / roic_usado if roic_usado > 0 else 0.0
     fcf_2037 = nopat * (1 + p.g_perpetuidade) * (1 - reinvest)
     tv_perp = fcf_2037 / (p.taxa_madura - p.g_perpetuidade) if nopat > 0 else 0.0
-    arr = out["cnpjs"][-1] * p.preco_software_cnpj_liq * p.preco_mult * (1 + p.inflacao_preco) ** (y - 2027) * 12
+    # [v2, revisão] ARR com o preço líquido vigente em 2036 (R$ 165 em R$ de 2027, após upsell), não o de 2027 (R$ 140):
+    preco_2036 = p.preco_software_por_ano.get(y, p.preco_software_cnpj_liq) * (p.preco_software_cnpj_liq / 140.0)
+    arr = out["cnpjs"][-1] * preco_2036 * p.preco_mult * (1 + p.inflacao_preco) ** (y - 2027) * 12
     rec_cons = a["rec_retainer"] + a["rec_diag"] + a["rec_projeto"]
     tv_mult = p.mult_arr_software * arr + p.mult_receita_consultoria * rec_cons
     tv_ebitda = p.mult_ebitda * a["ebitda"] if a["ebitda"] > 0 else 0.0
@@ -555,6 +573,10 @@ def irr_monthly(flows: np.ndarray) -> float:
 
     grid = np.concatenate([np.linspace(-0.5, -0.01, 50), np.linspace(-0.01, 1.0, 400)])
     vals = [npv(r) for r in grid]
+    # [v2, revisão] se o VPL muda de sinal mais de uma vez na grade, há mais de uma TIR: devolve n/d (o relatório diz "indefinida")
+    mudancas = sum(1 for i in range(1, len(grid)) if vals[i - 1] * vals[i] < 0)
+    if mudancas > 1:
+        return float("nan")
     for i in range(1, len(grid)):
         if vals[i - 1] == 0:
             return float(grid[i - 1])
@@ -602,6 +624,17 @@ def evaluate(p: P, flat_rate: float = None) -> Dict[str, object]:
     if stopped:
         # na liquidação, o caixa devolvido vai 100% ao fundador (foi quem aportou)
         fund[p.stop_t] += (1 - p.stake_fundador) * out["dividendos"][p.stop_t]
+    # [v2, revisão] IRRF de 10% sobre dividendos do fundador acima de R$ 50 mil no mês (Lei 15.270/2025)
+    div_fund = p.stake_fundador * out["dividendos"]
+    irrf = np.where((div_fund > p.irrf_limite_mes) & (~np.array([stopped and t == p.stop_t for t in range(T)])),
+                    p.irrf_aliquota * div_fund, 0.0)
+    irrf_retido_total = float(np.sum(irrf))
+    if p.irrf_dividendos_modo in ("timing", "custo"):
+        fund = fund - irrf
+    if p.irrf_dividendos_modo == "timing":
+        for t in range(T):
+            if irrf[t] > 0:
+                fund[min(t + p.irrf_meses_restituicao, T - 1)] += irrf[t]
     fund_tv = fund.copy()
     fund_tv[T - 1] += p.stake_fundador * (tv_base + caixa_final)
     vpl_fund = float(np.sum(fund * f_mid)) + p.stake_fundador * (tv_base + caixa_final) * f_end[T - 1]
@@ -635,7 +668,7 @@ def evaluate(p: P, flat_rate: float = None) -> Dict[str, object]:
                 vpl_fund_sem_renda=vpl_fund_sem_renda, payback_fund=pb, payback_fund_desc=pbd, payback_emp=pb_e,
                 payback_emp_desc=pbd_e, caixa_min=float(caixa.min()), t_caixa_min=t_min, capital_necessario=capital_necessario,
                 breakeven_t=be, caixa_final=caixa_final, tv_base=tv_base, f_mid=f_mid, f_end=f_end, caixa_serie=caixa,
-                fund_flows=fund, emp_flows=emp_flows, renda=renda)
+                fund_flows=fund, emp_flows=emp_flows, renda=renda, irrf_retido_total=irrf_retido_total)
 
 
 # ----------------------------------------------------------------------------------
@@ -783,7 +816,7 @@ def main():
            "payback_fund_meses", "payback_fund_desc_meses", "payback_emp_meses", "payback_emp_desc_meses", "caixa_min",
            "mes_caixa_min", "capital_necessario", "breakeven_mes", "receita_2029", "receita_2033", "receita_2036",
            "ebitda_2036", "retainers_2029", "cnpjs_2029", "cnpjs_2036", "tv_base", "tv_perpetuidade", "tv_multiplo",
-           "tv_ebitda", "roic_2036"]
+           "tv_ebitda", "roic_2036", "irrf_retido_fundador_nominal"]
     rows = []
     ev_emp = ev_fund = 0.0
     for name, r in results.items():
@@ -797,10 +830,17 @@ def main():
                      (r["breakeven_t"] + 1) if r["breakeven_t"] is not None else -1,
                      a[2029]["receita_bruta"], a[2033]["receita_bruta"], a[2036]["receita_bruta"], a[2036]["ebitda"],
                      a[2029]["retainers"], a[2029]["cnpjs"], a[2036]["cnpjs"], r["tv_base"], r["tv"]["tv_perpetuidade"],
-                     r["tv"]["tv_multiplo"], r["tv"]["tv_ebitda"], r["tv"]["roic"]])
+                     r["tv"]["tv_multiplo"], r["tv"]["tv_ebitda"], r["tv"]["roic"], r["irrf_retido_total"]])
         ev_emp += PROBS[name] * r["vpl_emp"]
         ev_fund += PROBS[name] * r["vpl_fund"]
-    rows.append(["valor_esperado", 1.0, ev_emp, "", ev_fund, "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""])
+    rows.append(["valor_esperado", 1.0, ev_emp, "", ev_fund, "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""])
+    # [v2, revisão] variantes do IRRF no cenário-base, para registro
+    for modo in ["nenhum", "custo"]:
+        rv = evaluate(replace(base, irrf_dividendos_modo=modo))
+        rows.append([f"base_irrf_{modo}", "", rv["vpl_emp"], rv["tir_emp"], rv["vpl_fund"], rv["tir_fund"], rv["vpl_fund_sem_renda"],
+                     (rv["payback_fund"] + 1) if rv["payback_fund"] is not None else -1,
+                     (rv["payback_fund_desc"] + 1) if rv["payback_fund_desc"] is not None else -1,
+                     "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", rv["irrf_retido_total"]])
     write_csv(os.path.join(HERE, "modelo_cenarios.csv"), hdr, rows)
 
     # ---- sensibilidade preço × volume ----
@@ -885,6 +925,10 @@ def main():
          replace(base, taxa_desconto_por_ano={k: v - 0.05 for k, v in base.taxa_desconto_por_ano.items()}, taxa_madura=0.15)),
         ("Múltiplo de saída do software (1,5× / 4,0× ARR)", replace(base, mult_arr_software=1.5), replace(base, mult_arr_software=4.0)),
         ("Horas por retainer (8 h / 4 h)", replace(base, horas_retainer=8), replace(base, horas_retainer=4)),
+        # [v2, revisão] o fundador vende, entrega e codifica até out/2028: 30 h faturáveis é o cenário em que o produto consome seu tempo
+        ("Horas faturáveis do fundador (30 h / 70 h)", replace(base, horas_fundador=30), replace(base, horas_fundador=70)),
+        # [v2, revisão] IRRF sobre dividendos: custo definitivo (10% perdidos) / nenhum
+        ("IRRF 10% s/ dividendos (custo definitivo / nenhum)", replace(base, irrf_dividendos_modo="custo"), replace(base, irrf_dividendos_modo="nenhum")),
     ]
     rows = []
     for nome, lo, hi in premissas:
