@@ -2,6 +2,10 @@
 
 Estudo iniciado em 1º de novembro de 2026 sobre a viabilidade de criar, em Uberlândia (MG), uma empresa que comece com consultoria e evolua para software para atender a demanda gerada pela Reforma Tributária do consumo no Brasil (IBS, CBS, Imposto Seletivo, transição 2026–2033 e split payment).
 
+## Plataforma
+
+A pasta `plataforma/` tem a aplicação web pronta para uso: calculadora pública por setor que capta contatos, área do consultor com clientes, simulações e relatórios em PDF, e portal em marca branca para escritórios de contabilidade parceiros. Veja `plataforma/README.md`.
+
 ## Como ler
 
 1. `reports/Reforma tributária split payment viabilidade.md`: o relatório final, com veredito, modelo financeiro, plano de ação 0 → N clientes e fontes. Comece por ele.
