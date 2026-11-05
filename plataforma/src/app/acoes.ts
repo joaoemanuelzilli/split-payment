@@ -107,7 +107,16 @@ export async function salvarSimulacaoAcao(d: { id?: number; nicho_id: string; no
   const n = getNicho(String(d.nicho_id));
   if (!n) return { ok: false, erro: 'Setor não encontrado.' };
   if (d.empresa_id) { const e = getEmpresa(Number(d.empresa_id)); if (!e || !podeVer(u, e)) return { ok: false, erro: 'Cliente não encontrado.' }; }
-  if (d.id) { const s = getSimulacao(Number(d.id)); if (!s) return { ok: false, erro: 'Simulação não encontrada.' }; if (s.empresa_id) { const e = getEmpresa(s.empresa_id); if (e && !podeVer(u, e)) return { ok: false, erro: 'Sem acesso.' }; } }
+  if (d.id) {
+    const s = getSimulacao(Number(d.id));
+    if (!s) return { ok: false, erro: 'Simulação não encontrada.' };
+    if (s.empresa_id) {
+      const e = getEmpresa(s.empresa_id);
+      if (!e || !podeVer(u, e)) return { ok: false, erro: 'Sem acesso.' };
+    } else if (u.papel === 'parceiro' && s.criado_por !== u.id) {
+      return { ok: false, erro: 'Sem acesso.' };
+    }
+  }
   let empresaId = d.empresa_id ? Number(d.empresa_id) : null;
   if (!empresaId && u.papel === 'parceiro') empresaId = null;
   const s = salvarSimulacao({

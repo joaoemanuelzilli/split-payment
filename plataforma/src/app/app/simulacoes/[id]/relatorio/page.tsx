@@ -11,5 +11,6 @@ export default async function RelatorioInterno({ params }: { params: Promise<{ i
   if (!s) notFound();
   const e = s.empresa_id ? getEmpresa(s.empresa_id) : undefined;
   if (e && !podeVer(u, e)) notFound();
+  if (!e && u.papel === 'parceiro' && s.criado_por !== u.id) notFound();
   return <div className="py-6 print:py-0"><Relatorio s={s} interno /></div>;
 }
