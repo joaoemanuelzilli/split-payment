@@ -44,7 +44,7 @@ docker run -d -p 3000:3000 -v caixa-split-dados:/dados caixa-split
 docker exec -e ADMIN_EMAIL=voce@empresa.com.br -e ADMIN_SENHA='senha-forte' <container> npm run seed
 ```
 
-Em produção o cookie de sessão é `secure`: publique atrás de HTTPS. Para testar em produção sem HTTPS, use `COOKIE_INSECURE=1`.
+Em produção o cookie de sessão é `secure`: publique atrás de HTTPS. Os limites de envio da calculadora e de tentativas de login usam o IP que o seu proxy registra: defina `TRUSTED_PROXY_HOPS` com o número de proxies na frente da aplicação (padrão 1; use 0 se não houver proxy). Os contadores ficam na memória de uma instância; para várias instâncias, ou se aparecer abuso, acrescente um CAPTCHA no formulário público. Para testar em produção sem HTTPS, use `COOKIE_INSECURE=1`.
 
 ## Quando sair uma norma nova
 

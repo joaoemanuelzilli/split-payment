@@ -48,19 +48,46 @@ function limparParametros(p: unknown): ParametrosGlobais {
 }
 const texto = (x: unknown, max = 200) => (typeof x === 'string' ? x.trim().slice(0, max) : '');
 
-// ---------- público: captura de contato ----------
-const tentativas = new Map<string, number[]>();
-function limitar(chave: string, max = 8, janelaMs = 10 * 60 * 1000) {
+// ---------- limites de uso (memória do processo) ----------
+// Contadores por janela de tempo. Ficam na memória do servidor: valem para uma instância.
+// Para várias instâncias, troque por um armazenamento compartilhado.
+const JANELA = 10 * 60 * 1000;
+const contadores = new Map<string, number[]>();
+function recentes(chave: string) {
   const agora = Date.now();
-  const lista = (tentativas.get(chave) ?? []).filter(t => agora - t < janelaMs);
-  lista.push(agora);
-  tentativas.set(chave, lista);
-  return lista.length <= max;
+  const lista = (contadores.get(chave) ?? []).filter(t => agora - t < JANELA);
+  if (lista.length) contadores.set(chave, lista); else contadores.delete(chave);
+  return lista;
+}
+function registrar(chave: string) {
+  const lista = recentes(chave);
+  lista.push(Date.now());
+  contadores.set(chave, lista);
+  if (contadores.size > 10000) for (const k of [...contadores.keys()]) recentes(k); // descarta janelas vencidas
+}
+const excedeu = (chave: string, max: number) => recentes(chave).length >= max;
+const limpar = (chave: string) => contadores.delete(chave);
+
+/** IP do cliente segundo o proxy confiável. TRUSTED_PROXY_HOPS = número de proxies seus na frente da aplicação (padrão 1).
+ *  Usa a entrada que o seu proxy acrescentou ao X-Forwarded-For (contada do fim), não a primeira, que o visitante pode forjar. */
+async function ipCliente() {
+  const h = await headers();
+  const hops = Number(process.env.TRUSTED_PROXY_HOPS ?? 1);
+  const xff = h.get('x-forwarded-for');
+  if (xff && hops > 0) {
+    const partes = xff.split(',').map(x => x.trim()).filter(Boolean);
+    const ip = partes[partes.length - hops];
+    if (ip) return ip;
+  }
+  return h.get('x-real-ip') || 'direto';
 }
 
+// ---------- público: captura de contato ----------
 export async function capturarLead(d: { nicho_id: string; valores: Valores; caixa: Caixa; parametros: ParametrosGlobais; contato: Record<string, string>; parceiro?: string }) {
-  const ip = (await headers()).get('x-forwarded-for')?.split(',')[0]?.trim() || 'local';
-  if (!limitar('lead:' + ip)) return { ok: false, erro: 'Muitos envios em sequência. Tente de novo em alguns minutos.' };
+  const ip = await ipCliente();
+  if (excedeu('lead:' + ip, 8) || excedeu('lead:total', 300)) return { ok: false, erro: 'Muitos envios em sequência. Tente de novo em alguns minutos.' };
+  registrar('lead:' + ip);
+  registrar('lead:total');
   const n = getNicho(String(d.nicho_id));
   if (!n) return { ok: false, erro: 'Setor não encontrado.' };
   const c = d.contato ?? {};
@@ -90,9 +117,16 @@ export async function capturarLead(d: { nicho_id: string; valores: Valores; caix
 export async function entrar(_: unknown, fd: FormData) {
   const email = texto(fd.get('email'), 160).toLowerCase();
   const senha = String(fd.get('senha') ?? '');
-  if (!limitar('login:' + email, 10)) return { erro: 'Muitas tentativas. Aguarde alguns minutos.' };
+  const ip = await ipCliente();
+  // Só falhas contam. O limite é por IP e por IP + e-mail: quem erra a senha de outra pessoa a partir de outro IP não bloqueia a conta dela.
+  if (excedeu('login-ip:' + ip, 30) || excedeu(`login:${ip}:${email}`, 8)) return { erro: 'Muitas tentativas erradas. Aguarde alguns minutos.' };
   const u = db().prepare('SELECT id, senha_hash FROM usuarios WHERE email = ? AND ativo = 1').get(email) as { id: number; senha_hash: string } | undefined;
-  if (!u || !conferirSenha(senha, u.senha_hash)) return { erro: 'E-mail ou senha não conferem.' };
+  if (!u || !conferirSenha(senha, u.senha_hash)) {
+    registrar('login-ip:' + ip);
+    registrar(`login:${ip}:${email}`);
+    return { erro: 'E-mail ou senha não conferem.' };
+  }
+  limpar(`login:${ip}:${email}`);
   await criarSessao(u.id);
   redirect('/app');
 }
