@@ -49,45 +49,57 @@ function limparParametros(p: unknown): ParametrosGlobais {
 const texto = (x: unknown, max = 200) => (typeof x === 'string' ? x.trim().slice(0, max) : '');
 
 // ---------- limites de uso (memória do processo) ----------
-// Contadores por janela de tempo. Ficam na memória do servidor: valem para uma instância.
-// Para várias instâncias, troque por um armazenamento compartilhado.
+// Contadores por janela de tempo, na memória do servidor (valem para uma instância; para várias, use um armazenamento compartilhado).
+// O mapa tem tamanho máximo: quando enche, descarta as chaves mais antigas. A limpeza das janelas vencidas roda num temporizador.
 const JANELA = 10 * 60 * 1000;
-const contadores = new Map<string, number[]>();
-function recentes(chave: string) {
-  const agora = Date.now();
-  const lista = (contadores.get(chave) ?? []).filter(t => agora - t < JANELA);
-  if (lista.length) contadores.set(chave, lista); else contadores.delete(chave);
-  return lista;
+const MAX_CHAVES = 20000;
+type GL = typeof globalThis & { __contadores?: Map<string, number[]>; __varredura?: ReturnType<typeof setInterval> };
+const gl = globalThis as GL;
+const contadores = (gl.__contadores ??= new Map<string, number[]>());
+if (!gl.__varredura) {
+  gl.__varredura = setInterval(() => {
+    const limite = Date.now() - JANELA;
+    for (const [k, v] of contadores) { const r = v.filter(t => t > limite); if (r.length) contadores.set(k, r); else contadores.delete(k); }
+  }, 60_000);
+  gl.__varredura.unref?.();
+}
+function contar(chave: string) {
+  const limite = Date.now() - JANELA;
+  return (contadores.get(chave) ?? []).filter(t => t > limite).length;
 }
 function registrar(chave: string) {
-  const lista = recentes(chave);
+  const limite = Date.now() - JANELA;
+  const lista = (contadores.get(chave) ?? []).filter(t => t > limite);
   lista.push(Date.now());
-  contadores.set(chave, lista);
-  if (contadores.size > 10000) for (const k of [...contadores.keys()]) recentes(k); // descarta janelas vencidas
+  contadores.delete(chave); // reinsere no fim: o mapa fica em ordem de uso
+  contadores.set(chave, lista.slice(-100));
+  while (contadores.size > MAX_CHAVES) contadores.delete(contadores.keys().next().value as string);
 }
-const excedeu = (chave: string, max: number) => recentes(chave).length >= max;
 const limpar = (chave: string) => contadores.delete(chave);
+const esperar = (ms: number) => new Promise(r => setTimeout(r, ms));
 
-/** IP do cliente segundo o proxy confiável. TRUSTED_PROXY_HOPS = número de proxies seus na frente da aplicação (padrão 1).
- *  Usa a entrada que o seu proxy acrescentou ao X-Forwarded-For (contada do fim), não a primeira, que o visitante pode forjar. */
-async function ipCliente() {
-  const h = await headers();
-  const hops = Number(process.env.TRUSTED_PROXY_HOPS ?? 1);
-  const xff = h.get('x-forwarded-for');
-  if (xff && hops > 0) {
-    const partes = xff.split(',').map(x => x.trim()).filter(Boolean);
-    const ip = partes[partes.length - hops];
-    if (ip) return ip;
-  }
-  return h.get('x-real-ip') || 'direto';
+/** Número de proxies confiáveis na frente da aplicação (TRUSTED_PROXY_HOPS). Sem configuração, 0: os cabeçalhos de proxy são ignorados. */
+const HOPS = (() => {
+  const bruto = process.env.TRUSTED_PROXY_HOPS;
+  if (bruto === undefined || bruto === '') return 0;
+  const n = Number(bruto);
+  if (!Number.isInteger(n) || n < 0 || n > 5) throw new Error(`TRUSTED_PROXY_HOPS inválido: "${bruto}". Use um inteiro de 0 a 5.`);
+  return n;
+})();
+
+/** IP do cliente como o seu proxy registrou (entrada acrescentada por ele no X-Forwarded-For, contada do fim).
+ *  Devolve null quando não há proxy configurado: aí o limite por IP fica desligado, em vez de virar um limite único para todos. */
+async function ipCliente(): Promise<string | null> {
+  if (HOPS === 0) return null;
+  const partes = ((await headers()).get('x-forwarded-for') ?? '').split(',').map(x => x.trim()).filter(Boolean);
+  return partes.length >= HOPS ? partes[partes.length - HOPS] : null;
 }
 
 // ---------- público: captura de contato ----------
 export async function capturarLead(d: { nicho_id: string; valores: Valores; caixa: Caixa; parametros: ParametrosGlobais; contato: Record<string, string>; parceiro?: string }) {
   const ip = await ipCliente();
-  if (excedeu('lead:' + ip, 8) || excedeu('lead:total', 300)) return { ok: false, erro: 'Muitos envios em sequência. Tente de novo em alguns minutos.' };
-  registrar('lead:' + ip);
-  registrar('lead:total');
+  if (ip && contar('lead:' + ip) >= 8) return { ok: false, erro: 'Muitos envios em sequência. Tente de novo em alguns minutos.' };
+  if (contar('lead:total') >= 300) return { ok: false, erro: 'Muitos envios em sequência. Tente de novo em alguns minutos.' };
   const n = getNicho(String(d.nicho_id));
   if (!n) return { ok: false, erro: 'Setor não encontrado.' };
   const c = d.contato ?? {};
@@ -110,6 +122,9 @@ export async function capturarLead(d: { nicho_id: string; valores: Valores; caix
     adicionarNota(empresaId, null, `Contato pela calculadora ${parceiro ? `do parceiro ${parceiro.nome}` : 'do site'}. Necessidade prudente em ${s.resumo.anoTeste}: R$ ${Math.round(s.resumo.necessidadeTeste).toLocaleString('pt-BR')} (semáforo ${s.resumo.semaforo}).`);
     return s;
   })();
+  // Conta só envios válidos: lixo não esgota a cota global.
+  if (ip) registrar('lead:' + ip);
+  registrar('lead:total');
   return { ok: true, token: sim.token };
 }
 
@@ -118,15 +133,17 @@ export async function entrar(_: unknown, fd: FormData) {
   const email = texto(fd.get('email'), 160).toLowerCase();
   const senha = String(fd.get('senha') ?? '');
   const ip = await ipCliente();
-  // Só falhas contam. O limite é por IP e por IP + e-mail: quem erra a senha de outra pessoa a partir de outro IP não bloqueia a conta dela.
-  if (excedeu('login-ip:' + ip, 30) || excedeu(`login:${ip}:${email}`, 8)) return { erro: 'Muitas tentativas erradas. Aguarde alguns minutos.' };
+  // Só falhas contam. Por conta: espera crescente (nunca bloqueia a conta). Por IP (com proxy configurado): limite rígido.
+  if (ip && contar('login-ip:' + ip) >= 30) return { erro: 'Muitas tentativas erradas deste endereço. Aguarde alguns minutos.' };
+  const falhasConta = contar('login-conta:' + email);
+  if (falhasConta >= 5) await esperar(Math.min(10_000, 500 * 2 ** (falhasConta - 5)));
   const u = db().prepare('SELECT id, senha_hash FROM usuarios WHERE email = ? AND ativo = 1').get(email) as { id: number; senha_hash: string } | undefined;
   if (!u || !conferirSenha(senha, u.senha_hash)) {
-    registrar('login-ip:' + ip);
-    registrar(`login:${ip}:${email}`);
+    if (ip) registrar('login-ip:' + ip);
+    registrar('login-conta:' + email);
     return { erro: 'E-mail ou senha não conferem.' };
   }
-  limpar(`login:${ip}:${email}`);
+  limpar('login-conta:' + email);
   await criarSessao(u.id);
   redirect('/app');
 }
