@@ -8,7 +8,7 @@
     "start": "next start -p 3000",
     "lint": "next lint",
     "typecheck": "tsc --noEmit",
-    "test": "tsx scripts/test-engine.ts && tsx scripts/test-derive.ts",
+    "test": "tsx scripts/test-engine.ts && tsx scripts/test-derive.ts && tsx --conditions=react-server scripts/test-limites.ts",
     "test:engine": "tsx scripts/test-engine.ts",
     "test:derive": "tsx scripts/test-derive.ts",
     "seed": "tsx --conditions=react-server scripts/seed.ts"

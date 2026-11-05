@@ -9,6 +9,8 @@ RUN NEXT_TELEMETRY_DISABLED=1 DATABASE_PATH=/tmp/build.db npm run build
 FROM node:22-bookworm-slim
 WORKDIR /app
 ENV NODE_ENV=production NEXT_TELEMETRY_DISABLED=1 DATABASE_PATH=/dados/app.db PORT=3000
+# Número de proxies seus na frente do contêiner (obrigatório em produção). Ajuste no docker run com -e.
+ENV TRUSTED_PROXY_HOPS=1
 COPY --from=build /app ./
 VOLUME ["/dados"]
 EXPOSE 3000

@@ -1,5 +1,4 @@
 'use server';
-import { headers } from 'next/headers';
 import { redirect } from 'next/navigation';
 import { revalidatePath } from 'next/cache';
 import { db } from '@/lib/db';
@@ -13,6 +12,7 @@ import type { Caixa, FaixaPreco } from '@/lib/calc';
 import type { Valores } from '@/lib/derive/core';
 import type { Nicho, ParametrosGlobais } from '@/lib/types';
 import { slugify } from '@/lib/format';
+import { ipCliente, LIMITES } from '@/lib/limites';
 
 // ---------- validação ----------
 const finito = (x: unknown, min = -1e12, max = 1e12) => typeof x === 'number' && Number.isFinite(x) && x >= min && x <= max;
@@ -48,64 +48,20 @@ function limparParametros(p: unknown): ParametrosGlobais {
 }
 const texto = (x: unknown, max = 200) => (typeof x === 'string' ? x.trim().slice(0, max) : '');
 
-// ---------- limites de uso (memória do processo) ----------
-// Contadores por janela de tempo, na memória do servidor (valem para uma instância; para várias, use um armazenamento compartilhado).
-// O mapa tem tamanho máximo: quando enche, descarta as chaves mais antigas. A limpeza das janelas vencidas roda num temporizador.
-const JANELA = 10 * 60 * 1000;
-const MAX_CHAVES = 20000;
-type GL = typeof globalThis & { __contadores?: Map<string, number[]>; __varredura?: ReturnType<typeof setInterval> };
-const gl = globalThis as GL;
-const contadores = (gl.__contadores ??= new Map<string, number[]>());
-if (!gl.__varredura) {
-  gl.__varredura = setInterval(() => {
-    const limite = Date.now() - JANELA;
-    for (const [k, v] of contadores) { const r = v.filter(t => t > limite); if (r.length) contadores.set(k, r); else contadores.delete(k); }
-  }, 60_000);
-  gl.__varredura.unref?.();
-}
-function contar(chave: string) {
-  const limite = Date.now() - JANELA;
-  return (contadores.get(chave) ?? []).filter(t => t > limite).length;
-}
-function registrar(chave: string) {
-  const limite = Date.now() - JANELA;
-  const lista = (contadores.get(chave) ?? []).filter(t => t > limite);
-  lista.push(Date.now());
-  contadores.delete(chave); // reinsere no fim: o mapa fica em ordem de uso
-  contadores.set(chave, lista.slice(-100));
-  while (contadores.size > MAX_CHAVES) contadores.delete(contadores.keys().next().value as string);
-}
-const limpar = (chave: string) => contadores.delete(chave);
-const esperar = (ms: number) => new Promise(r => setTimeout(r, ms));
-
-/** Número de proxies confiáveis na frente da aplicação (TRUSTED_PROXY_HOPS). Sem configuração, 0: os cabeçalhos de proxy são ignorados. */
-const HOPS = (() => {
-  const bruto = process.env.TRUSTED_PROXY_HOPS;
-  if (bruto === undefined || bruto === '') return 0;
-  const n = Number(bruto);
-  if (!Number.isInteger(n) || n < 0 || n > 5) throw new Error(`TRUSTED_PROXY_HOPS inválido: "${bruto}". Use um inteiro de 0 a 5.`);
-  return n;
-})();
-
-/** IP do cliente como o seu proxy registrou (entrada acrescentada por ele no X-Forwarded-For, contada do fim).
- *  Devolve null quando não há proxy configurado: aí o limite por IP fica desligado, em vez de virar um limite único para todos. */
-async function ipCliente(): Promise<string | null> {
-  if (HOPS === 0) return null;
-  const partes = ((await headers()).get('x-forwarded-for') ?? '').split(',').map(x => x.trim()).filter(Boolean);
-  return partes.length >= HOPS ? partes[partes.length - HOPS] : null;
-}
-
 // ---------- público: captura de contato ----------
 export async function capturarLead(d: { nicho_id: string; valores: Valores; caixa: Caixa; parametros: ParametrosGlobais; contato: Record<string, string>; parceiro?: string }) {
   const ip = await ipCliente();
-  if (ip && contar('lead:' + ip) >= 8) return { ok: false, erro: 'Muitos envios em sequência. Tente de novo em alguns minutos.' };
-  if (contar('lead:total') >= 300) return { ok: false, erro: 'Muitos envios em sequência. Tente de novo em alguns minutos.' };
+  const OCUPADO = { ok: false as const, erro: 'Muitos envios em sequência. Tente de novo em alguns minutos.' };
+  // Reserva as vagas antes de validar; devolve se o envio for recusado, para lixo não esgotar a cota.
+  if (!LIMITES.leadPorIp.reservar(ip)) return OCUPADO;
+  if (!LIMITES.leadTotal.reservar('total')) { LIMITES.leadPorIp.devolver(ip); return OCUPADO; }
+  const recusar = (erro: string) => { LIMITES.leadPorIp.devolver(ip); LIMITES.leadTotal.devolver('total'); return { ok: false as const, erro }; };
   const n = getNicho(String(d.nicho_id));
-  if (!n) return { ok: false, erro: 'Setor não encontrado.' };
+  if (!n) return recusar('Setor não encontrado.');
   const c = d.contato ?? {};
   const nome = texto(c.nome, 120), empresa = texto(c.empresa, 160), email = texto(c.email, 160), telefone = texto(c.telefone, 40);
-  if (!nome || !empresa || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email) || telefone.replace(/\D/g, '').length < 10) return { ok: false, erro: 'Preencha nome, empresa, e-mail válido e WhatsApp com DDD.' };
-  if (!c.consentimento) return { ok: false, erro: 'É preciso autorizar o uso dos dados.' };
+  if (!nome || !empresa || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email) || telefone.replace(/\D/g, '').length < 10) return recusar('Preencha nome, empresa, e-mail válido e WhatsApp com DDD.');
+  if (!c.consentimento) return recusar('É preciso autorizar o uso dos dados.');
   const parceiro = d.parceiro ? getParceiroPorSlug(String(d.parceiro)) : undefined;
   const valores = limparValores(n, d.valores);
   const caixa = limparCaixa(d.caixa, n);
@@ -122,9 +78,6 @@ export async function capturarLead(d: { nicho_id: string; valores: Valores; caix
     adicionarNota(empresaId, null, `Contato pela calculadora ${parceiro ? `do parceiro ${parceiro.nome}` : 'do site'}. Necessidade prudente em ${s.resumo.anoTeste}: R$ ${Math.round(s.resumo.necessidadeTeste).toLocaleString('pt-BR')} (semáforo ${s.resumo.semaforo}).`);
     return s;
   })();
-  // Conta só envios válidos: lixo não esgota a cota global.
-  if (ip) registrar('lead:' + ip);
-  registrar('lead:total');
   return { ok: true, token: sim.token };
 }
 
@@ -133,17 +86,21 @@ export async function entrar(_: unknown, fd: FormData) {
   const email = texto(fd.get('email'), 160).toLowerCase();
   const senha = String(fd.get('senha') ?? '');
   const ip = await ipCliente();
-  // Só falhas contam. Por conta: espera crescente (nunca bloqueia a conta). Por IP (com proxy configurado): limite rígido.
-  if (ip && contar('login-ip:' + ip) >= 30) return { erro: 'Muitas tentativas erradas deste endereço. Aguarde alguns minutos.' };
-  const falhasConta = contar('login-conta:' + email);
-  if (falhasConta >= 5) await esperar(Math.min(10_000, 500 * 2 ** (falhasConta - 5)));
   const u = db().prepare('SELECT id, senha_hash FROM usuarios WHERE email = ? AND ativo = 1').get(email) as { id: number; senha_hash: string } | undefined;
-  if (!u || !conferirSenha(senha, u.senha_hash)) {
-    if (ip) registrar('login-ip:' + ip);
-    registrar('login-conta:' + email);
-    return { erro: 'E-mail ou senha não conferem.' };
+  const conta = u ? `u${u.id}` : 'desconhecido';
+  // Reserva antes de conferir a senha (pedidos em paralelo se enxergam); devolve as vagas se a senha estiver certa.
+  // Limites: 30 erros por endereço, 10 por conta e 200 no total, a cada 10 minutos.
+  const reservados: [keyof typeof LIMITES, string][] = [];
+  for (const [lim, chave] of [['loginTotal', 'total'], ['loginPorIp', ip], ['loginPorConta', conta]] as [keyof typeof LIMITES, string][]) {
+    if (!LIMITES[lim].reservar(chave)) {
+      for (const [l, k] of reservados) LIMITES[l].devolver(k);
+      return { erro: 'Muitas tentativas erradas. Aguarde 10 minutos e tente de novo.' };
+    }
+    reservados.push([lim, chave]);
   }
-  limpar('login-conta:' + email);
+  if (!u || !conferirSenha(senha, u.senha_hash)) return { erro: 'E-mail ou senha não conferem.' };
+  for (const [l, k] of reservados) LIMITES[l].devolver(k);
+  LIMITES.loginPorConta.zerar(conta);
   await criarSessao(u.id);
   redirect('/app');
 }

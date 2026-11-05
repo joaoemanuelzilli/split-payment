@@ -44,7 +44,7 @@ docker run -d -p 3000:3000 -v caixa-split-dados:/dados caixa-split
 docker exec -e ADMIN_EMAIL=voce@empresa.com.br -e ADMIN_SENHA='senha-forte' <container> npm run seed
 ```
 
-Em produção o cookie de sessão é `secure`: publique atrás de HTTPS. Os limites de envio da calculadora e de tentativas de login usam o IP que o seu proxy registra: defina `TRUSTED_PROXY_HOPS` com o número de proxies seus na frente da aplicação (por exemplo, 1 com Nginx ou Caddy). Sem essa variável, os cabeçalhos de proxy são ignorados e o limite por endereço fica desligado; o login continua protegido por conta, com espera crescente a cada senha errada. Os contadores ficam na memória de uma instância; para várias instâncias, ou se aparecer abuso, acrescente um CAPTCHA no formulário público. Para testar em produção sem HTTPS, use `COOKIE_INSECURE=1`.
+Em produção o cookie de sessão é `secure`: publique atrás de HTTPS. Defina também `TRUSTED_PROXY_HOPS` com o número de proxies seus na frente da aplicação (1 com um Nginx ou Caddy; de 1 a 5). Em produção ele é obrigatório: o servidor recusa as ações sem ele, porque é por ele que a plataforma sabe o endereço de quem acessa. Limites, a cada 10 minutos: 8 envios da calculadora por endereço e 300 no total; no login, 30 senhas erradas por endereço, 10 por conta e 200 no total. Uma conta que passa de 10 senhas erradas fica 10 minutos sem entrar: é o preço de impedir tentativa de senha em massa. Os contadores ficam na memória de uma instância; com várias instâncias, troque por um armazenamento compartilhado, e se aparecer abuso na calculadora pública, acrescente um CAPTCHA. Para testar em produção sem HTTPS, use `COOKIE_INSECURE=1`.
 
 ## Quando sair uma norma nova
 
