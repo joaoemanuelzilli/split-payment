@@ -29,19 +29,29 @@ npm test
 
 ## Publicar
 
-O banco é um arquivo SQLite. Qualquer servidor com Node 22 e disco persistente serve (VPS, Railway, Render, Fly.io). Não use hospedagem sem disco persistente, como a Vercel, sem trocar o banco antes.
+O banco é um arquivo SQLite, então a hospedagem precisa de disco persistente (VPS, Railway, Render, Fly.io). Não use a Vercel sem trocar o banco antes. O caminho pronto no repositório é um servidor próprio com Docker: `docker-compose.yml` sobe a aplicação, o Caddy (HTTPS automático) e um backup diário do banco.
+
+**Do que precisa:** um VPS com Ubuntu, 2 GB de memória (o build do Next pede isso), datacenter em São Paulo de preferência, e um domínio registrado no registro.br.
+
+1. No registro.br, crie um registro **A** do domínio apontando para o IP do VPS. Espere ele responder: `dig +short seudominio.com.br` deve mostrar o IP.
+2. No VPS, instale o Docker (`curl -fsSL https://get.docker.com | sh`) e libere só as portas 22, 80 e 443 no firewall.
+3. Copie a pasta `plataforma` para o VPS (`git clone` do repositório), entre nela e configure o domínio:
+   ```bash
+   cp .env.example .env    # edite DOMINIO=seudominio.com.br
+   docker compose up -d --build
+   docker compose exec -e ADMIN_EMAIL=voce@empresa.com.br -e ADMIN_SENHA='senha-forte' app npm run seed
+   ```
+4. Abra `https://seudominio.com.br`. O certificado sai no primeiro acesso. Entre com o administrador e preencha a marca em Configurações (nome, cor, e-mail, telefone, logo).
+
+**Atualizar:** `git pull && docker compose up -d --build`. O banco fica no volume `dados` e não é tocado.
+
+**Backup:** uma cópia por dia em `/dados/backups` dentro do volume, mantendo as 14 mais recentes (`BACKUP_MANTER`). Uma cópia agora: `docker compose exec app npm run backup`. Para ter uma cópia fora do servidor, traga a pasta de vez em quando: `docker compose cp backup:/dados/backups ./backups` no VPS e depois `scp -r` para o seu computador. **Restaurar:** `docker compose stop app`, copie o backup escolhido por cima de `/dados/app.db` (apagando `app.db-wal` e `app.db-shm`) e `docker compose start app`.
+
+Sem Docker:
 
 ```bash
 npm run build
-DATABASE_PATH=/caminho/persistente/app.db npm start
-```
-
-Ou com Docker:
-
-```bash
-docker build -t caixa-split .
-docker run -d -p 127.0.0.1:3000:3000 -e TRUSTED_PROXY_HOPS=1 -v caixa-split-dados:/dados caixa-split   # porta só local; o proxy com HTTPS fica na frente
-docker exec -e ADMIN_EMAIL=voce@empresa.com.br -e ADMIN_SENHA='senha-forte' <container> npm run seed
+DATABASE_PATH=/caminho/persistente/app.db TRUSTED_PROXY_HOPS=1 npm start   # com Nginx ou Caddy com HTTPS na frente
 ```
 
 Em produção o cookie de sessão é `secure`: publique atrás de HTTPS. Defina também `TRUSTED_PROXY_HOPS` com o número de proxies seus na frente da aplicação (1 com um Nginx ou Caddy; de 1 a 5). Em produção ele é obrigatório: o servidor recusa as ações sem ele, porque é por ele que a plataforma sabe o endereço de quem acessa. Deixe a porta da aplicação acessível só pelo proxy: quem chegar direto nela pode forjar o endereço. Limites, a cada 10 minutos: 8 envios da calculadora por endereço e 300 no total; no login, 30 senhas erradas por endereço; por e-mail, uma tentativa por vez e espera crescente a partir da 5ª errada (até 15 segundos), sem bloquear a conta: a senha certa sempre entra; acima de 300 senhas erradas no total, todo login ganha 2 segundos de espera. Não há bloqueio rígido de conta, trava de conta por tentativa em andamento nem teto global de login, de propósito: os três deixariam qualquer pessoa impedir o acesso de outra. A fila de uma tentativa por vez é por endereço + e-mail. Se quiser trocar essa disponibilidade por um bloqueio mais rígido, a decisão é sua. Os contadores ficam na memória de uma instância; com várias instâncias, troque por um armazenamento compartilhado, e se aparecer abuso na calculadora pública, acrescente um CAPTCHA. Para testar em produção sem HTTPS, use `COOKIE_INSECURE=1`.
@@ -69,7 +79,8 @@ Em produção o cookie de sessão é `secure`: publique atrás de HTTPS. Defina 
 | `src/components/Resultado.tsx`, `Relatorio.tsx` | Tela de resultado e relatório em PDF (impressão do navegador). |
 | `src/app/(site)`, `src/app/p`, `src/app/relatorio` | Site público, páginas de parceiros e relatório público por link. |
 | `src/app/app` | Área de trabalho: painel, clientes, simulador, setores, parceiros, configurações. |
-| `scripts/` | Testes de aceite, criação do administrador e o briefing usado para escrever as fórmulas. |
+| `scripts/` | Testes de aceite, criação do administrador, backup do banco e o briefing usado para escrever as fórmulas. |
+| `docker-compose.yml`, `Caddyfile`, `.env.example` | Publicação num VPS: aplicação, HTTPS e backup diário. |
 
 ## Hipóteses assumidas nas fórmulas
 

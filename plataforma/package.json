@@ -11,7 +11,8 @@
     "test": "tsx scripts/test-engine.ts && tsx scripts/test-derive.ts && tsx --conditions=react-server scripts/test-limites.ts",
     "test:engine": "tsx scripts/test-engine.ts",
     "test:derive": "tsx scripts/test-derive.ts",
-    "seed": "tsx --conditions=react-server scripts/seed.ts"
+    "seed": "tsx --conditions=react-server scripts/seed.ts",
+    "backup": "node scripts/backup.mjs"
   },
   "dependencies": {
     "better-sqlite3": "12.4.1",

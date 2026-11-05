@@ -1,0 +1,45 @@
+# Publicação num servidor próprio (VPS): aplicação + HTTPS automático (Caddy) + backup diário do banco.
+# Uso: copie .env.example para .env, preencha DOMINIO e rode `docker compose up -d --build`.
+services:
+  app:
+    build: .
+    image: caixa-split:latest
+    restart: unless-stopped
+    environment:
+      TRUSTED_PROXY_HOPS: "1"   # um proxy (o Caddy) na frente
+    volumes:
+      - dados:/dados
+    expose:
+      - "3000"                  # só na rede interna do Docker; a porta aberta ao mundo é a do Caddy
+
+  backup:
+    image: caixa-split:latest
+    restart: unless-stopped
+    depends_on: [app]
+    healthcheck:
+      disable: true             # não serve páginas; a checagem de saúde da imagem é só para o app
+    environment:
+      BACKUP_MANTER: "14"
+    volumes:
+      - dados:/dados
+    command: ["sh", "-c", "while true; do node scripts/backup.mjs; sleep 86400; done"]
+
+  caddy:
+    image: caddy:2.10.2
+    restart: unless-stopped
+    depends_on: [app]
+    environment:
+      DOMINIO: ${DOMINIO:?defina DOMINIO no arquivo .env}
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_dados:/data
+      - caddy_config:/config
+
+volumes:
+  dados:
+  caddy_dados:
+  caddy_config:

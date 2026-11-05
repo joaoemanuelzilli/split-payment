@@ -1,0 +1,11 @@
+# O Caddy pede e renova o certificado HTTPS sozinho (Let's Encrypt) para o domínio do .env.
+{$DOMINIO} {
+	encode zstd gzip
+	header {
+		Strict-Transport-Security "max-age=31536000"
+		X-Content-Type-Options nosniff
+		Referrer-Policy strict-origin-when-cross-origin
+		-Server
+	}
+	reverse_proxy app:3000
+}
