@@ -14,9 +14,9 @@ export default async function EscolherSetor({ searchParams }: { searchParams: Pr
   const q = sp.empresa ? `&empresa=${sp.empresa}` : '';
   return (
     <>
-      <Cabecalho titulo="Nova simulação" descricao="Escolha o setor. O formulário abre com uma empresa típica preenchida."
+      <Cabecalho titulo="Nova simulação" descricao="Escolha o setor. O formulário abre com uma empresa típica já preenchida"
         acoes={<Link href={`/app/simulador?${so1 ? '' : 'p=1'}${q}`} className="btn-secundario">{so1 ? 'Mostrar todos os setores' : 'Só prioridade 1'}</Link>} />
-      <div className="grid gap-x-10 gap-y-8 px-4 py-6 md:grid-cols-2 md:px-8 xl:grid-cols-3">
+      <div className="grid gap-x-10 gap-y-8 px-5 py-6 md:grid-cols-2 md:px-8 xl:grid-cols-3 xl:px-10 2xl:grid-cols-4">
         {cats.map(c => (
           <section key={c.codigo}>
             <h2 className="border-b border-tinta pb-1.5 text-sm font-bold">{c.nome}</h2>

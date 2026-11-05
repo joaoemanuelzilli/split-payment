@@ -1,7 +1,7 @@
 // Tela de resultado. Componente puro: serve ao simulador (navegador) e aos relatórios (servidor).
 import type { Resultado as R } from '@/lib/calc';
 import type { Nicho } from '@/lib/types';
-import { brl, pct } from '@/lib/format';
+import { brl, pct, semPonto } from '@/lib/format';
 import GraficoAnos from './GraficoAnos';
 import Semaforo from './Semaforo';
 
@@ -13,11 +13,11 @@ export function Manchete({ r }: { r: R }) {
     <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
       <div>
         <p className="text-sm text-tinta-2">Capital de giro a mais em {t.ano}, por causa do split</p>
-        <p className="mt-1 text-4xl font-extrabold tracking-tight md:text-5xl">
-          {brl(ano.favoravel)} <span className="font-semibold text-tinta-3">a</span> {brl(ano.prudente)}
+        <p className="mt-1 text-4xl font-bold tracking-[-0.03em] tabular-nums md:text-5xl">
+          {brl(ano.favoravel)} <span className="font-medium text-tinta-3">a</span> {brl(ano.prudente)}
         </p>
         <p className="mt-1 text-sm text-tinta-2">
-          Entre {pct(r.pctMes(t.ano, 'favoravel'))} e {pct(r.pctMes(t.ano, 'prudente'))} de um mês de faturamento. Em 2033, com o IBS cheio, o cenário prudente chega a {brl(r.anos[6].prudente)}.
+          Entre {pct(r.pctMes(t.ano, 'favoravel'))} e {pct(r.pctMes(t.ano, 'prudente'))} de um mês de faturamento. Em 2033, com o IBS cheio, o cenário prudente chega a {brl(r.anos[6].prudente)}
         </p>
       </div>
       <Semaforo veredito={t.verdict} />
@@ -33,7 +33,7 @@ export default function Resultado({ r, nicho, compacto = false }: { r: R; nicho:
         <ul className="space-y-2">
           {d.mensagens.map((m, i) => (
             <li key={i} className={`rounded border px-3 py-2 text-sm ${m.nivel === 'alerta' ? 'border-[#E9C98F] bg-[#FBF3E6]' : 'border-linha bg-marca-claro'}`}>
-              {m.texto}
+              {semPonto(m.texto)}
             </li>
           ))}
         </ul>
@@ -48,9 +48,9 @@ function Detalhe({ r, compacto }: { r: R; compacto: boolean }) {
   const t = r.teste;
   const a = r.anos.find(x => x.ano === t.ano)!;
   const comp = [
-    { nome: 'Imposto que sai antes', valor: a.debitoAntecipado, texto: 'Com o split, o IBS e a CBS das vendas saem no dia em que o cliente paga, e não mais no vencimento da apuração.' },
-    { nome: 'Crédito que espera o fornecedor', valor: a.creditoCondicionado, texto: 'O crédito das compras só fica disponível depois que o imposto do fornecedor é pago (LC 214, art. 47).' },
-    { nome: 'Saldo credor que o split acrescenta', valor: a.saldoCredor, texto: 'Quando o crédito passa do débito que ainda está em aberto, a sobra vai para ressarcimento e fica parada.' },
+    { nome: 'Imposto que sai antes', valor: a.debitoAntecipado, texto: 'Com o split, o IBS e a CBS das vendas saem no dia em que o cliente paga, e não mais no vencimento da apuração' },
+    { nome: 'Crédito que espera o fornecedor', valor: a.creditoCondicionado, texto: 'O crédito das compras só fica disponível depois que o imposto do fornecedor é pago (LC 214, art. 47)' },
+    { nome: 'Saldo credor que o split acrescenta', valor: a.saldoCredor, texto: 'Quando o crédito passa do débito que ainda está em aberto, a sobra vai para ressarcimento e fica parada' },
   ];
   const totalComp = comp.reduce((s, c) => s + c.valor, 0) || 1;
   return (
@@ -76,13 +76,13 @@ function Detalhe({ r, compacto }: { r: R; compacto: boolean }) {
             </tbody>
           </table>
         </div>
-        <p className="ajuda mt-3">Favorável: o crédito abate a retenção do split em até 48 horas. Prudente: o crédito só abate na apuração mensal. A regra oficial ainda não saiu; os dois aparecem sempre.</p>
+        <p className="ajuda mt-3">Favorável: o crédito abate a retenção do split em até 48 horas. Prudente: o crédito só abate na apuração mensal. A regra oficial ainda não saiu, então os dois aparecem sempre</p>
       </section>
 
       <section className="grid gap-6 md:grid-cols-2">
         <div className="painel p-4 md:p-6">
           <h3 className="h3">De onde vem o número de {t.ano}</h3>
-          <p className="ajuda">Cenário prudente, decomposto.</p>
+          <p className="ajuda">Cenário prudente, decomposto</p>
           <ul className="mt-4 space-y-4">
             {comp.map(c => (
               <li key={c.nome}>
@@ -98,7 +98,7 @@ function Detalhe({ r, compacto }: { r: R; compacto: boolean }) {
           {a.saldoCredorSemSplit > 0.5 && (
             <div className="mt-5 rounded border border-linha bg-papel p-3 text-sm">
               <p className="font-medium">Capital que já fica preso hoje: {brl(a.saldoCredorSemSplit)}</p>
-              <p className="ajuda">É o saldo credor que existiria mesmo sem split, porque o crédito passa do débito total (comum com alíquota zero). Não entra no número acima.</p>
+              <p className="ajuda">É o saldo credor que existiria mesmo sem split, porque o crédito passa do débito total (comum com alíquota zero). Não entra no número acima</p>
             </div>
           )}
         </div>
@@ -115,7 +115,7 @@ export function TesteCaixaPainel({ r }: { r: R }) {
       <div className="flex items-start justify-between gap-3">
         <div>
           <h3 className="h3">O caixa aguenta em {t.ano}?</h3>
-          <p className="ajuda">Quem cobre a necessidade prudente, nesta ordem: caixa livre, limites, falta.</p>
+          <p className="ajuda">Quem cobre a necessidade prudente, nesta ordem: caixa livre, limites, falta</p>
         </div>
         <Semaforo veredito={t.verdict} pequeno />
       </div>
@@ -127,7 +127,7 @@ export function TesteCaixaPainel({ r }: { r: R }) {
         <dt className="text-tinta-2">Custo por ano</dt><dd className="num">{brl(t.costYear)}</dd>
         <dt className="text-tinta-2">Custo sobre a geração de caixa</dt><dd className="num">{Number.isFinite(t.pctFco) ? pct(100 * t.pctFco) : 'sem geração informada'}</dd>
       </dl>
-      <p className="ajuda mt-4">Verde: o caixa livre cobre e o custo fica abaixo de 5% da geração de caixa. Amarelo: não falta dinheiro e o custo fica abaixo de 15%. Vermelho: os demais casos.</p>
+      <p className="ajuda mt-4">Verde: o caixa livre cobre e o custo fica abaixo de 5% da geração de caixa. Amarelo: não falta dinheiro e o custo fica abaixo de 15%. Vermelho: os demais casos</p>
     </div>
   );
 }
@@ -136,11 +136,11 @@ function Extras({ r }: { r: R }) {
   return (
     <section className="painel p-4 md:p-6">
       <h3 className="h3">Cenários para comparar</h3>
-      <p className="ajuda">Cálculos só para exibição. O resultado principal acima não muda.</p>
+      <p className="ajuda">Cálculos só para comparar. O resultado principal acima não muda</p>
       {r.extras.map(e => (
         <div key={e.rotulo} className="mt-4">
           <p className="text-sm font-semibold">{e.rotulo}</p>
-          {e.descricao && <p className="ajuda">{e.descricao}</p>}
+          {e.descricao && <p className="ajuda">{semPonto(e.descricao)}</p>}
           <div className="mt-2 overflow-x-auto">
             <TabelaAnos anos={e.anos} />
           </div>
@@ -172,7 +172,7 @@ function BlocoSimples({ r, nicho }: { r: R; nicho: Nicho }) {
               </tbody>
             </table>
           </div>
-          <p className="ajuda mt-3">Para vender a empresas do regime regular, o optante do Simples puro fica mais caro na conta do cliente nessa diferença. A opção pelo IBS e pela CBS por fora do DAS abre em março e setembro.</p>
+          <p className="ajuda mt-3">Para vender a empresas do regime regular, o optante do Simples puro fica mais caro na conta do cliente nessa diferença. A opção pelo IBS e pela CBS por fora do DAS abre em março e setembro</p>
         </div>
       )}
       <div className="painel p-4 md:p-6">
@@ -180,7 +180,7 @@ function BlocoSimples({ r, nicho }: { r: R; nicho: Nicho }) {
         <div className="mt-3 overflow-x-auto">
           <TabelaAnos anos={s.seRegular} />
         </div>
-        <p className="ajuda mt-3">Calculado com as linhas do formulário como regime regular. Serve para pesar a decisão: o ganho comercial de transferir crédito contra o caixa que o split vai pedir.</p>
+        <p className="ajuda mt-3">Calculado com as linhas do formulário como regime regular. Serve para pesar a decisão: o ganho comercial de transferir crédito contra o caixa que o split vai pedir</p>
       </div>
     </section>
   );
@@ -200,9 +200,9 @@ export function AvisosObrigatorios({ nicho }: { nicho: Nicho }) {
   const aliqZero = nicho.linhas_receita.some(l => l.aliquota_pct_cheia === 0) || nicho.resultado_exemplo.por_ano.some(a => a.saldo_credor_sem_split > 0);
   const temIS = /seletivo/i.test(JSON.stringify(nicho.tratamento_tributario.regras_relevantes));
   return (
-    <aside className="rounded-lg border border-linha bg-papel p-4 text-xs leading-relaxed text-tinta-2">
+    <aside className="rounded-lg border border-linha p-4 text-xs leading-relaxed text-tinta-2 md:p-5">
       <p className="mb-2 font-semibold text-tinta">Leia antes de usar o número</p>
-      <ul className="list-disc space-y-1 pl-4">
+      <ul className="grid list-disc gap-x-10 gap-y-1.5 pl-4 xl:grid-cols-2">
         <li>É diagnóstico financeiro, não parecer jurídico ou contábil. O enquadramento (reduções, NCM, NBS, art. 127) precisa ser conferido caso a caso.</li>
         <li>As datas do split são previsão da Receita Federal, sem ato normativo publicado: etapa facultativa no 2º semestre de 2027 e obrigatória em 2028 nas vendas entre empresas por boleto, Pix, TED e TEF. Cartão, vale e consumidor final não têm data.</li>
         <li>O cenário favorável supõe que o crédito abate a retenção em até 48 horas; o prudente, só na apuração mensal. A regra ainda não foi publicada. O prudente não é o pior caso: pico de safra ou compra grande de ativo podem passar dele.</li>

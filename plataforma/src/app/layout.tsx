@@ -1,11 +1,11 @@
 import type { Metadata } from 'next';
-import { Schibsted_Grotesk } from 'next/font/google';
+import { Parkinsans } from 'next/font/google';
 import './globals.css';
 import { getMarca } from '@/lib/dados';
 
 export const dynamic = 'force-dynamic';
 
-const fonte = Schibsted_Grotesk({ subsets: ['latin'], variable: '--fonte', display: 'swap' });
+const fonte = Parkinsans({ subsets: ['latin', 'latin-ext'], variable: '--fonte', display: 'swap', adjustFontFallback: false });
 
 export async function generateMetadata(): Promise<Metadata> {
   const m = getMarca();

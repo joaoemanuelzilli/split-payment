@@ -14,8 +14,8 @@ export default async function Empresas({ searchParams }: { searchParams: Promise
   const lista = listarEmpresas(u, { etapa: sp.etapa, q: sp.q });
   return (
     <>
-      <Cabecalho titulo="Clientes" descricao="Empresas em conversa, com a última simulação de cada uma." acoes={<Link href="/app/empresas/nova" className="btn-primario">Novo cliente</Link>} />
-      <div className="px-4 py-6 md:px-8">
+      <Cabecalho titulo="Clientes" descricao="Empresas em conversa, com a última simulação de cada uma" acoes={<Link href="/app/empresas/nova" className="btn-primario">Novo cliente</Link>} />
+      <div className="px-5 py-6 md:px-8 xl:px-10">
         <form className="flex flex-wrap gap-2">
           <input name="q" defaultValue={sp.q} placeholder="Buscar por nome, CNPJ, contato ou e-mail" className="campo max-w-sm" />
           <select name="etapa" defaultValue={sp.etapa ?? ''} className="campo w-auto">
@@ -25,7 +25,7 @@ export default async function Empresas({ searchParams }: { searchParams: Promise
           <button className="btn-secundario">Filtrar</button>
         </form>
         <div className="painel mt-4 overflow-x-auto">
-          {lista.length === 0 ? <p className="p-6 text-sm text-tinta-2">Nenhum cliente encontrado com esse filtro.</p> : (
+          {lista.length === 0 ? <p className="p-6 text-sm text-tinta-2">Nenhum cliente encontrado com esse filtro</p> : (
             <table className="tabela">
               <thead><tr><th>Empresa</th><th>Setor</th><th className="num">Faturamento/mês</th><th className="num">Necessidade</th><th>Caixa</th><th>Etapa</th><th>Atualizado</th></tr></thead>
               <tbody>

@@ -8,19 +8,19 @@ import BotaoConfirmar from '@/components/BotaoConfirmar';
 import { recalcularAcao, salvarMarcaAcao, salvarParametrosAcao, salvarPrecosAcao, salvarUsuarioAcao } from '../../acoes';
 
 export const metadata = { title: 'Configurações' };
-const OK: Record<string, string> = { parametros: 'Premissas salvas.', recalculo: 'Simulações recalculadas.', marca: 'Marca e site salvos.', precos: 'Preços salvos.', usuario: 'Usuário salvo.' };
-const ERRO: Record<string, string> = { usuario: 'Preencha nome, e-mail, papel e, para parceiro, o escritório.', senha: 'A senha precisa de pelo menos 8 caracteres.', email: 'Esse e-mail já está em uso.' };
+const OK: Record<string, string> = { parametros: 'Premissas salvas', recalculo: 'Simulações recalculadas', marca: 'Marca e site salvos', precos: 'Preços salvos', usuario: 'Usuário salvo' };
+const ERRO: Record<string, string> = { usuario: 'Preencha nome, e-mail, papel e, para parceiro, o escritório', senha: 'A senha precisa de pelo menos 8 caracteres', email: 'Esse e-mail já está em uso' };
 
 const PARAMS: { id: string; rotulo: string; ajuda: string }[] = [
-  { id: 'cbs_referencia_pct', rotulo: 'CBS de referência (%)', ajuda: 'TCU: 11,35%. Atualize quando o Senado publicar a resolução (até 15/12/2026).' },
-  { id: 'ibs_cheio_pct', rotulo: 'IBS cheio em 2033 (%)', ajuda: 'Projeção do Comitê Gestor.' },
-  { id: 'adesao_2027_pct', rotulo: 'Adesão ao split em 2027 (%)', ajuda: 'Etapa facultativa prevista para o 2º semestre.' },
-  { id: 'adesao_2028_em_diante_pct', rotulo: 'Adesão a partir de 2028 (%)', ajuda: 'Obrigatória prevista.' },
-  { id: 'ressarcimento_dias_extra', rotulo: 'Prazo extra do ressarcimento (dias)', ajuda: '45, 75 ou 165 conforme o caso.' },
-  { id: 'dias_antecipacao', rotulo: 'Dias de antecipação de recebíveis', ajuda: 'Quando a empresa antecipa, recebe em D+2.' },
-  { id: 'cdi_pct_aa', rotulo: 'CDI (% a.a.)', ajuda: 'Custo de oportunidade do caixa próprio.' },
-  { id: 'ano_teste', rotulo: 'Ano padrão do teste de caixa', ajuda: '2028 é o primeiro ano cheio do split.' },
-  { id: 'credito_fornecedor_simples_pct_cheia', rotulo: 'Crédito de fornecedor do Simples (% da cheia)', ajuda: 'Usado na comparação de regime.' },
+  { id: 'cbs_referencia_pct', rotulo: 'CBS de referência (%)', ajuda: 'TCU: 11,35%. Atualize quando o Senado publicar a resolução (até 15/12/2026)' },
+  { id: 'ibs_cheio_pct', rotulo: 'IBS cheio em 2033 (%)', ajuda: 'Projeção do Comitê Gestor' },
+  { id: 'adesao_2027_pct', rotulo: 'Adesão ao split em 2027 (%)', ajuda: 'Etapa facultativa prevista para o 2º semestre' },
+  { id: 'adesao_2028_em_diante_pct', rotulo: 'Adesão a partir de 2028 (%)', ajuda: 'Obrigatória prevista' },
+  { id: 'ressarcimento_dias_extra', rotulo: 'Prazo extra do ressarcimento (dias)', ajuda: '45, 75 ou 165 conforme o caso' },
+  { id: 'dias_antecipacao', rotulo: 'Dias de antecipação de recebíveis', ajuda: 'Quando a empresa antecipa, recebe em D+2' },
+  { id: 'cdi_pct_aa', rotulo: 'CDI (% a.a.)', ajuda: 'Custo de oportunidade do caixa próprio' },
+  { id: 'ano_teste', rotulo: 'Ano padrão do teste de caixa', ajuda: '2028 é o primeiro ano cheio do split' },
+  { id: 'credito_fornecedor_simples_pct_cheia', rotulo: 'Crédito de fornecedor do Simples (% da cheia)', ajuda: 'Usado na comparação de regime' },
 ];
 
 export default async function Configuracoes({ searchParams }: { searchParams: Promise<{ ok?: string; erro?: string; n?: string }> }) {
@@ -32,20 +32,20 @@ export default async function Configuracoes({ searchParams }: { searchParams: Pr
   const parceiros = listarParceiros();
   return (
     <>
-      <Cabecalho titulo="Configurações" descricao="Marca, premissas da reforma, preços e quem acessa." />
-      <div className="max-w-4xl space-y-8 px-4 py-6 md:px-8">
+      <Cabecalho titulo="Configurações" descricao="Marca, premissas da reforma, preços e quem acessa" />
+      <div className="grid items-start gap-8 px-5 py-6 md:px-8 xl:px-10 min-[1500px]:grid-cols-2">
         {sp.ok && <p role="status" className="rounded bg-[#E8F3EC] px-3 py-2 text-sm text-ok">{OK[sp.ok]}{sp.n ? ` (${sp.n})` : ''}</p>}
-        {sp.erro && <p role="alert" className="rounded bg-[#FCECEA] px-3 py-2 text-sm text-risco">{ERRO[sp.erro] ?? 'Não foi possível salvar.'}</p>}
+        {sp.erro && <p role="alert" className="rounded bg-[#FCECEA] px-3 py-2 text-sm text-risco">{ERRO[sp.erro] ?? 'Não foi possível salvar. Tente de novo'}</p>}
 
         <section id="parametros" className="painel p-5">
           <h2 className="h2">Premissas da reforma</h2>
-          <p className="ajuda">Valem para novas simulações e para a calculadora pública. As simulações salvas guardam as premissas com que foram feitas; use o recálculo para atualizá-las.</p>
+          <p className="ajuda">Valem para novas simulações e para a calculadora pública. As simulações salvas guardam as premissas com que foram feitas; use o recálculo para atualizá-las</p>
           <form action={salvarParametrosAcao} className="mt-4 grid gap-4 sm:grid-cols-2">
             {PARAMS.map(x => (
               <div key={x.id}>
                 <label className="rotulo" htmlFor={`p-${x.id}`}>{x.rotulo}</label>
                 <input id={`p-${x.id}`} name={x.id} type="number" step="0.01" defaultValue={(p as unknown as Record<string, number>)[x.id]} className="campo" />
-                <p className="ajuda">{x.ajuda} Base: {(pb as unknown as Record<string, number>)[x.id]}.</p>
+                <p className="ajuda">{x.ajuda} · base: {(pb as unknown as Record<string, number>)[x.id]}</p>
               </div>
             ))}
             <div className="sm:col-span-2"><label className="rotulo" htmlFor="motivo">Motivo da mudança</label><input id="motivo" name="motivo" placeholder="Ex.: Resolução do Senado de dezembro de 2026" className="campo" /></div>
@@ -79,7 +79,7 @@ export default async function Configuracoes({ searchParams }: { searchParams: Pr
 
         <section className="painel p-5">
           <h2 className="h2">Preços sugeridos por faixa de faturamento mensal</h2>
-          <p className="ajuda">Aparecem na ficha do cliente e na proposta. Valores iniciais são hipótese: calibre com os primeiros diagnósticos.</p>
+          <p className="ajuda">Aparecem na ficha do cliente e na proposta. Valores iniciais são hipótese: calibre com os primeiros diagnósticos</p>
           <form action={salvarPrecosAcao} className="mt-4 space-y-2">
             <div className="hidden grid-cols-3 gap-3 text-xs font-semibold text-tinta-2 sm:grid"><span>Faturamento mensal até (R$)</span><span>Diagnóstico (R$)</span><span>Acompanhamento mensal (R$)</span></div>
             {faixas.map((f, i) => (

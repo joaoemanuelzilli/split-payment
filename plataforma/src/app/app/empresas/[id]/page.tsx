@@ -32,12 +32,12 @@ export default async function FichaEmpresa({ params }: { params: Promise<{ id: s
 
   return (
     <>
-      <Cabecalho titulo={e.nome} descricao={<>{n ? `${n.categoria}: ${n.nicho}` : 'Setor não definido'}{e.parceiro_nome ? `. Veio pelo parceiro ${e.parceiro_nome}` : ''}. Cadastrado em {dataBR(e.criado_em + 'Z')}.</>}
+      <Cabecalho titulo={e.nome} descricao={<>{n ? `${n.categoria}: ${n.nicho}` : 'Setor não definido'}{e.parceiro_nome ? ` · veio pelo parceiro ${e.parceiro_nome}` : ''} · cadastrado em {dataBR(e.criado_em + 'Z')}</>}
         acoes={<>
           <Link href={`/app/simulador/novo?empresa=${e.id}${e.nicho_id ? `&nicho=${e.nicho_id}` : ''}`} className="btn-primario">Nova simulação</Link>
           {ultima && <Link href={`/app/empresas/${e.id}/proposta`} className="btn-secundario">Proposta</Link>}
         </>} />
-      <div className="grid gap-8 px-4 py-6 md:px-8 xl:grid-cols-[1.5fr_1fr]">
+      <div className="grid gap-8 px-5 py-6 md:px-8 xl:grid-cols-[minmax(0,1fr)_400px] xl:px-10 2xl:grid-cols-[minmax(0,1fr)_460px]">
         <div className="min-w-0 space-y-8">
           <form action={mudarEtapaAcao} className="painel flex flex-wrap items-end gap-3 p-4">
             <input type="hidden" name="id" value={e.id} />
@@ -46,13 +46,13 @@ export default async function FichaEmpresa({ params }: { params: Promise<{ id: s
               <select id="etapa" name="etapa" defaultValue={e.etapa} className="campo">{ETAPAS.map(x => <option key={x.id} value={x.id}>{x.nome}</option>)}</select>
             </div>
             <button className="btn-secundario">Mudar etapa</button>
-            <p className="w-full text-xs text-tinta-3">{[e.contato_nome, e.cargo, e.email, e.telefone].filter(Boolean).join(' · ') || 'Sem contato cadastrado.'}</p>
+            <p className="w-full text-xs text-tinta-3">{[e.contato_nome, e.cargo, e.email, e.telefone].filter(Boolean).join(' · ') || 'Sem contato cadastrado'}</p>
           </form>
 
           <section className="painel overflow-hidden">
             <h2 className="h3 border-b border-linha px-4 py-3">Simulações</h2>
             {sims.length === 0 ? (
-              <p className="p-4 text-sm text-tinta-2">Nenhuma simulação. Comece pela calculadora do setor com os números que o cliente já passou.</p>
+              <p className="p-4 text-sm text-tinta-2">Nenhuma simulação. Comece pela calculadora do setor com os números que o cliente já passou</p>
             ) : (
               <ul className="divide-y divide-linha">
                 {sims.map(s => (
@@ -80,14 +80,14 @@ export default async function FichaEmpresa({ params }: { params: Promise<{ id: s
           {check.length > 0 && (
             <section className="painel p-4">
               <h2 className="h3">Roteiro da reunião</h2>
-              <p className="ajuda">Perguntas sobre o que a empresa já faz. Anote a resposta e marque quando estiver respondida.</p>
-              <ol className="mt-3 space-y-3">
+              <p className="ajuda">Perguntas sobre o que a empresa já faz. Anote a resposta e marque quando estiver respondida</p>
+              <ol className="mt-3 lista-limpa">
                 {perguntas.map((c, i) => (
-                  <li key={c.id} className="rounded border border-linha p-3">
+                  <li key={c.id} className="py-3">
                     <div className="flex items-start gap-3">
                       <form action={checklistAcao}>
                         <input type="hidden" name="empresa_id" value={e.id} /><input type="hidden" name="item" value={c.id} /><input type="hidden" name="acao" value="alternar" />
-                        <button aria-label={c.feito ? 'Marcar como não respondida' : 'Marcar como respondida'} className={`mt-0.5 grid h-5 w-5 place-items-center rounded border text-xs ${c.feito ? 'border-ok bg-ok text-white' : 'border-linha'}`}>{c.feito ? '✓' : ''}</button>
+                        <button aria-label={c.feito ? 'Marcar como não respondida' : 'Marcar como respondida'} className={`mt-0.5 grid h-5 w-5 place-items-center rounded border ${c.feito ? 'border-ok bg-ok text-white' : 'border-tinta-3 bg-white hover:border-marca'}`}>{c.feito && <Visto />}</button>
                       </form>
                       <div className="flex-1">
                         <p className={`text-sm ${c.feito ? 'text-tinta-3' : ''}`}><span className="mr-1 font-semibold">{i + 1}.</span>{c.texto}</p>
@@ -107,7 +107,7 @@ export default async function FichaEmpresa({ params }: { params: Promise<{ id: s
                   <li key={c.id}>
                     <form action={checklistAcao} className="flex items-start gap-2 text-sm">
                       <input type="hidden" name="empresa_id" value={e.id} /><input type="hidden" name="item" value={c.id} /><input type="hidden" name="acao" value="alternar" />
-                      <button aria-label="Alternar" className={`mt-0.5 grid h-4 w-4 shrink-0 place-items-center rounded border text-[10px] ${c.feito ? 'border-ok bg-ok text-white' : 'border-linha'}`}>{c.feito ? '✓' : ''}</button>
+                      <button aria-label={c.feito ? 'Desmarcar' : 'Marcar como feito'} className={`mt-0.5 grid h-4 w-4 shrink-0 place-items-center rounded border ${c.feito ? 'border-ok bg-ok text-white' : 'border-tinta-3 bg-white hover:border-marca'}`}>{c.feito && <Visto />}</button>
                       <span className={c.feito ? 'text-tinta-3 line-through' : ''}>{c.texto}</span>
                     </form>
                   </li>
@@ -130,7 +130,7 @@ export default async function FichaEmpresa({ params }: { params: Promise<{ id: s
             </form>
             <ul className="mt-4 space-y-3">
               {notas.map(nt => (
-                <li key={nt.id} className="border-l-2 border-linha pl-3 text-sm">
+                <li key={nt.id} className="border-t border-linha pt-3 text-sm first:border-t-0 first:pt-0">
                   <p className="whitespace-pre-line">{nt.texto}</p>
                   <p className="text-xs text-tinta-3">{nt.usuario_nome ?? 'Sistema'} · {dataHoraBR(nt.criado_em + 'Z')}</p>
                 </li>
@@ -143,14 +143,14 @@ export default async function FichaEmpresa({ params }: { params: Promise<{ id: s
           <section className="painel p-4">
             <h2 className="h3">O que oferecer</h2>
             {rUlt && rUlt.derivacao.modo === 'motor' ? (
-              <p className="mt-1 text-sm text-tinta-2">Carregar a necessidade prudente de 2027 a 2033 custa cerca de <strong className="text-tinta">{brl(custoAcumulado(rUlt))}</strong> em juros e CDI. Em {rUlt.teste.ano}, {pct(Number.isFinite(rUlt.teste.pctFco) ? 100 * rUlt.teste.pctFco : 0)} da geração de caixa.</p>
-            ) : <p className="mt-1 text-sm text-tinta-2">Faça uma simulação para ancorar o preço no custo de não fazer nada.</p>}
-            <ol className="mt-4 space-y-3 text-sm">
-              <li className="rounded border border-linha p-3"><p className="font-semibold">Diagnóstico com os números reais</p><p className="text-tinta-2">Duas a três semanas, enquadramento conferido e reunião com os sócios.</p><p className="mt-1 font-semibold tabular-nums">{brl(preco.diagnostico)}</p></li>
-              <li className="rounded border border-linha p-3"><p className="font-semibold">Projeto de execução</p><p className="text-tinta-2">Prazos com fornecedores e clientes, antecipação, limite contratado antes de precisar, preço e contratos.</p><p className="mt-1 text-tinta-3">Sob escopo, depois do diagnóstico</p></li>
-              <li className="rounded border border-linha p-3"><p className="font-semibold">Acompanhamento mensal de 2027 a 2033</p><p className="text-tinta-2">Atualizar a conta a cada norma, saldo credor e ressarcimento, plano de cada ano da rampa.</p><p className="mt-1 font-semibold tabular-nums">{brl(preco.acompanhamento)} por mês</p></li>
+              <p className="mt-1 text-sm text-tinta-2">Carregar a necessidade prudente de 2027 a 2033 custa cerca de <strong className="text-tinta">{brl(custoAcumulado(rUlt))}</strong> em juros e CDI. Em {rUlt.teste.ano}, {pct(Number.isFinite(rUlt.teste.pctFco) ? 100 * rUlt.teste.pctFco : 0)} da geração de caixa</p>
+            ) : <p className="mt-1 text-sm text-tinta-2">Faça uma simulação para ancorar o preço no custo de não fazer nada</p>}
+            <ol className="mt-4 lista-limpa border-y border-linha text-sm">
+              <li className="py-3"><p className="flex items-baseline justify-between gap-3 font-semibold"><span>Diagnóstico com os números reais</span><span className="whitespace-nowrap tabular-nums">{brl(preco.diagnostico)}</span></p><p className="mt-0.5 text-tinta-2">Duas a três semanas, enquadramento conferido e reunião com os sócios</p></li>
+              <li className="py-3"><p className="flex items-baseline justify-between gap-3 font-semibold"><span>Projeto de execução</span><span className="whitespace-nowrap font-normal text-tinta-3">sob escopo</span></p><p className="mt-0.5 text-tinta-2">Prazos com fornecedores e clientes, antecipação, limite contratado antes de precisar, preço e contratos</p></li>
+              <li className="py-3"><p className="flex items-baseline justify-between gap-3 font-semibold"><span>Acompanhamento mensal, 2027 a 2033</span><span className="whitespace-nowrap tabular-nums">{brl(preco.acompanhamento)}/mês</span></p><p className="mt-0.5 text-tinta-2">Atualizar a conta a cada norma, saldo credor e ressarcimento, plano de cada ano da rampa</p></li>
             </ol>
-            <p className="ajuda mt-3">Preços sugeridos pela faixa de faturamento ({receita ? brl(receita) : 'não informado'} por mês). Ajuste em Configurações.</p>
+            <p className="ajuda mt-3">Preços sugeridos pela faixa de faturamento ({receita ? brl(receita) : 'não informado'} por mês). Ajuste em Configurações</p>
           </section>
 
           {n && (
@@ -179,4 +179,8 @@ export default async function FichaEmpresa({ params }: { params: Promise<{ id: s
       </div>
     </>
   );
+}
+
+function Visto() {
+  return <svg viewBox="0 0 12 12" className="h-3 w-3" aria-hidden><path d="M2.5 6.2 5 8.5l4.5-5" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" /></svg>;
 }

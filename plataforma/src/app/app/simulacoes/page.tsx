@@ -13,10 +13,10 @@ export default async function Simulacoes() {
   const sims = listarSimulacoes(u);
   return (
     <>
-      <Cabecalho titulo="Simulações" descricao="Todas as simulações salvas, inclusive as que chegaram pela calculadora pública." acoes={<Link href="/app/simulador" className="btn-primario">Nova simulação</Link>} />
-      <div className="px-4 py-6 md:px-8">
+      <Cabecalho titulo="Simulações" descricao="Todas as simulações salvas, inclusive as que chegaram pela calculadora pública" acoes={<Link href="/app/simulador" className="btn-primario">Nova simulação</Link>} />
+      <div className="px-5 py-6 md:px-8 xl:px-10">
         <div className="painel overflow-x-auto">
-          {sims.length === 0 ? <p className="p-6 text-sm text-tinta-2">Nenhuma simulação salva.</p> : (
+          {sims.length === 0 ? <p className="p-6 text-sm text-tinta-2">Nenhuma simulação salva ainda</p> : (
             <table className="tabela">
               <thead><tr><th>Simulação</th><th>Cliente</th><th className="num">Faixa no ano do teste</th><th className="num">2028, % de um mês</th><th>Caixa</th><th>Atualizada</th><th></th></tr></thead>
               <tbody>

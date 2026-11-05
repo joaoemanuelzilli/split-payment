@@ -20,7 +20,7 @@ export function CabecalhoSite({ parceiro }: { parceiro?: { nome: string; slug: s
   const base = parceiro ? `/p/${parceiro.slug}` : '';
   return (
     <header className="border-b border-linha bg-papel-2">
-      <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-3 px-4 py-3">
+      <div className="recipiente flex flex-wrap items-center justify-between gap-3 py-3">
         <Link href={base || '/'} className="text-tinta">
           {parceiro ? (
             <span className="flex items-center gap-3">
@@ -43,19 +43,20 @@ export function CabecalhoSite({ parceiro }: { parceiro?: { nome: string; slug: s
 export function RodapeSite() {
   const m = getMarca();
   return (
-    <footer className="mt-20 border-t border-linha bg-papel-2">
-      <div className="mx-auto grid max-w-6xl gap-6 px-4 py-10 text-sm text-tinta-2 md:grid-cols-3">
+    <footer className="mt-16 border-t border-linha bg-papel-2">
+      <div className="recipiente grid gap-8 py-10 text-sm text-tinta-2 md:grid-cols-[1fr_1fr_1.4fr]">
         <div>
           <Logo nome={m.nome} />
-          <p className="mt-2 max-w-xs">{m.slogan}. {m.cidade}</p>
+          <p className="mt-2 max-w-xs">{m.slogan}</p>
+          <p className="text-tinta-3">{m.cidade}</p>
         </div>
         <div>
           <p className="font-semibold text-tinta">Contato</p>
           <p className="mt-1">{m.email}</p>
           <p>{m.telefone}</p>
         </div>
-        <p className="text-xs leading-relaxed">
-          Diagnóstico financeiro, não parecer jurídico ou contábil. As datas do split payment são previsão da Receita Federal, sem ato normativo publicado. Base de nichos versão 1.1, de 04/11/2026.
+        <p className="max-w-xl text-xs leading-relaxed">
+          Diagnóstico financeiro, não parecer jurídico ou contábil. As datas do split payment são previsão da Receita Federal, sem ato normativo publicado. Base de setores versão 1.1, de 04/11/2026
         </p>
       </div>
     </footer>

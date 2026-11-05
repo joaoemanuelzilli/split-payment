@@ -6,6 +6,7 @@ import { sair } from '../acoes';
 import NavApp from './NavApp';
 
 export const metadata = { robots: { index: false } };
+const PAPEL: Record<string, string> = { admin: 'Administrador', consultor: 'Consultor', parceiro: 'Escritório parceiro' };
 
 export default async function LayoutApp({ children }: { children: React.ReactNode }) {
   const u = await exigirUsuario();
@@ -21,14 +22,14 @@ export default async function LayoutApp({ children }: { children: React.ReactNod
   ];
   const estilo = parceiro?.cor ? ({ ['--marca' as string]: parceiro.cor } as React.CSSProperties) : undefined;
   return (
-    <div className="min-h-screen md:grid md:grid-cols-[232px_1fr]" style={estilo}>
+    <div className="min-h-screen md:grid md:grid-cols-[220px_1fr]" style={estilo}>
       <aside className="nao-imprimir border-b border-linha bg-papel-2 md:sticky md:top-0 md:h-screen md:border-b-0 md:border-r">
         <div className="flex items-center justify-between px-4 py-4 md:block">
           <Link href="/app" className="text-tinta">{parceiro ? <span className="font-bold">{parceiro.nome}</span> : <Logo nome={m.nome} logoUrl={m.logoUrl} />}</Link>
-          <p className="hidden text-xs text-tinta-3 md:mt-1 md:block">{u.nome} · {u.papel === 'admin' ? 'Administrador' : u.papel === 'consultor' ? 'Consultor' : 'Escritório parceiro'}</p>
+          <p className="hidden text-xs text-tinta-3 md:mt-1.5 md:block">{[u.nome, PAPEL[u.papel]].filter((x, i, l) => l.indexOf(x) === i).join(' · ')}</p>
         </div>
         <NavApp itens={itens} />
-        <div className="hidden space-y-1 px-3 pb-4 text-sm md:absolute md:bottom-0 md:block md:w-[231px]">
+        <div className="hidden space-y-1 px-3 pb-4 text-sm md:absolute md:bottom-0 md:block md:w-[219px]">
           {parceiro && <a className="block rounded px-3 py-2 text-marca hover:bg-papel-3" href={`/p/${parceiro.slug}`} target="_blank" rel="noreferrer">Minha página pública</a>}
           <Link className="block rounded px-3 py-2 hover:bg-papel-3" href="/app/conta">Minha conta</Link>
           <form action={sair}><button className="w-full rounded px-3 py-2 text-left hover:bg-papel-3">Sair</button></form>

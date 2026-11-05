@@ -24,8 +24,8 @@ export default async function NovaSim({ searchParams }: { searchParams: Promise<
   const empresas = listarEmpresas(u).map(e => ({ id: e.id, nome: e.nome }));
   return (
     <>
-      <Cabecalho titulo={n.nicho} descricao={`${n.categoria}. ${emp ? `Cliente: ${emp.nome}.` : ''}`} />
-      <div className="px-4 py-6 md:px-8">
+      <Cabecalho titulo={n.nicho} descricao={`${n.categoria}${emp ? ` · cliente ${emp.nome}` : ''}`} />
+      <div className="px-5 py-6 md:px-8 xl:px-10">
         <Simulador nicho={n} inicial={inicial} modo="consultor" empresaId={empresaId} empresas={empresas} salvar={salvarSimulacaoAcao}
           nomeInicial={emp ? `${emp.nome}: ${n.nicho}` : undefined} />
       </div>

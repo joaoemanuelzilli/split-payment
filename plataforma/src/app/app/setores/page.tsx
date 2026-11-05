@@ -19,8 +19,8 @@ export default async function Setores({ searchParams }: { searchParams: Promise<
     : ordem === 'prioridade' ? a.prioridade - b.prioridade || a.id.localeCompare(b.id) : a.id.localeCompare(b.id));
   return (
     <>
-      <Cabecalho titulo="Setores e teses" descricao="Os 123 setores da base, com o efeito do exemplo, a prioridade comercial e o CNAE para buscar empresas. Use para escolher onde prospectar." />
-      <div className="px-4 py-6 md:px-8">
+      <Cabecalho titulo="Setores e teses" descricao="Os 123 setores da base, com o efeito do exemplo, a prioridade comercial e o CNAE para buscar empresas. Use para escolher onde prospectar" />
+      <div className="px-5 py-6 md:px-8 xl:px-10">
         <form className="flex flex-wrap gap-2">
           <input name="q" defaultValue={sp.q} placeholder="Setor ou CNAE" className="campo max-w-xs" />
           <select name="exp" defaultValue={sp.exp ?? ''} className="campo w-auto"><option value="">Qualquer exposição</option><option value="alta">Alta</option><option value="media">Média</option><option value="baixa">Baixa</option></select>
@@ -45,7 +45,7 @@ export default async function Setores({ searchParams }: { searchParams: Promise<
             </tbody>
           </table>
         </div>
-        <p className="ajuda mt-2">Percentuais de um mês de faturamento, cenário prudente (2028 mostra a faixa favorável a prudente), com a empresa típica de cada setor.</p>
+        <p className="ajuda mt-2">Percentuais de um mês de faturamento, cenário prudente (2028 mostra a faixa favorável a prudente), com a empresa típica de cada setor</p>
       </div>
     </>
   );

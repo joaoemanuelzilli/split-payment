@@ -44,7 +44,7 @@ export function estatisticas() {
     mediana2033: mediana(ns.map(n => n.resultado_exemplo.pct_um_mes_receita_2033.prudente)),
     maisExpostos: [...ns]
       .sort((a, b) => b.resultado_exemplo.pct_um_mes_receita_2028.prudente - a.resultado_exemplo.pct_um_mes_receita_2028.prudente)
-      .slice(0, 5),
+      .slice(0, 6),
     fontes: new Set(ns.flatMap(n => n.fontes.map(f => f.url))).size,
   };
 }

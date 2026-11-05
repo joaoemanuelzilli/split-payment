@@ -16,7 +16,7 @@ export default async function FichaSetor({ params }: { params: Promise<{ id: str
     <>
       <Cabecalho titulo={n.nicho} descricao={`${n.id}. ${n.categoria}. Prioridade ${n.prioridade}, confiança ${n.confianca_geral === 'media' ? 'média' : n.confianca_geral}. ${n.porte_alvo}`}
         acoes={<><Link href={`/app/simulador/novo?nicho=${n.id}`} className="btn-primario">Simular</Link><a href={`/setores/${nichoSlug(n)}`} target="_blank" rel="noreferrer" className="btn-secundario">Página pública</a></>} />
-      <div className="grid gap-8 px-4 py-6 md:px-8 xl:grid-cols-[1.4fr_1fr]">
+      <div className="grid gap-8 px-5 py-6 md:px-8 xl:px-10 xl:grid-cols-[1.4fr_1fr]">
         <div className="min-w-0 space-y-8">
           <section><h2 className="h2">Tese de consultoria</h2><p className="mt-2 leading-relaxed">{n.tese_consultoria}</p></section>
           <section><h2 className="h2">Leitura crítica</h2><p className="mt-2 leading-relaxed text-tinta-2">{n.analise_critica}</p></section>

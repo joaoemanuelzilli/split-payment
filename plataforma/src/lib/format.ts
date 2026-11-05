@@ -24,3 +24,10 @@ export function slugify(s: string) {
 export function minusculaInicial(s: string) {
   return s.length > 1 && s[1] === s[1].toUpperCase() && /[A-Z]/.test(s[1]) ? s : s.charAt(0).toLowerCase() + s.slice(1);
 }
+
+/** Tira o ponto final de textos de uma frase só (legendas, ajudas, itens curtos). Texto com mais de uma frase fica como está. */
+export function semPonto(s: string) {
+  const t = s.trim();
+  if (!t.endsWith('.') || /[.!?;]\s/.test(t.slice(0, -1)) || /(\b[a-z]\.[a-z]|etc)\.$/i.test(t)) return t;
+  return t.slice(0, -1);
+}

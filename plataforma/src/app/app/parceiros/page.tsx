@@ -4,7 +4,7 @@ import Cabecalho from '@/components/Cabecalho';
 import { salvarParceiroAcao } from '../../acoes';
 
 export const metadata = { title: 'Parceiros' };
-const MSG: Record<string, string> = { nome: 'Informe o nome do escritório.', slug: 'Esse endereço já está em uso. Escolha outro.' };
+const MSG: Record<string, string> = { nome: 'Informe o nome do escritório', slug: 'Esse endereço já está em uso. Escolha outro' };
 
 function Form({ p }: { p?: Parceiro }) {
   return (
@@ -32,9 +32,9 @@ export default async function Parceiros({ searchParams }: { searchParams: Promis
   return (
     <>
       <Cabecalho titulo="Escritórios parceiros" descricao="Cada parceiro tem uma página com a própria marca e a calculadora. Os contatos que chegam por ela ficam marcados com o parceiro. Para dar acesso ao painel, crie um usuário do tipo parceiro em Configurações." />
-      <div className="space-y-6 px-4 py-6 md:px-8">
-        {sp.erro && <p role="alert" className="text-sm text-risco">{MSG[sp.erro] ?? 'Não foi possível salvar.'}</p>}
-        {sp.ok && <p role="status" className="text-sm text-ok">Parceiro salvo.</p>}
+      <div className="space-y-6 px-5 py-6 md:px-8 xl:px-10">
+        {sp.erro && <p role="alert" className="text-sm text-risco">{MSG[sp.erro] ?? 'Não foi possível salvar. Tente de novo'}</p>}
+        {sp.ok && <p role="status" className="text-sm text-ok">Parceiro salvo</p>}
         {lista.map(p => (
           <details key={p.id} className="painel p-4">
             <summary className="flex cursor-pointer flex-wrap items-center justify-between gap-3">

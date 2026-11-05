@@ -7,7 +7,7 @@ import type { Valores } from '@/lib/derive/core';
 import CampoInput, { MoedaInput, NumeroInput } from './CampoInput';
 import Resultado, { AvisosObrigatorios, Manchete, TesteCaixaPainel } from './Resultado';
 import Semaforo from './Semaforo';
-import { brl, pct } from '@/lib/format';
+import { brl, pct, semPonto } from '@/lib/format';
 
 export interface DadosSimulacao { valores: Valores; caixa: Caixa; parametros: ParametrosGlobais }
 export type SalvarFn = (d: DadosSimulacao & { id?: number; nicho_id: string; nome: string; empresa_id: number | null }) => Promise<{ ok: boolean; id?: number; erro?: string }>;
@@ -28,11 +28,11 @@ interface Props {
 }
 
 const CAIXA_CAMPOS: { id: keyof Caixa; rotulo: string; ajuda: string; tipo: 'moeda' | 'pct' }[] = [
-  { id: 'caixa', rotulo: 'Caixa hoje', ajuda: 'Saldo em conta e aplicações de liquidez imediata.', tipo: 'moeda' },
-  { id: 'caixa_minimo', rotulo: 'Caixa mínimo de segurança', ajuda: 'Abaixo disso a empresa não aceita ficar.', tipo: 'moeda' },
-  { id: 'limites', rotulo: 'Limites de crédito aprovados e não usados', ajuda: 'Conta garantida, capital de giro pré-aprovado. Sem antecipação de recebíveis.', tipo: 'moeda' },
-  { id: 'custo_credito_pct_am', rotulo: 'Custo do crédito', ajuda: 'Taxa mensal média das linhas de capital de giro.', tipo: 'pct' },
-  { id: 'geracao_caixa_mes', rotulo: 'Geração de caixa por mês', ajuda: 'Quanto sobra do operacional, em média, por mês.', tipo: 'moeda' },
+  { id: 'caixa', rotulo: 'Caixa hoje', ajuda: 'Saldo em conta e aplicações de liquidez imediata', tipo: 'moeda' },
+  { id: 'caixa_minimo', rotulo: 'Caixa mínimo de segurança', ajuda: 'Abaixo disso a empresa não aceita ficar', tipo: 'moeda' },
+  { id: 'limites', rotulo: 'Limites de crédito aprovados e não usados', ajuda: 'Conta garantida e capital de giro pré-aprovado, sem antecipação de recebíveis', tipo: 'moeda' },
+  { id: 'custo_credito_pct_am', rotulo: 'Custo do crédito', ajuda: 'Taxa mensal média das linhas de capital de giro', tipo: 'pct' },
+  { id: 'geracao_caixa_mes', rotulo: 'Geração de caixa por mês', ajuda: 'Quanto sobra do operacional, em média, por mês', tipo: 'moeda' },
 ];
 
 export default function Simulador(p: Props) {
@@ -59,21 +59,21 @@ export default function Simulador(p: Props) {
   }
 
   return (
-    <div className="grid gap-8 lg:grid-cols-[minmax(0,420px)_minmax(0,1fr)]">
+    <div className="grid gap-8 lg:grid-cols-[minmax(0,400px)_minmax(0,1fr)] xl:grid-cols-[minmax(0,440px)_minmax(0,1fr)] xl:gap-10">
       <form className="space-y-6" onSubmit={e => e.preventDefault()}>
         <fieldset className="painel space-y-4 p-4 md:p-5">
           <legend className="sr-only">Dados do negócio</legend>
           <div className="flex items-baseline justify-between gap-3">
             <h2 className="h3">Como a empresa vende e compra</h2>
-            <button type="button" className="btn-texto text-xs" onClick={restaurar}>Voltar ao exemplo</button>
+            <button type="button" className="btn-texto shrink-0 whitespace-nowrap px-0 text-xs" onClick={restaurar}>Voltar ao exemplo</button>
           </div>
-          <p className="ajuda -mt-2">Os campos vêm preenchidos com uma empresa típica do setor. Troque pelos números reais.</p>
+          <p className="ajuda -mt-2">Os campos vêm com uma empresa típica do setor. Troque pelos números reais</p>
           {p.nicho.campos_especificos.map(f => <CampoInput key={f.id} campo={f} valor={valores[f.id]} onChange={v => set(f.id, v)} />)}
         </fieldset>
 
         <fieldset className="painel space-y-4 p-4 md:p-5">
           <h2 className="h3">Teste de caixa</h2>
-          <p className="ajuda -mt-2">Para saber se o caixa de hoje cobre a necessidade e quanto custa.</p>
+          <p className="ajuda -mt-2">Mostra se o caixa de hoje cobre a necessidade e quanto custa</p>
           {CAIXA_CAMPOS.map(c => (
             <div key={c.id}>
               <label htmlFor={`cx-${c.id}`} className="rotulo">{c.rotulo}</label>
@@ -87,7 +87,7 @@ export default function Simulador(p: Props) {
 
         <details className="painel p-4 md:p-5" open={consultor}>
           <summary className="h3 cursor-pointer">Premissas da reforma</summary>
-          <p className="ajuda mt-1">Valores de 04/11/2026. Mude quando sair uma norma nova ou para testar cenários.</p>
+          <p className="ajuda mt-1">Valores de 04/11/2026. Mude quando sair uma norma nova ou para testar cenários</p>
           <div className="mt-4 grid grid-cols-2 gap-4">
             <ParNum id="cbs_referencia_pct" rotulo="CBS de referência" sufixo="%" par={par} setPar={setPar} max={20} passo={0.05} />
             <ParNum id="ibs_cheio_pct" rotulo="IBS cheio (2033)" sufixo="%" par={par} setPar={setPar} max={30} passo={0.1} />
@@ -128,8 +128,8 @@ export default function Simulador(p: Props) {
             <div className="flex flex-wrap gap-2">
               <button type="button" className="btn-primario" disabled={pendente} onClick={() => start(async () => {
                 const res = await p.salvar!({ id: simId, nicho_id: p.nicho.id, nome, empresa_id: empresaId, valores, caixa, parametros: par });
-                if (res.ok && res.id) { setSimId(res.id); setMsg('Simulação salva.'); router.replace(`/app/simulador/${res.id}`); router.refresh(); }
-                else setMsg(res.erro ?? 'Não foi possível salvar.');
+                if (res.ok && res.id) { setSimId(res.id); setMsg('Simulação salva'); router.replace(`/app/simulador/${res.id}`); router.refresh(); }
+                else setMsg(res.erro ?? 'Não foi possível salvar. Tente de novo');
               })}>{simId ? 'Salvar alterações' : 'Salvar simulação'}</button>
               {simId && <a className="btn-secundario" href={`/app/simulacoes/${simId}/relatorio`} target="_blank" rel="noreferrer">Abrir relatório em PDF</a>}
             </div>
@@ -177,7 +177,7 @@ function ResultadoPublico({ r, p, dados }: { r: ReturnType<typeof calcular>; p: 
                 </li>
               ))}
             </ul>
-            <p className="ajuda mt-3">Em % de um mês de faturamento. O salto de 2033 vem do IBS cheio.</p>
+            <p className="ajuda mt-3">Em % de um mês de faturamento. O salto de 2033 vem do IBS cheio</p>
           </div>
           <TesteCaixaPainel r={r} />
         </div>
@@ -185,11 +185,11 @@ function ResultadoPublico({ r, p, dados }: { r: ReturnType<typeof calcular>; p: 
         <div className="painel p-4 md:p-6">
           <h3 className="h3">No Simples puro, o split quase não mexe no caixa</h3>
           <p className="mt-2 text-sm">{r.derivacao.textoModo}</p>
-          <p className="mt-2 text-sm">A pergunta é outra: continuar no Simples puro ou recolher IBS e CBS por fora para não perder clientes PJ. O diagnóstico completo mostra a conta dos dois lados.</p>
+          <p className="mt-2 text-sm">A pergunta é outra: continuar no Simples puro ou recolher IBS e CBS por fora para não perder clientes PJ. O diagnóstico completo mostra a conta dos dois lados</p>
         </div>
       )}
       {r.derivacao.mensagens.filter(m => m.nivel === 'alerta').map((m, i) => (
-        <p key={i} className="rounded border border-[#E9C98F] bg-[#FBF3E6] px-3 py-2 text-sm">{m.texto}</p>
+        <p key={i} className="rounded border border-[#E9C98F] bg-[#FBF3E6] px-3 py-2 text-sm">{semPonto(m.texto)}</p>
       ))}
       <form className="painel space-y-4 border-marca p-4 md:p-6" onSubmit={e => {
         e.preventDefault();
@@ -199,12 +199,12 @@ function ResultadoPublico({ r, p, dados }: { r: ReturnType<typeof calcular>; p: 
           setErro(null);
           const res = await p.capturar!({ ...dados, nicho_id: p.nicho.id, contato, parceiro: p.parceiro });
           if (res.ok && res.token) router.push(`/relatorio/${res.token}`);
-          else setErro(res.erro ?? 'Não foi possível enviar. Confira os campos.');
+          else setErro(res.erro ?? 'Não foi possível enviar. Confira os campos e tente de novo');
         });
       }}>
         <div>
           <h3 className="h2">Receba o diagnóstico completo</h3>
-          <p className="mt-1 text-sm text-tinta-2">De onde vem cada real, o teste de caixa ano a ano e o relatório em PDF para levar aos sócios.{t.verdict === 'vermelho' ? ' No seu caso o semáforo está vermelho: vale conversar antes de 2027.' : ''}</p>
+          <p className="mt-1 text-sm text-tinta-2">De onde vem cada real, o teste de caixa ano a ano e o relatório em PDF para levar aos sócios{t.verdict === 'vermelho' ? '. No seu caso o semáforo está vermelho: vale conversar antes de 2027' : ''}</p>
         </div>
         <div className="grid gap-4 sm:grid-cols-2">
           <Entrada nome="nome" rotulo="Seu nome" obrigatorio autoComplete="name" />
@@ -216,12 +216,12 @@ function ResultadoPublico({ r, p, dados }: { r: ReturnType<typeof calcular>; p: 
         </div>
         <label className="flex items-start gap-2 text-xs text-tinta-2">
           <input type="checkbox" name="consentimento" required className="mt-0.5 h-4 w-4 accent-[var(--marca)]" />
-          Autorizo o uso destes dados para receber o diagnóstico e ser contatado sobre ele. Os números da simulação ficam guardados para a conversa.
+          Autorizo o uso destes dados para receber o diagnóstico e ser contatado sobre ele. Os números da simulação ficam guardados para a conversa
         </label>
         {erro && <p role="alert" className="text-sm text-risco">{erro}</p>}
         <button className="btn-primario w-full sm:w-auto" disabled={pendente}>{pendente ? 'Gerando…' : 'Ver o diagnóstico completo'}</button>
       </form>
-      <p className="text-center text-xs text-tinta-3">Prévia: necessidade prudente em {t.ano} de {brl(t.need)}. <Semaforo veredito={t.verdict} pequeno /></p>
+      <p className="flex flex-wrap items-center justify-center gap-2 text-xs text-tinta-3">Prévia: necessidade prudente em {t.ano} de {brl(t.need)} <Semaforo veredito={t.verdict} pequeno /></p>
     </>
   );
 }

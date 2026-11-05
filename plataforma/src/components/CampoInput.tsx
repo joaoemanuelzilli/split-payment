@@ -2,6 +2,7 @@
 import { useEffect, useState } from 'react';
 import type { CampoEspecifico, ValorCampo } from '@/lib/types';
 import { opcoesDe } from '@/lib/derive/core';
+import { semPonto } from '@/lib/format';
 
 const fmtMoeda = (v: number) => (Number.isFinite(v) ? Math.round(v).toLocaleString('pt-BR') : '');
 
@@ -80,7 +81,7 @@ export default function CampoInput({ campo, valor, onChange }: { campo: CampoEsp
     <div>
       <label htmlFor={id} className="rotulo">{campo.rotulo}</label>
       {controle}
-      {campo.ajuda && <p className="ajuda">{campo.ajuda}</p>}
+      {campo.ajuda && <p className="ajuda">{semPonto(campo.ajuda)}</p>}
     </div>
   );
 }
