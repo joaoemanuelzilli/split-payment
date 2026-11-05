@@ -42,7 +42,7 @@ export default function Relatorio({ s, interno = false }: { s: Simulacao; intern
         <h1 className="mt-1 text-3xl font-extrabold tracking-tight">{empresa?.nome ?? s.nome}</h1>
         <p className="mt-1 text-tinta-2">{n.categoria}: {n.nicho}</p>
         {desatualizada && interno && (
-          <p className="nao-imprimir mt-3 rounded border-l-4 border-atencao bg-[#FBF3E6] px-3 py-2 text-sm">Esta simulação usa premissas diferentes das atuais da plataforma. Abra no simulador e salve de novo para atualizar, ou use o recálculo geral nas configurações.</p>
+          <p className="nao-imprimir mt-3 rounded border border-[#E9C98F] bg-[#FBF3E6] px-3 py-2 text-sm">Esta simulação usa premissas diferentes das atuais da plataforma. Abra no simulador e salve de novo para atualizar, ou use o recálculo geral nas configurações.</p>
         )}
       </section>
 

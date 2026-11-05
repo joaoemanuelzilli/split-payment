@@ -32,7 +32,7 @@ export default async function Painel() {
         acoes={<><Link href="/app/empresas/nova" className="btn-secundario">Novo cliente</Link><Link href="/app/simulador" className="btn-primario">Nova simulação</Link></>} />
       <div className="space-y-8 px-4 py-6 md:px-8">
         {desatualizadas > 0 && (
-          <p className="rounded border-l-4 border-atencao bg-[#FBF3E6] px-4 py-3 text-sm">
+          <p className="rounded border border-[#E9C98F] bg-[#FBF3E6] px-4 py-3 text-sm">
             {desatualizadas} {desatualizadas === 1 ? 'simulação usa' : 'simulações usam'} premissas diferentes das atuais.{' '}
             {u.papel === 'admin' ? <Link href="/app/configuracoes#parametros" className="font-semibold underline">Recalcular em Configurações</Link> : 'Peça ao administrador para recalcular.'}
           </p>

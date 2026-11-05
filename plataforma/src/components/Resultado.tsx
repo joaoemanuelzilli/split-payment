@@ -32,7 +32,7 @@ export default function Resultado({ r, nicho, compacto = false }: { r: R; nicho:
       {d.mensagens.length > 0 && (
         <ul className="space-y-2">
           {d.mensagens.map((m, i) => (
-            <li key={i} className={`rounded border-l-4 px-3 py-2 text-sm ${m.nivel === 'alerta' ? 'border-atencao bg-[#FBF3E6]' : 'border-marca bg-marca-claro'}`}>
+            <li key={i} className={`rounded border px-3 py-2 text-sm ${m.nivel === 'alerta' ? 'border-[#E9C98F] bg-[#FBF3E6]' : 'border-linha bg-marca-claro'}`}>
               {m.texto}
             </li>
           ))}

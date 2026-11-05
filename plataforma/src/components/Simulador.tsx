@@ -189,7 +189,7 @@ function ResultadoPublico({ r, p, dados }: { r: ReturnType<typeof calcular>; p: 
         </div>
       )}
       {r.derivacao.mensagens.filter(m => m.nivel === 'alerta').map((m, i) => (
-        <p key={i} className="rounded border-l-4 border-atencao bg-[#FBF3E6] px-3 py-2 text-sm">{m.texto}</p>
+        <p key={i} className="rounded border border-[#E9C98F] bg-[#FBF3E6] px-3 py-2 text-sm">{m.texto}</p>
       ))}
       <form className="painel space-y-4 border-marca p-4 md:p-6" onSubmit={e => {
         e.preventDefault();
