@@ -1,6 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  serverExternalPackages: ['better-sqlite3'],
+  serverExternalPackages: ['@electric-sql/pglite'],
   outputFileTracingIncludes: { '/**': ['./data/base-nichos-split.json'] },
   poweredByHeader: false,
 };

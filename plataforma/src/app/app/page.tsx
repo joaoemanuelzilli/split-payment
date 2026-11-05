@@ -18,10 +18,10 @@ const ACOMPANHAR = [
 
 export default async function Painel() {
   const u = await exigirUsuario();
-  const p = painel(u);
-  const empresas = listarEmpresas(u).slice(0, 8);
-  const sims = listarSimulacoes(u);
-  const atuais = getParametros();
+  const p = await painel(u);
+  const empresas = (await listarEmpresas(u)).slice(0, 8);
+  const sims = await listarSimulacoes(u);
+  const atuais = await getParametros();
   const desatualizadas = sims.filter(s => simulacaoDesatualizada(s, atuais)).length;
   const mudouBase = JSON.stringify(atuais) !== JSON.stringify(parametrosBase());
   const cont = (id: string) => p.porEtapa.find(x => x.etapa === id)?.n ?? 0;

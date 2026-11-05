@@ -28,7 +28,7 @@ function Form({ p }: { p?: Parceiro }) {
 export default async function Parceiros({ searchParams }: { searchParams: Promise<{ erro?: string; ok?: string }> }) {
   await exigirUsuario(['admin']);
   const sp = await searchParams;
-  const lista = listarParceiros();
+  const lista = await listarParceiros();
   return (
     <>
       <Cabecalho titulo="Escritórios parceiros" descricao="Cada parceiro tem uma página com a própria marca e a calculadora. Os contatos que chegam por ela ficam marcados com o parceiro. Para dar acesso ao painel, crie um usuário do tipo parceiro em Configurações." />

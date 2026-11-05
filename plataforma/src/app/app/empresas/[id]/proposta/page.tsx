@@ -11,15 +11,15 @@ export const metadata = { title: 'Proposta' };
 
 export default async function Proposta({ params }: { params: Promise<{ id: string }> }) {
   const u = await exigirUsuario();
-  const e = getEmpresa(Number((await params).id));
+  const e = await getEmpresa(Number((await params).id));
   if (!e || !podeVer(u, e)) notFound();
-  const s = listarSimulacoes(u, e.id)[0];
+  const s = (await listarSimulacoes(u, e.id))[0];
   if (!s) notFound();
   const n = getNicho(s.nicho_id)!;
   const r = calcular(n, { valores: s.valores, caixa: s.caixa, parametros: s.parametros });
-  const preco = precoSugerido(r.receitaMensal, getFaixas());
-  const m = getMarca();
-  const parceiro = e.parceiro_id ? getParceiro(e.parceiro_id) : undefined;
+  const preco = precoSugerido(r.receitaMensal, await getFaixas());
+  const m = await getMarca();
+  const parceiro = e.parceiro_id ? await getParceiro(e.parceiro_id) : undefined;
   const t = r.teste;
   const fav = r.anos.find(a => a.ano === t.ano)!.favoravel;
   return (

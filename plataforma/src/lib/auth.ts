@@ -2,7 +2,7 @@ import 'server-only';
 import crypto from 'node:crypto';
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
-import { db } from './db';
+import { executar, um } from './db';
 
 export type Papel = 'admin' | 'consultor' | 'parceiro';
 export interface Usuario { id: number; email: string; nome: string; papel: Papel; parceiro_id: number | null }
@@ -29,7 +29,7 @@ export const tokenAleatorio = (bytes = 24) => crypto.randomBytes(bytes).toString
 export async function criarSessao(usuarioId: number) {
   const token = tokenAleatorio(32);
   const expira = new Date(Date.now() + DIAS * 864e5);
-  db().prepare('INSERT INTO sessoes (token, usuario_id, expira_em) VALUES (?, ?, ?)').run(token, usuarioId, expira.toISOString());
+  await executar('INSERT INTO sessoes (token, usuario_id, expira_em) VALUES (?, ?, ?)', [token, usuarioId, expira.toISOString()]);
   const jar = await cookies();
   jar.set(COOKIE, token, {
     httpOnly: true,
@@ -43,19 +43,18 @@ export async function criarSessao(usuarioId: number) {
 export async function encerrarSessao() {
   const jar = await cookies();
   const t = jar.get(COOKIE)?.value;
-  if (t) db().prepare('DELETE FROM sessoes WHERE token = ?').run(t);
+  if (t) await executar('DELETE FROM sessoes WHERE token = ?', [t]);
   jar.delete(COOKIE);
 }
 
 export async function usuarioAtual(): Promise<Usuario | null> {
   const t = (await cookies()).get(COOKIE)?.value;
   if (!t) return null;
-  const u = db()
-    .prepare(
-      `SELECT u.id, u.email, u.nome, u.papel, u.parceiro_id FROM sessoes s JOIN usuarios u ON u.id = s.usuario_id
-       WHERE s.token = ? AND s.expira_em > ? AND u.ativo = 1`,
-    )
-    .get(t, new Date().toISOString()) as Usuario | undefined;
+  const u = await um<Usuario>(
+    `SELECT u.id, u.email, u.nome, u.papel, u.parceiro_id FROM sessoes s JOIN usuarios u ON u.id = s.usuario_id
+     WHERE s.token = ? AND s.expira_em > ? AND u.ativo = 1`,
+    [t, new Date().toISOString()],
+  );
   return u ?? null;
 }
 

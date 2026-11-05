@@ -2,9 +2,9 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { exigirUsuario } from '@/lib/auth';
 import { getNicho } from '@/lib/base';
-import { db } from '@/lib/db';
+import { todos } from '@/lib/db';
 import { calcular, custoAcumulado, precoSugerido } from '@/lib/calc';
-import { ETAPAS, getEmpresa, getFaixas, listarChecklist, listarNotas, listarParceiros, listarSimulacoes, podeVer, simulacaoDesatualizada } from '@/lib/dados';
+import { ETAPAS, getEmpresa, getFaixas, listarChecklist, listarNotas, listarParceiros, listarSimulacoes, podeVer, simulacaoDesatualizada, getParametros } from '@/lib/dados';
 import { brl, dataBR, dataHoraBR, pct } from '@/lib/format';
 import Cabecalho from '@/components/Cabecalho';
 import FormEmpresa from '@/components/FormEmpresa';
@@ -14,18 +14,19 @@ import { adicionarNotaAcao, atualizarEmpresaAcao, checklistAcao, excluirEmpresaA
 
 export default async function FichaEmpresa({ params }: { params: Promise<{ id: string }> }) {
   const u = await exigirUsuario();
-  const e = getEmpresa(Number((await params).id));
+  const e = await getEmpresa(Number((await params).id));
   if (!e || !podeVer(u, e)) notFound();
   const n = e.nicho_id ? getNicho(e.nicho_id) : undefined;
-  const sims = listarSimulacoes(u, e.id);
-  const check = listarChecklist(e.id);
-  const notas = listarNotas(e.id);
+  const sims = await listarSimulacoes(u, e.id);
+  const check = await listarChecklist(e.id);
+  const notas = await listarNotas(e.id);
+  const atuais = await getParametros();
   const admin = u.papel === 'admin';
   const ultima = sims[0];
   const rUlt = ultima && n ? calcular(getNicho(ultima.nicho_id)!, { valores: ultima.valores, caixa: ultima.caixa, parametros: ultima.parametros }) : undefined;
   const receita = rUlt?.receitaMensal ?? e.faturamento_mensal ?? 0;
-  const preco = precoSugerido(receita, getFaixas());
-  const usuarios = db().prepare("SELECT id, nome FROM usuarios WHERE papel != 'parceiro' AND ativo = 1 ORDER BY nome").all() as { id: number; nome: string }[];
+  const preco = precoSugerido(receita, await getFaixas());
+  const usuarios = await todos<{ id: number; nome: string }>("SELECT id, nome FROM usuarios WHERE papel != 'parceiro' AND ativo = 1 ORDER BY nome");
   const perguntas = check.filter(c => c.tipo === 'pergunta');
   const documentos = check.filter(c => c.tipo === 'documento');
   const tarefas = check.filter(c => c.tipo === 'tarefa');
@@ -59,7 +60,7 @@ export default async function FichaEmpresa({ params }: { params: Promise<{ id: s
                   <li key={s.id} className="flex flex-wrap items-center justify-between gap-3 px-4 py-3">
                     <div>
                       <Link href={`/app/simulador/${s.id}`} className="font-medium hover:text-marca">{s.nome}</Link>
-                      <p className="text-xs text-tinta-3">{dataHoraBR(s.atualizado_em + 'Z')}{simulacaoDesatualizada(s) ? ' · premissas antigas' : ''}</p>
+                      <p className="text-xs text-tinta-3">{dataHoraBR(s.atualizado_em + 'Z')}{simulacaoDesatualizada(s, atuais) ? ' · premissas antigas' : ''}</p>
                     </div>
                     <div className="flex flex-wrap items-center gap-4 text-sm">
                       {s.resumo.modo === 'motor' ? (
@@ -167,7 +168,7 @@ export default async function FichaEmpresa({ params }: { params: Promise<{ id: s
 
           <details className="painel p-4">
             <summary className="h3 cursor-pointer">Dados do cliente</summary>
-            <div className="mt-4"><FormEmpresa e={e} acao={atualizarEmpresaAcao} admin={admin} parceiros={admin ? listarParceiros() : undefined} usuarios={admin ? usuarios : undefined} rotuloBotao="Salvar dados" /></div>
+            <div className="mt-4"><FormEmpresa e={e} acao={atualizarEmpresaAcao} admin={admin} parceiros={admin ? await listarParceiros() : undefined} usuarios={admin ? usuarios : undefined} rotuloBotao="Salvar dados" /></div>
             {u.papel !== 'parceiro' && (
               <form action={excluirEmpresaAcao} className="mt-6 border-t border-linha pt-4">
                 <input type="hidden" name="id" value={e.id} />

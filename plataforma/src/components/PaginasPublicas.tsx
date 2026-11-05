@@ -8,8 +8,8 @@ import { capturarLead } from '@/app/acoes';
 
 const EXPOSICAO = { alta: 'Exposição alta', media: 'Exposição média', baixa: 'Exposição baixa' };
 
-export function ListaSetores({ base = '' }: { base?: string }) {
-  const cfg = getConfigPublica();
+export async function ListaSetores({ base = '' }: { base?: string }) {
+  const cfg = await getConfigPublica();
   const cats = categorias(n => !cfg.somentePrioridade1 || n.prioridade === 1);
   return (
     <div className="recipiente py-12">
@@ -38,9 +38,9 @@ export function ListaSetores({ base = '' }: { base?: string }) {
   );
 }
 
-export function PaginaNicho({ nicho, parceiro, base = '' }: { nicho: Nicho; parceiro?: string; base?: string }) {
-  const cfg = getConfigPublica();
-  const inicial = { valores: Object.fromEntries(nicho.campos_especificos.map(f => [f.id, f.padrao])), caixa: { ...nicho.caixa_exemplo }, parametros: getParametros() };
+export async function PaginaNicho({ nicho, parceiro, base = '' }: { nicho: Nicho; parceiro?: string; base?: string }) {
+  const cfg = await getConfigPublica();
+  const inicial = { valores: Object.fromEntries(nicho.campos_especificos.map(f => [f.id, f.padrao])), caixa: { ...nicho.caixa_exemplo }, parametros: await getParametros() };
   return (
     <div className="recipiente py-8">
       <nav className="text-sm text-tinta-3"><Link href={`${base}/setores`} className="hover:text-marca">Setores</Link> / {nicho.categoria}</nav>

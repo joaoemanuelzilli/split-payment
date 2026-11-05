@@ -10,8 +10,8 @@ const PAPEL: Record<string, string> = { admin: 'Administrador', consultor: 'Cons
 
 export default async function LayoutApp({ children }: { children: React.ReactNode }) {
   const u = await exigirUsuario();
-  const m = getMarca();
-  const parceiro = u.parceiro_id ? getParceiro(u.parceiro_id) : undefined;
+  const m = await getMarca();
+  const parceiro = u.parceiro_id ? await getParceiro(u.parceiro_id) : undefined;
   const itens = [
     { href: '/app', rotulo: 'Painel' },
     { href: '/app/empresas', rotulo: 'Clientes' },

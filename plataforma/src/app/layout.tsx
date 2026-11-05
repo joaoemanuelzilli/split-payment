@@ -8,7 +8,7 @@ export const dynamic = 'force-dynamic';
 const fonte = Parkinsans({ subsets: ['latin', 'latin-ext'], variable: '--fonte', display: 'swap', adjustFontFallback: false });
 
 export async function generateMetadata(): Promise<Metadata> {
-  const m = getMarca();
+  const m = await getMarca();
   return {
     title: { default: `${m.nome}: ${m.slogan}`, template: `%s | ${m.nome}` },
     description: 'Quanto capital de giro a sua empresa vai precisar a mais com o split payment de IBS e CBS, de 2027 a 2033, por setor.',
@@ -23,8 +23,8 @@ function clarear(hex: string) {
   return '#' + mix.map(v => v.toString(16).padStart(2, '0')).join('');
 }
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
-  const m = getMarca();
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
+  const m = await getMarca();
   const estilo = { ['--marca' as string]: m.cor, ['--marca-claro' as string]: clarear(m.cor) } as React.CSSProperties;
   return (
     <html lang="pt-BR" className={fonte.variable} style={estilo}>

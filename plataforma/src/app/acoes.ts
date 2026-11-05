@@ -2,7 +2,7 @@
 import crypto from 'node:crypto';
 import { redirect } from 'next/navigation';
 import { revalidatePath } from 'next/cache';
-import { db } from '@/lib/db';
+import { executar, um } from '@/lib/db';
 import { getNicho } from '@/lib/base';
 import { conferirSenha, criarSessao, encerrarSessao, exigirUsuario, hashSenha } from '@/lib/auth';
 import {
@@ -36,8 +36,8 @@ function limparCaixa(c: unknown, n: Nicho): Caixa {
   for (const k of Object.keys(out) as (keyof Caixa)[]) if (finito(src[k], 0, 1e13)) out[k] = src[k] as number;
   return out;
 }
-function limparParametros(p: unknown): ParametrosGlobais {
-  const base = getParametros();
+async function limparParametros(p: unknown): Promise<ParametrosGlobais> {
+  const base = await getParametros();
   const src = (p && typeof p === 'object' ? p : {}) as Record<string, unknown>;
   const lim: Record<keyof ParametrosGlobais, [number, number]> = {
     cbs_referencia_pct: [0, 30], ibs_cheio_pct: [0, 40], adesao_2027_pct: [0, 100], adesao_2028_em_diante_pct: [0, 100],
@@ -65,20 +65,20 @@ export async function capturarLead(d: { nicho_id: string; valores: Valores; caix
   const nome = texto(c.nome, 120), empresa = texto(c.empresa, 160), email = texto(c.email, 160), telefone = texto(c.telefone, 40);
   if (!nome || !empresa || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email) || telefone.replace(/\D/g, '').length < 10) return recusar('Preencha nome, empresa, e-mail válido e WhatsApp com DDD.');
   if (!c.consentimento) return recusar('É preciso autorizar o uso dos dados.');
-  const parceiro = d.parceiro ? getParceiroPorSlug(String(d.parceiro)) : undefined;
+  const parceiro = d.parceiro ? await getParceiroPorSlug(String(d.parceiro)) : undefined;
   const valores = limparValores(n, d.valores);
   const caixa = limparCaixa(d.caixa, n);
-  const parametros = limparParametros(d.parametros);
+  const parametros = await limparParametros(d.parametros);
   const [cidade, uf] = texto(c.cidade, 80).split(/[,/-]/).map(s => s.trim());
-  const sim = db().transaction(() => {
-    const empresaId = criarEmpresa({
+  const sim = await (async () => {
+    const empresaId = await criarEmpresa({
       nome: empresa, contato_nome: nome, email, telefone, cnpj: texto(c.cnpj, 20) || null, cidade: cidade || null, uf: (uf || '').slice(0, 2).toUpperCase() || null,
       nicho_id: n.id, etapa: 'lead', origem: parceiro ? 'parceiro' : 'site', parceiro_id: parceiro?.id ?? null, consentimento: 1,
       faturamento_mensal: null,
     });
-    const s = salvarSimulacao({ empresa_id: empresaId, nicho_id: n.id, nome: `Calculadora do site: ${n.nicho}`, valores, caixa, parametros, criado_por: null });
-    atualizarEmpresa(empresaId, { faturamento_mensal: s.resumo.receitaMensal });
-    adicionarNota(empresaId, null, `Contato pela calculadora ${parceiro ? `do parceiro ${parceiro.nome}` : 'do site'}. Necessidade prudente em ${s.resumo.anoTeste}: R$ ${Math.round(s.resumo.necessidadeTeste).toLocaleString('pt-BR')} (semáforo ${s.resumo.semaforo}).`);
+    const s = await salvarSimulacao({ empresa_id: empresaId, nicho_id: n.id, nome: `Calculadora do site: ${n.nicho}`, valores, caixa, parametros, criado_por: null });
+    await atualizarEmpresa(empresaId, { faturamento_mensal: s.resumo.receitaMensal });
+    await adicionarNota(empresaId, null, `Contato pela calculadora ${parceiro ? `do parceiro ${parceiro.nome}` : 'do site'}. Necessidade prudente em ${s.resumo.anoTeste}: R$ ${Math.round(s.resumo.necessidadeTeste).toLocaleString('pt-BR')} (semáforo ${s.resumo.semaforo}).`);
     return s;
   })();
   return { ok: true, token: sim.token };
@@ -106,7 +106,7 @@ export async function entrar(_: unknown, fd: FormData) {
     let espera = kConta === Limite.EXCEDENTE ? 15_000 : antes >= 5 ? Math.min(15_000, 500 * 2 ** (antes - 5)) : 0;
     if (LIMITES.loginErrosTotal.usadas('total') > LIMIAR_ERROS_TOTAL) espera += 2_000;
     if (espera) await new Promise(r => setTimeout(r, espera));
-    const u = db().prepare('SELECT id, senha_hash FROM usuarios WHERE email = ? AND ativo = 1').get(email) as { id: number; senha_hash: string } | undefined;
+    const u = await um<{ id: number; senha_hash: string }>('SELECT id, senha_hash FROM usuarios WHERE email = ? AND ativo = 1', [email]);
     if (!u || !conferirSenha(senha, u.senha_hash)) {
       LIMITES.loginErrosTotal.registrar('total');
       return { erro: 'E-mail ou senha não conferem.' };
@@ -130,12 +130,12 @@ export async function salvarSimulacaoAcao(d: { id?: number; nicho_id: string; no
   const u = await exigirUsuario();
   const n = getNicho(String(d.nicho_id));
   if (!n) return { ok: false, erro: 'Setor não encontrado.' };
-  if (d.empresa_id) { const e = getEmpresa(Number(d.empresa_id)); if (!e || !podeVer(u, e)) return { ok: false, erro: 'Cliente não encontrado.' }; }
+  if (d.empresa_id) { const e = await getEmpresa(Number(d.empresa_id)); if (!e || !podeVer(u, e)) return { ok: false, erro: 'Cliente não encontrado.' }; }
   if (d.id) {
-    const s = getSimulacao(Number(d.id));
+    const s = await getSimulacao(Number(d.id));
     if (!s) return { ok: false, erro: 'Simulação não encontrada.' };
     if (s.empresa_id) {
-      const e = getEmpresa(s.empresa_id);
+      const e = await getEmpresa(s.empresa_id);
       if (!e || !podeVer(u, e)) return { ok: false, erro: 'Sem acesso.' };
     } else if (u.papel === 'parceiro' && s.criado_por !== u.id) {
       return { ok: false, erro: 'Sem acesso.' };
@@ -143,13 +143,13 @@ export async function salvarSimulacaoAcao(d: { id?: number; nicho_id: string; no
   }
   let empresaId = d.empresa_id ? Number(d.empresa_id) : null;
   if (!empresaId && u.papel === 'parceiro') empresaId = null;
-  const s = salvarSimulacao({
+  const s = await salvarSimulacao({
     id: d.id ? Number(d.id) : undefined, empresa_id: empresaId, nicho_id: n.id, nome: texto(d.nome, 160) || `Diagnóstico ${n.nicho}`,
-    valores: limparValores(n, d.valores), caixa: limparCaixa(d.caixa, n), parametros: limparParametros(d.parametros), criado_por: u.id,
+    valores: limparValores(n, d.valores), caixa: limparCaixa(d.caixa, n), parametros: await limparParametros(d.parametros), criado_por: u.id,
   });
   if (empresaId) {
-    const e = getEmpresa(empresaId)!;
-    if (!e.nicho_id || !e.faturamento_mensal) atualizarEmpresa(empresaId, { nicho_id: e.nicho_id || n.id, faturamento_mensal: e.faturamento_mensal || s.resumo.receitaMensal });
+    const e = (await getEmpresa(empresaId))!;
+    if (!e.nicho_id || !e.faturamento_mensal) await atualizarEmpresa(empresaId, { nicho_id: e.nicho_id || n.id, faturamento_mensal: e.faturamento_mensal || s.resumo.receitaMensal });
     revalidatePath(`/app/empresas/${empresaId}`);
   }
   revalidatePath('/app/simulacoes');
@@ -157,11 +157,11 @@ export async function salvarSimulacaoAcao(d: { id?: number; nicho_id: string; no
 }
 export async function excluirSimulacaoAcao(fd: FormData) {
   const u = await exigirUsuario();
-  const s = getSimulacao(Number(fd.get('id')));
+  const s = await getSimulacao(Number(fd.get('id')));
   if (!s) return;
-  if (s.empresa_id) { const e = getEmpresa(s.empresa_id); if (e && !podeVer(u, e)) return; }
+  if (s.empresa_id) { const e = await getEmpresa(s.empresa_id); if (e && !podeVer(u, e)) return; }
   else if (u.papel === 'parceiro' && s.criado_por !== u.id) return;
-  excluirSimulacao(s.id);
+  await excluirSimulacao(s.id);
   redirect(s.empresa_id ? `/app/empresas/${s.empresa_id}` : '/app/simulacoes');
 }
 
@@ -181,12 +181,12 @@ export async function criarEmpresaAcao(fd: FormData) {
   if (!d.nome) redirect('/app/empresas/nova?erro=nome');
   if (d.nicho_id && !getNicho(d.nicho_id)) d.nicho_id = null;
   const parceiroId = u.papel === 'parceiro' ? u.parceiro_id : Number(fd.get('parceiro_id')) || null;
-  const id = criarEmpresa({ ...d, origem: u.papel === 'parceiro' ? 'parceiro' : 'manual', responsavel_id: u.papel === 'parceiro' ? null : u.id, parceiro_id: parceiroId, etapa: 'lead' });
+  const id = await criarEmpresa({ ...d, origem: u.papel === 'parceiro' ? 'parceiro' : 'manual', responsavel_id: u.papel === 'parceiro' ? null : u.id, parceiro_id: parceiroId, etapa: 'lead' });
   redirect(`/app/empresas/${id}`);
 }
 async function empresaPermitida(id: number) {
   const u = await exigirUsuario();
-  const e = getEmpresa(id);
+  const e = await getEmpresa(id);
   if (!e || !podeVer(u, e)) redirect('/app/empresas');
   return { u, e };
 }
@@ -201,7 +201,7 @@ export async function atualizarEmpresaAcao(fd: FormData) {
     if (fd.has('parceiro_id')) extra.parceiro_id = Number(fd.get('parceiro_id')) || null;
     if (fd.has('responsavel_id')) extra.responsavel_id = Number(fd.get('responsavel_id')) || null;
   }
-  atualizarEmpresa(id, { ...d, ...extra });
+  await atualizarEmpresa(id, { ...d, ...extra });
   revalidatePath(`/app/empresas/${id}`);
 }
 export async function mudarEtapaAcao(fd: FormData) {
@@ -209,8 +209,8 @@ export async function mudarEtapaAcao(fd: FormData) {
   const { u } = await empresaPermitida(id);
   const etapa = String(fd.get('etapa')) as Etapa;
   if (!ETAPAS.some(e => e.id === etapa)) return;
-  atualizarEmpresa(id, { etapa });
-  adicionarNota(id, u.id, `Etapa alterada para: ${ETAPAS.find(e => e.id === etapa)!.nome}.`);
+  await atualizarEmpresa(id, { etapa });
+  await adicionarNota(id, u.id, `Etapa alterada para: ${ETAPAS.find(e => e.id === etapa)!.nome}.`);
   revalidatePath(`/app/empresas/${id}`);
   revalidatePath('/app');
 }
@@ -218,23 +218,23 @@ export async function excluirEmpresaAcao(fd: FormData) {
   const id = Number(fd.get('id'));
   const { u } = await empresaPermitida(id);
   if (u.papel === 'parceiro') return;
-  excluirEmpresa(id);
+  await excluirEmpresa(id);
   redirect('/app/empresas');
 }
 export async function adicionarNotaAcao(fd: FormData) {
   const id = Number(fd.get('id'));
   const { u } = await empresaPermitida(id);
   const t = texto(fd.get('texto'), 4000);
-  if (t) adicionarNota(id, u.id, t);
+  if (t) await adicionarNota(id, u.id, t);
   revalidatePath(`/app/empresas/${id}`);
 }
 export async function checklistAcao(fd: FormData) {
   const empresaId = Number(fd.get('empresa_id'));
   await empresaPermitida(empresaId);
   const item = Number(fd.get('item'));
-  if (fd.get('acao') === 'alternar') db().prepare('UPDATE checklist SET feito = 1 - feito WHERE id = ? AND empresa_id = ?').run(item, empresaId);
-  if (fd.get('acao') === 'responder') db().prepare('UPDATE checklist SET resposta = ? WHERE id = ? AND empresa_id = ?').run(texto(fd.get('resposta'), 2000) || null, item, empresaId);
-  if (fd.get('acao') === 'nova') { const t = texto(fd.get('texto'), 500); if (t) db().prepare("INSERT INTO checklist (empresa_id, tipo, texto, ordem) VALUES (?, 'tarefa', ?, 500)").run(empresaId, t); }
+  if (fd.get('acao') === 'alternar') await executar('UPDATE checklist SET feito = 1 - feito WHERE id = ? AND empresa_id = ?', [item, empresaId]);
+  if (fd.get('acao') === 'responder') await executar('UPDATE checklist SET resposta = ? WHERE id = ? AND empresa_id = ?', [texto(fd.get('resposta'), 2000) || null, item, empresaId]);
+  if (fd.get('acao') === 'nova') { const t = texto(fd.get('texto'), 500); if (t) await executar("INSERT INTO checklist (empresa_id, tipo, texto, ordem) VALUES (?, 'tarefa', ?, 500)", [empresaId, t]); }
   revalidatePath(`/app/empresas/${empresaId}`);
 }
 
@@ -243,26 +243,26 @@ export async function salvarParametrosAcao(fd: FormData) {
   const u = await exigirUsuario(['admin']);
   const src: Record<string, number> = {};
   for (const [k, v] of fd.entries()) if (k !== 'motivo' && k !== 'recalcular') src[k] = Number(String(v).replace(',', '.'));
-  salvarParametros(limparParametros(src), texto(fd.get('motivo'), 300) || 'Atualização manual', u);
-  if (fd.get('recalcular')) recalcularTodas();
+  await salvarParametros(await limparParametros(src), texto(fd.get('motivo'), 300) || 'Atualização manual', u);
+  if (fd.get('recalcular')) await recalcularTodas();
   revalidatePath('/app', 'layout');
   redirect('/app/configuracoes?ok=parametros');
 }
 export async function recalcularAcao() {
   await exigirUsuario(['admin']);
-  const n = recalcularTodas();
+  const n = await recalcularTodas();
   revalidatePath('/app', 'layout');
   redirect(`/app/configuracoes?ok=recalculo&n=${n}`);
 }
 export async function salvarMarcaAcao(fd: FormData) {
   await exigirUsuario(['admin']);
   const cor = texto(fd.get('cor'), 7);
-  setSetting('marca', {
+  await setSetting('marca', {
     nome: texto(fd.get('nome'), 80) || MARCA_PADRAO.nome, slogan: texto(fd.get('slogan'), 160) || MARCA_PADRAO.slogan,
     cor: /^#[0-9a-fA-F]{6}$/.test(cor) ? cor : MARCA_PADRAO.cor, email: texto(fd.get('email'), 160), telefone: texto(fd.get('telefone'), 40),
     site: texto(fd.get('site'), 160), cidade: texto(fd.get('cidade'), 80), logoUrl: texto(fd.get('logoUrl'), 400),
   });
-  setSetting('publico', { exigirCadastro: fd.get('exigirCadastro') === 'on', somentePrioridade1: fd.get('somentePrioridade1') === 'on' });
+  await setSetting('publico', { exigirCadastro: fd.get('exigirCadastro') === 'on', somentePrioridade1: fd.get('somentePrioridade1') === 'on' });
   revalidatePath('/', 'layout');
   redirect('/app/configuracoes?ok=marca');
 }
@@ -273,7 +273,7 @@ export async function salvarPrecosAcao(fd: FormData) {
     diagnostico: Number(fd.get(`diag_${i}`)) || 0,
     acompanhamento: Number(fd.get(`acomp_${i}`)) || 0,
   }));
-  setSetting('faixas_preco', faixas);
+  await setSetting('faixas_preco', faixas);
   redirect('/app/configuracoes?ok=precos');
 }
 export async function salvarParceiroAcao(fd: FormData) {
@@ -288,8 +288,9 @@ export async function salvarParceiroAcao(fd: FormData) {
     cidade: texto(fd.get('cidade'), 80) || null, repasse_pct: Math.min(100, Math.max(0, Number(fd.get('repasse_pct')) || 0)), ativo: fd.get('ativo') === 'off' ? 0 : 1,
   };
   try {
-    if (id) db().prepare(`UPDATE parceiros SET nome=@nome, slug=@slug, cor=@cor, logo_url=@logo_url, contato_nome=@contato_nome, email=@email, telefone=@telefone, cidade=@cidade, repasse_pct=@repasse_pct, ativo=@ativo WHERE id=@id`).run({ ...d, id });
-    else db().prepare(`INSERT INTO parceiros (nome, slug, cor, logo_url, contato_nome, email, telefone, cidade, repasse_pct, ativo) VALUES (@nome, @slug, @cor, @logo_url, @contato_nome, @email, @telefone, @cidade, @repasse_pct, @ativo)`).run(d);
+    const v = [d.nome, d.slug, d.cor, d.logo_url, d.contato_nome, d.email, d.telefone, d.cidade, d.repasse_pct, d.ativo];
+    if (id) await executar('UPDATE parceiros SET nome=?, slug=?, cor=?, logo_url=?, contato_nome=?, email=?, telefone=?, cidade=?, repasse_pct=?, ativo=? WHERE id=?', [...v, id]);
+    else await executar('INSERT INTO parceiros (nome, slug, cor, logo_url, contato_nome, email, telefone, cidade, repasse_pct, ativo) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', v);
   } catch {
     redirect('/app/parceiros?erro=slug');
   }
@@ -307,11 +308,11 @@ export async function salvarUsuarioAcao(fd: FormData) {
   if (!email || !nome || !['admin', 'consultor', 'parceiro'].includes(papel) || (papel === 'parceiro' && !parceiroId)) redirect('/app/configuracoes?erro=usuario#usuarios');
   try {
     if (id) {
-      db().prepare('UPDATE usuarios SET email=?, nome=?, papel=?, parceiro_id=?, ativo=? WHERE id=?').run(email, nome, papel, parceiroId, fd.get('ativo') === 'off' ? 0 : 1, id);
-      if (senha.length >= 8) db().prepare('UPDATE usuarios SET senha_hash=? WHERE id=?').run(hashSenha(senha), id);
+      await executar('UPDATE usuarios SET email=?, nome=?, papel=?, parceiro_id=?, ativo=? WHERE id=?', [email, nome, papel, parceiroId, fd.get('ativo') === 'off' ? 0 : 1, id]);
+      if (senha.length >= 8) await executar('UPDATE usuarios SET senha_hash=? WHERE id=?', [hashSenha(senha), id]);
     } else {
       if (senha.length < 8) redirect('/app/configuracoes?erro=senha#usuarios');
-      db().prepare('INSERT INTO usuarios (email, nome, senha_hash, papel, parceiro_id) VALUES (?, ?, ?, ?, ?)').run(email, nome, hashSenha(senha), papel, parceiroId);
+      await executar('INSERT INTO usuarios (email, nome, senha_hash, papel, parceiro_id) VALUES (?, ?, ?, ?, ?)', [email, nome, hashSenha(senha), papel, parceiroId]);
     }
   } catch (e) {
     if ((e as { digest?: string }).digest?.startsWith('NEXT_REDIRECT')) throw e;
@@ -322,8 +323,8 @@ export async function salvarUsuarioAcao(fd: FormData) {
 export async function trocarSenhaAcao(fd: FormData) {
   const u = await exigirUsuario();
   const atual = String(fd.get('atual') ?? ''), nova = String(fd.get('nova') ?? '');
-  const row = db().prepare('SELECT senha_hash FROM usuarios WHERE id = ?').get(u.id) as { senha_hash: string };
-  if (!conferirSenha(atual, row.senha_hash) || nova.length < 8) redirect('/app/conta?erro=1');
-  db().prepare('UPDATE usuarios SET senha_hash = ? WHERE id = ?').run(hashSenha(nova), u.id);
+  const row = await um<{ senha_hash: string }>('SELECT senha_hash FROM usuarios WHERE id = ?', [u.id]);
+  if (!row || !conferirSenha(atual, row.senha_hash) || nova.length < 8) redirect('/app/conta?erro=1');
+  await executar('UPDATE usuarios SET senha_hash = ? WHERE id = ?', [hashSenha(nova), u.id]);
   redirect('/app/conta?ok=1');
 }

@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { exigirUsuario } from '@/lib/auth';
 import { getNicho } from '@/lib/base';
-import { listarSimulacoes, simulacaoDesatualizada } from '@/lib/dados';
+import { listarSimulacoes, simulacaoDesatualizada, getParametros } from '@/lib/dados';
 import { brl, dataHoraBR, pct } from '@/lib/format';
 import Cabecalho from '@/components/Cabecalho';
 import Semaforo from '@/components/Semaforo';
@@ -10,7 +10,8 @@ export const metadata = { title: 'Simulações' };
 
 export default async function Simulacoes() {
   const u = await exigirUsuario();
-  const sims = listarSimulacoes(u);
+  const sims = await listarSimulacoes(u);
+  const atuais = await getParametros();
   return (
     <>
       <Cabecalho titulo="Simulações" descricao="Todas as simulações salvas, inclusive as que chegaram pela calculadora pública" acoes={<Link href="/app/simulador" className="btn-primario">Nova simulação</Link>} />
@@ -27,7 +28,7 @@ export default async function Simulacoes() {
                     <td className="num whitespace-nowrap">{s.resumo.modo === 'motor' ? `${brl(s.resumo.favoravelTeste)} a ${brl(s.resumo.necessidadeTeste)}` : 'Simples puro'}</td>
                     <td className="num whitespace-nowrap">{pct(s.resumo.pct2028.favoravel)} a {pct(s.resumo.pct2028.prudente)}</td>
                     <td><Semaforo veredito={s.resumo.semaforo} pequeno /></td>
-                    <td className="whitespace-nowrap text-tinta-2">{dataHoraBR(s.atualizado_em + 'Z')}{simulacaoDesatualizada(s) && <span className="block text-xs text-atencao">premissas antigas</span>}</td>
+                    <td className="whitespace-nowrap text-tinta-2">{dataHoraBR(s.atualizado_em + 'Z')}{simulacaoDesatualizada(s, atuais) && <span className="block text-xs text-atencao">premissas antigas</span>}</td>
                     <td><Link href={`/app/simulacoes/${s.id}/relatorio`} className="btn-texto text-xs">Relatório</Link></td>
                   </tr>
                 ))}

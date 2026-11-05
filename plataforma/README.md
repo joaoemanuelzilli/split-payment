@@ -8,7 +8,7 @@ Aplicação web que transforma a base de 123 nichos (`data/base-nichos-split.jso
 
 ## Rodar no computador
 
-Precisa de Node.js 22.
+Precisa de Node.js 22. Sem configurar nada, a plataforma usa um Postgres embutido, gravado em `data/pg`.
 
 ```bash
 npm install
@@ -16,7 +16,7 @@ ADMIN_EMAIL=voce@empresa.com.br ADMIN_SENHA='uma-senha-forte' npm run seed   # c
 npm run dev                                                                   # http://localhost:3000
 ```
 
-`npm run seed -- --demo` também cria um parceiro e dois clientes de exemplo.
+`npm run seed -- --demo` também cria um parceiro e dois clientes de exemplo. Para usar um Postgres de verdade, ponha `DATABASE_URL=postgresql://...` em `.env.local`.
 
 ## Testes de aceite
 
@@ -29,32 +29,33 @@ npm test
 
 ## Publicar
 
-O banco é um arquivo SQLite, então a hospedagem precisa de disco persistente (VPS, Railway, Render, Fly.io). Não use a Vercel sem trocar o banco antes. O caminho pronto no repositório é um servidor próprio com Docker: `docker-compose.yml` sobe a aplicação, o Caddy (HTTPS automático) e um backup diário do banco.
+### Vercel + Supabase (caminho principal)
 
-**Do que precisa:** um VPS com Ubuntu, 2 GB de memória (o build do Next pede isso), datacenter em São Paulo de preferência, e um domínio registrado no registro.br.
+O site roda na Vercel, na região de São Paulo (`vercel.json`), e o banco é o Postgres do Supabase. As tabelas ficam fechadas para a API pública do Supabase: só o servidor da plataforma lê e grava, e as tabelas são criadas sozinhas na primeira conexão.
 
-1. No registro.br, crie um registro **A** do domínio apontando para o IP do VPS. Espere ele responder: `dig +short seudominio.com.br` deve mostrar o IP.
-2. No VPS, instale o Docker (`curl -fsSL https://get.docker.com | sh`) e libere só as portas 22, 80 e 443 no firewall.
-3. Copie a pasta `plataforma` para o VPS (`git clone` do repositório), entre nela e configure o domínio:
+1. **Supabase:** crie um projeto, de preferência na região São Paulo. Em **Connect > Transaction pooler**, copie o endereço `postgresql://...:6543/postgres` e troque `[YOUR-PASSWORD]` pela senha do banco.
+2. **Administrador:** com esse endereço em `.env.local` (`DATABASE_URL=...`), rode `ADMIN_EMAIL=voce@empresa.com.br ADMIN_SENHA='senha-forte' npm run seed`.
+3. **Vercel:** `npx vercel login`, depois, dentro de `plataforma`, `npx vercel link` e as variáveis de produção:
    ```bash
-   cp .env.example .env    # edite DOMINIO=seudominio.com.br
-   docker compose up -d --build
-   docker compose exec -e ADMIN_EMAIL=voce@empresa.com.br -e ADMIN_SENHA='senha-forte' app npm run seed
+   npx vercel env add DATABASE_URL production        # o endereço do pooler do Supabase
+   npx vercel env add TRUSTED_PROXY_HOPS production  # 1
+   npx vercel --prod
    ```
-4. Abra `https://seudominio.com.br`. O certificado sai no primeiro acesso. Entre com o administrador e preencha a marca em Configurações (nome, cor, e-mail, telefone, logo).
 
-**Atualizar:** `git pull && docker compose up -d --build`. O banco fica no volume `dados` e não é tocado.
+Backup: o Supabase faz cópias diárias nos planos pagos. No plano grátis, exporte de vez em quando com `pg_dump` usando o endereço de conexão direta.
 
-**Backup:** uma cópia por dia em `/dados/backups` dentro do volume, mantendo as 14 mais recentes (`BACKUP_MANTER`). Uma cópia agora: `docker compose exec app npm run backup`. Para ter uma cópia fora do servidor, traga a pasta de vez em quando: `docker compose cp backup:/dados/backups ./backups` no VPS e depois `scp -r` para o seu computador. **Restaurar:** `docker compose stop app`, copie o backup escolhido por cima de `/dados/app.db` (apagando `app.db-wal` e `app.db-shm`) e `docker compose start app`.
+### Servidor próprio (VPS com Docker)
 
-Sem Docker:
+`docker-compose.yml` sobe a aplicação, um Postgres, o Caddy (HTTPS automático) e um backup diário com `pg_dump`, que guarda as 14 cópias mais recentes.
 
-```bash
-npm run build
-DATABASE_PATH=/caminho/persistente/app.db TRUSTED_PROXY_HOPS=1 npm start   # com Nginx ou Caddy com HTTPS na frente
-```
+1. No registro.br, aponte o domínio (registro **A**) para o IP do servidor.
+2. No servidor, instale o Docker e libere só as portas 22, 80 e 443.
+3. Na pasta `plataforma`: `cp .env.example .env`, preencha `DOMINIO` e `DB_SENHA`, e rode `docker compose up -d --build`.
+4. Crie o administrador: `docker compose exec -e ADMIN_EMAIL=voce@empresa.com.br -e ADMIN_SENHA='senha-forte' app npm run seed`.
 
-Em produção o cookie de sessão é `secure`: publique atrás de HTTPS. Defina também `TRUSTED_PROXY_HOPS` com o número de proxies seus na frente da aplicação (1 com um Nginx ou Caddy; de 1 a 5). Em produção ele é obrigatório: o servidor recusa as ações sem ele, porque é por ele que a plataforma sabe o endereço de quem acessa. Deixe a porta da aplicação acessível só pelo proxy: quem chegar direto nela pode forjar o endereço. Limites, a cada 10 minutos: 8 envios da calculadora por endereço e 300 no total; no login, 30 senhas erradas por endereço; por e-mail, uma tentativa por vez e espera crescente a partir da 5ª errada (até 15 segundos), sem bloquear a conta: a senha certa sempre entra; acima de 300 senhas erradas no total, todo login ganha 2 segundos de espera. Não há bloqueio rígido de conta, trava de conta por tentativa em andamento nem teto global de login, de propósito: os três deixariam qualquer pessoa impedir o acesso de outra. A fila de uma tentativa por vez é por endereço + e-mail. Se quiser trocar essa disponibilidade por um bloqueio mais rígido, a decisão é sua. Os contadores ficam na memória de uma instância; com várias instâncias, troque por um armazenamento compartilhado, e se aparecer abuso na calculadora pública, acrescente um CAPTCHA. Para testar em produção sem HTTPS, use `COOKIE_INSECURE=1`.
+**Atualizar:** `git pull && docker compose up -d --build`. **Restaurar um backup:** `docker compose exec backup pg_restore -h db -U postgres -d postgres --clean /backups/<arquivo>.dump`.
+
+Em produção o cookie de sessão é `secure`: publique atrás de HTTPS. Defina também `TRUSTED_PROXY_HOPS` com o número de proxies seus na frente da aplicação (1 com um Nginx ou Caddy; de 1 a 5). Em produção ele é obrigatório: o servidor recusa as ações sem ele, porque é por ele que a plataforma sabe o endereço de quem acessa. Deixe a porta da aplicação acessível só pelo proxy: quem chegar direto nela pode forjar o endereço. Limites, a cada 10 minutos: 8 envios da calculadora por endereço e 300 no total; no login, 30 senhas erradas por endereço; por e-mail, uma tentativa por vez e espera crescente a partir da 5ª errada (até 15 segundos), sem bloquear a conta: a senha certa sempre entra; acima de 300 senhas erradas no total, todo login ganha 2 segundos de espera. Não há bloqueio rígido de conta, trava de conta por tentativa em andamento nem teto global de login, de propósito: os três deixariam qualquer pessoa impedir o acesso de outra. A fila de uma tentativa por vez é por endereço + e-mail. Se quiser trocar essa disponibilidade por um bloqueio mais rígido, a decisão é sua. Os contadores ficam na memória de cada instância. Na Vercel, que sobe várias instâncias conforme o acesso, os limites valem por instância e ficam mais frouxos; se aparecer abuso, leve os contadores para o banco e acrescente um CAPTCHA na calculadora pública. Para testar em produção sem HTTPS, use `COOKIE_INSECURE=1`.
 
 ## Quando sair uma norma nova
 
@@ -74,13 +75,14 @@ Em produção o cookie de sessão é `secure`: publique atrás de HTTPS. Defina 
 | `src/lib/derive/core.ts` | Formulário para linhas do motor: atribuições diretas, normalização das fatias, modos (Simples puro, não contribuinte) e cenários extras. |
 | `src/lib/derive/niches/Cxx.ts` | As fórmulas próprias de cada nicho, uma função por nicho, tiradas do campo `derivacao`. |
 | `src/lib/calc.ts` | Cálculo completo: motor, teste de caixa, comparação do Simples e preço sugerido. |
-| `src/lib/dados.ts`, `db.ts`, `auth.ts` | Banco, regras de acesso e sessão. |
+| `src/lib/dados.ts`, `db.ts`, `auth.ts` | Banco (Postgres, ou embutido sem `DATABASE_URL`), regras de acesso e sessão. |
 | `src/components/Simulador.tsx` | O simulador (público e do consultor). |
 | `src/components/Resultado.tsx`, `Relatorio.tsx` | Tela de resultado e relatório em PDF (impressão do navegador). |
 | `src/app/(site)`, `src/app/p`, `src/app/relatorio` | Site público, páginas de parceiros e relatório público por link. |
 | `src/app/app` | Área de trabalho: painel, clientes, simulador, setores, parceiros, configurações. |
-| `scripts/` | Testes de aceite, criação do administrador, backup do banco e o briefing usado para escrever as fórmulas. |
-| `docker-compose.yml`, `Caddyfile`, `.env.example` | Publicação num VPS: aplicação, HTTPS e backup diário. |
+| `scripts/` | Testes de aceite, criação do administrador e o briefing usado para escrever as fórmulas. |
+| `vercel.json` | Região da Vercel (São Paulo). |
+| `docker-compose.yml`, `Caddyfile`, `.env.example` | Publicação num VPS: aplicação, Postgres, HTTPS e backup diário. |
 
 ## Hipóteses assumidas nas fórmulas
 

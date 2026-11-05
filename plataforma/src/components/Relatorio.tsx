@@ -1,19 +1,20 @@
 import { getNicho } from '@/lib/base';
 import { calcular } from '@/lib/calc';
-import { getEmpresa, getMarca, getParceiro, simulacaoDesatualizada, type Simulacao } from '@/lib/dados';
+import { getEmpresa, getMarca, getParceiro, simulacaoDesatualizada, type Simulacao, getParametros } from '@/lib/dados';
 import { opcoesDe } from '@/lib/derive/core';
 import { brl, dataBR, pct } from '@/lib/format';
 import Resultado, { AvisosObrigatorios, Manchete } from './Resultado';
 import { Logo } from './Site';
 import BotaoImprimir from './BotaoImprimir';
 
-export default function Relatorio({ s, interno = false }: { s: Simulacao; interno?: boolean }) {
+export default async function Relatorio({ s, interno = false }: { s: Simulacao; interno?: boolean }) {
   const n = getNicho(s.nicho_id)!;
   const r = calcular(n, { valores: s.valores, caixa: s.caixa, parametros: s.parametros });
-  const marca = getMarca();
-  const empresa = s.empresa_id ? getEmpresa(s.empresa_id) : undefined;
-  const parceiro = empresa?.parceiro_id ? getParceiro(empresa.parceiro_id) : undefined;
-  const desatualizada = simulacaoDesatualizada(s);
+  const marca = await getMarca();
+  const atuais = await getParametros();
+  const empresa = s.empresa_id ? await getEmpresa(s.empresa_id) : undefined;
+  const parceiro = empresa?.parceiro_id ? await getParceiro(empresa.parceiro_id) : undefined;
+  const desatualizada = simulacaoDesatualizada(s, atuais);
   const valorCampo = (id: string) => {
     const f = n.campos_especificos.find(x => x.id === id)!;
     const v = s.valores[id];

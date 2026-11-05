@@ -1,28 +1,42 @@
-# Publicação num servidor próprio (VPS): aplicação + HTTPS automático (Caddy) + backup diário do banco.
-# Uso: copie .env.example para .env, preencha DOMINIO e rode `docker compose up -d --build`.
+# Publicação num servidor próprio (VPS): aplicação + Postgres + HTTPS automático (Caddy) + backup diário.
+# Uso: copie .env.example para .env, preencha DOMINIO e DB_SENHA e rode `docker compose up -d --build`.
+# (Na Vercel com Supabase este arquivo não é usado.)
 services:
+  db:
+    image: postgres:17.6-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_PASSWORD: ${DB_SENHA:?defina DB_SENHA no arquivo .env}
+    volumes:
+      - pgdados:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "postgres"]
+      interval: 5s
+      retries: 10
+
   app:
     build: .
     image: caixa-split:latest
     restart: unless-stopped
+    depends_on:
+      db: { condition: service_healthy }
     environment:
+      DATABASE_URL: postgresql://postgres:${DB_SENHA}@db:5432/postgres
       TRUSTED_PROXY_HOPS: "1"   # um proxy (o Caddy) na frente
-    volumes:
-      - dados:/dados
     expose:
       - "3000"                  # só na rede interna do Docker; a porta aberta ao mundo é a do Caddy
 
   backup:
-    image: caixa-split:latest
+    image: postgres:17.6-alpine
     restart: unless-stopped
-    depends_on: [app]
-    healthcheck:
-      disable: true             # não serve páginas; a checagem de saúde da imagem é só para o app
+    depends_on:
+      db: { condition: service_healthy }
     environment:
-      BACKUP_MANTER: "14"
+      PGPASSWORD: ${DB_SENHA}
     volumes:
-      - dados:/dados
-    command: ["sh", "-c", "while true; do node scripts/backup.mjs; sleep 86400; done"]
+      - backups:/backups
+    # Uma cópia por dia, mantendo as 14 mais recentes
+    command: ["sh", "-c", "while true; do pg_dump -h db -U postgres -Fc -f /backups/app-$$(date +%Y%m%d-%H%M%S).dump postgres && ls -1t /backups/app-*.dump | tail -n +15 | xargs -r rm -f; sleep 86400; done"]
 
   caddy:
     image: caddy:2.10.2
@@ -40,6 +54,7 @@ services:
       - caddy_config:/config
 
 volumes:
-  dados:
+  pgdados:
+  backups:
   caddy_dados:
   caddy_config:

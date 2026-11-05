@@ -4,9 +4,9 @@ import { pct } from '@/lib/format';
 
 export const metadata = { title: 'Como calculamos' };
 
-export default function ComoCalculamos() {
+export default async function ComoCalculamos() {
   const b = getBase();
-  const p = getParametros();
+  const p = await getParametros();
   const est = estatisticas();
   return (
     <div className="recipiente py-12 md:py-16">

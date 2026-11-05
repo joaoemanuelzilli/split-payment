@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { getMarca } from '@/lib/dados';
 
-export function Logo({ nome, logoUrl }: { nome: string; logoUrl?: string }) {
+export async function Logo({ nome, logoUrl }: { nome: string; logoUrl?: string }) {
   if (logoUrl) return <img src={logoUrl} alt={nome} className="h-8 w-auto" />;
   return (
     <span className="inline-flex items-center gap-2 font-bold tracking-tight">
@@ -15,8 +15,8 @@ export function Logo({ nome, logoUrl }: { nome: string; logoUrl?: string }) {
   );
 }
 
-export function CabecalhoSite({ parceiro }: { parceiro?: { nome: string; slug: string; logo_url: string | null } }) {
-  const m = getMarca();
+export async function CabecalhoSite({ parceiro }: { parceiro?: { nome: string; slug: string; logo_url: string | null } }) {
+  const m = await getMarca();
   const base = parceiro ? `/p/${parceiro.slug}` : '';
   return (
     <header className="border-b border-linha bg-papel-2">
@@ -40,8 +40,8 @@ export function CabecalhoSite({ parceiro }: { parceiro?: { nome: string; slug: s
   );
 }
 
-export function RodapeSite() {
-  const m = getMarca();
+export async function RodapeSite() {
+  const m = await getMarca();
   return (
     <footer className="mt-16 border-t border-linha bg-papel-2">
       <div className="recipiente grid gap-8 py-10 text-sm text-tinta-2 md:grid-cols-[1fr_1fr_1.4fr]">

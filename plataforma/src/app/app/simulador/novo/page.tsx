@@ -14,14 +14,14 @@ export default async function NovaSim({ searchParams }: { searchParams: Promise<
   if (!sp.nicho) redirect(`/app/simulador${sp.empresa ? `?empresa=${sp.empresa}` : ''}`);
   const n = getNicho(sp.nicho);
   if (!n) notFound();
-  const emp = sp.empresa ? getEmpresa(Number(sp.empresa)) : undefined;
+  const emp = sp.empresa ? await getEmpresa(Number(sp.empresa)) : undefined;
   const empresaId = emp && podeVer(u, emp) ? emp.id : null;
-  const inicial = simulacaoInicial(n.id);
+  const inicial = await simulacaoInicial(n.id);
   if (emp?.faturamento_mensal) {
     const f = n.campos_especificos.find(c => c.alvos.includes('receita_mensal') && c.tipo === 'moeda');
     if (f) inicial.valores[f.id] = emp.faturamento_mensal;
   }
-  const empresas = listarEmpresas(u).map(e => ({ id: e.id, nome: e.nome }));
+  const empresas = (await listarEmpresas(u)).map(e => ({ id: e.id, nome: e.nome }));
   return (
     <>
       <Cabecalho titulo={n.nicho} descricao={`${n.categoria}${emp ? ` · cliente ${emp.nome}` : ''}`} />

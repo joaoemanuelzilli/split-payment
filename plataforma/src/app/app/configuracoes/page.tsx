@@ -1,6 +1,6 @@
 import { exigirUsuario } from '@/lib/auth';
 import { parametrosBase } from '@/lib/base';
-import { db } from '@/lib/db';
+import { todos } from '@/lib/db';
 import { getConfigPublica, getFaixas, getMarca, getParametros, listarParceiros } from '@/lib/dados';
 import { dataHoraBR } from '@/lib/format';
 import Cabecalho from '@/components/Cabecalho';
@@ -26,10 +26,10 @@ const PARAMS: { id: string; rotulo: string; ajuda: string }[] = [
 export default async function Configuracoes({ searchParams }: { searchParams: Promise<{ ok?: string; erro?: string; n?: string }> }) {
   await exigirUsuario(['admin']);
   const sp = await searchParams;
-  const m = getMarca(), pub = getConfigPublica(), p = getParametros(), pb = parametrosBase(), faixas = getFaixas();
-  const historico = db().prepare('SELECT h.*, u.nome FROM parametros_historico h LEFT JOIN usuarios u ON u.id = h.usuario_id ORDER BY h.id DESC LIMIT 10').all() as { id: number; valores: string; motivo: string; nome: string; criado_em: string }[];
-  const usuarios = db().prepare('SELECT u.*, p.nome AS parceiro_nome FROM usuarios u LEFT JOIN parceiros p ON p.id = u.parceiro_id ORDER BY u.nome').all() as { id: number; nome: string; email: string; papel: string; parceiro_id: number | null; parceiro_nome: string | null; ativo: number }[];
-  const parceiros = listarParceiros();
+  const m = await getMarca(), pub = await getConfigPublica(), p = await getParametros(), pb = parametrosBase(), faixas = await getFaixas();
+  const historico = await todos<{ id: number; valores: string; motivo: string; nome: string; criado_em: string }>('SELECT h.*, u.nome FROM parametros_historico h LEFT JOIN usuarios u ON u.id = h.usuario_id ORDER BY h.id DESC LIMIT 10');
+  const usuarios = await todos<{ id: number; nome: string; email: string; papel: string; parceiro_id: number | null; parceiro_nome: string | null; ativo: number }>('SELECT u.*, p.nome AS parceiro_nome FROM usuarios u LEFT JOIN parceiros p ON p.id = u.parceiro_id ORDER BY u.nome');
+  const parceiros = await listarParceiros();
   return (
     <>
       <Cabecalho titulo="Configurações" descricao="Marca, premissas da reforma, preços e quem acessa" />

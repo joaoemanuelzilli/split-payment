@@ -11,13 +11,13 @@ export const metadata = { title: 'Simulador' };
 
 export default async function EditarSim({ params }: { params: Promise<{ id: string }> }) {
   const u = await exigirUsuario();
-  const s = getSimulacao(Number((await params).id));
+  const s = await getSimulacao(Number((await params).id));
   if (!s) notFound();
-  const emp = s.empresa_id ? getEmpresa(s.empresa_id) : undefined;
+  const emp = s.empresa_id ? await getEmpresa(s.empresa_id) : undefined;
   if (emp && !podeVer(u, emp)) notFound();
   if (!emp && u.papel === 'parceiro' && s.criado_por !== u.id) notFound();
   const n = getNicho(s.nicho_id)!;
-  const empresas = listarEmpresas(u).map(e => ({ id: e.id, nome: e.nome }));
+  const empresas = (await listarEmpresas(u)).map(e => ({ id: e.id, nome: e.nome }));
   return (
     <>
       <Cabecalho titulo={s.nome} descricao={`${n.categoria}: ${n.nicho}${emp ? ` · cliente ${emp.nome}` : ''}`}

@@ -1,5 +1,5 @@
 import 'server-only';
-import { db, getSetting, setSetting } from './db';
+import { AGORA, HA_30_DIAS, executar, getSetting, setSetting, todos, um } from './db';
 import { getBase, getNicho, parametrosBase } from './base';
 import { calcular, caixaPadrao, FAIXAS_PADRAO, type Caixa, type FaixaPreco } from './calc';
 import { valoresPadrao, type Valores } from './derive';
@@ -20,12 +20,12 @@ export const CONFIG_PUBLICA_PADRAO: ConfigPublica = { exigirCadastro: true, some
 export const getMarca = () => getSetting<Marca>('marca', MARCA_PADRAO);
 export const getConfigPublica = () => getSetting<ConfigPublica>('publico', CONFIG_PUBLICA_PADRAO);
 export const getFaixas = () => getSetting<FaixaPreco[]>('faixas_preco', FAIXAS_PADRAO);
-export function getParametros(): ParametrosGlobais {
+export function getParametros(): Promise<ParametrosGlobais> {
   return getSetting<ParametrosGlobais>('parametros', parametrosBase());
 }
-export function salvarParametros(p: ParametrosGlobais, motivo: string, u: Usuario) {
-  setSetting('parametros', p);
-  db().prepare('INSERT INTO parametros_historico (valores, motivo, usuario_id) VALUES (?, ?, ?)').run(JSON.stringify(p), motivo, u.id);
+export async function salvarParametros(p: ParametrosGlobais, motivo: string, u: Usuario) {
+  await setSetting('parametros', p);
+  await executar('INSERT INTO parametros_historico (valores, motivo, usuario_id) VALUES (?, ?, ?)', [JSON.stringify(p), motivo, u.id]);
 }
 export { setSetting };
 
@@ -55,78 +55,79 @@ export function podeVer(u: Usuario, e: Pick<Empresa, 'parceiro_id'>) {
   return u.papel !== 'parceiro' || e.parceiro_id === u.parceiro_id;
 }
 
-export function listarEmpresas(u: Usuario, filtro: { etapa?: string; q?: string; parceiro?: number } = {}): Empresa[] {
+export async function listarEmpresas(u: Usuario, filtro: { etapa?: string; q?: string; parceiro?: number } = {}): Promise<Empresa[]> {
   const w: string[] = [];
   const a: unknown[] = [];
   if (u.papel === 'parceiro') { w.push('e.parceiro_id = ?'); a.push(u.parceiro_id); }
   if (filtro.etapa) { w.push('e.etapa = ?'); a.push(filtro.etapa); }
   if (filtro.parceiro) { w.push('e.parceiro_id = ?'); a.push(filtro.parceiro); }
-  if (filtro.q) { w.push('(e.nome LIKE ? OR e.cnpj LIKE ? OR e.contato_nome LIKE ? OR e.email LIKE ?)'); const q = `%${filtro.q}%`; a.push(q, q, q, q); }
+  if (filtro.q) { w.push('(e.nome ILIKE ? OR e.cnpj ILIKE ? OR e.contato_nome ILIKE ? OR e.email ILIKE ?)'); const q = `%${filtro.q}%`; a.push(q, q, q, q); }
   const sql = `SELECT e.*, p.nome AS parceiro_nome, u.nome AS responsavel_nome,
-      (SELECT json_extract(s.resumo, '$.necessidadeTeste') FROM simulacoes s WHERE s.empresa_id = e.id ORDER BY s.atualizado_em DESC LIMIT 1) AS ultima_necessidade,
-      (SELECT json_extract(s.resumo, '$.semaforo') FROM simulacoes s WHERE s.empresa_id = e.id ORDER BY s.atualizado_em DESC LIMIT 1) AS semaforo
+      (SELECT (s.resumo::jsonb->>'necessidadeTeste')::float8 FROM simulacoes s WHERE s.empresa_id = e.id ORDER BY s.atualizado_em DESC LIMIT 1) AS ultima_necessidade,
+      (SELECT s.resumo::jsonb->>'semaforo' FROM simulacoes s WHERE s.empresa_id = e.id ORDER BY s.atualizado_em DESC LIMIT 1) AS semaforo
     FROM empresas e LEFT JOIN parceiros p ON p.id = e.parceiro_id LEFT JOIN usuarios u ON u.id = e.responsavel_id
     ${w.length ? 'WHERE ' + w.join(' AND ') : ''} ORDER BY e.atualizado_em DESC LIMIT 500`;
-  return db().prepare(sql).all(...a) as Empresa[];
+  return todos<Empresa>(sql, a);
 }
 
-export function getEmpresa(id: number): Empresa | undefined {
-  return db().prepare(`SELECT e.*, p.nome AS parceiro_nome, u.nome AS responsavel_nome FROM empresas e
-    LEFT JOIN parceiros p ON p.id = e.parceiro_id LEFT JOIN usuarios u ON u.id = e.responsavel_id WHERE e.id = ?`).get(id) as Empresa | undefined;
+export function getEmpresa(id: number): Promise<Empresa | undefined> {
+  return um<Empresa>(`SELECT e.*, p.nome AS parceiro_nome, u.nome AS responsavel_nome FROM empresas e
+    LEFT JOIN parceiros p ON p.id = e.parceiro_id LEFT JOIN usuarios u ON u.id = e.responsavel_id WHERE e.id = ?`, [id]);
 }
 
 export type NovaEmpresa = Partial<Omit<Empresa, 'id' | 'criado_em' | 'atualizado_em'>> & { nome: string };
-export function criarEmpresa(d: NovaEmpresa): number {
-  const r = db().prepare(`INSERT INTO empresas (nome, cnpj, nicho_id, cidade, uf, contato_nome, cargo, email, telefone, faturamento_mensal,
-      etapa, origem, responsavel_id, parceiro_id, observacoes, consentimento)
-    VALUES (@nome, @cnpj, @nicho_id, @cidade, @uf, @contato_nome, @cargo, @email, @telefone, @faturamento_mensal,
-      @etapa, @origem, @responsavel_id, @parceiro_id, @observacoes, @consentimento)`).run({
+const CAMPOS_NOVA = ['nome', 'cnpj', 'nicho_id', 'cidade', 'uf', 'contato_nome', 'cargo', 'email', 'telefone', 'faturamento_mensal',
+  'etapa', 'origem', 'responsavel_id', 'parceiro_id', 'observacoes', 'consentimento'] as const;
+export async function criarEmpresa(d: NovaEmpresa): Promise<number> {
+  const v: Record<string, unknown> = {
     cnpj: null, nicho_id: null, cidade: null, uf: null, contato_nome: null, cargo: null, email: null, telefone: null,
     faturamento_mensal: null, etapa: 'lead', origem: 'manual', responsavel_id: null, parceiro_id: null, observacoes: null, consentimento: 0, ...d,
-  });
-  const id = Number(r.lastInsertRowid);
-  if (d.nicho_id) popularChecklist(id, d.nicho_id);
+  };
+  const r = await um<{ id: number }>(`INSERT INTO empresas (${CAMPOS_NOVA.join(', ')}) VALUES (${CAMPOS_NOVA.map(() => '?').join(', ')}) RETURNING id`,
+    CAMPOS_NOVA.map(c => v[c] ?? null));
+  const id = r!.id;
+  if (d.nicho_id) await popularChecklist(id, d.nicho_id);
   return id;
 }
 
-export function atualizarEmpresa(id: number, d: Partial<Empresa>) {
+export async function atualizarEmpresa(id: number, d: Partial<Empresa>) {
   const campos = ['nome', 'cnpj', 'nicho_id', 'cidade', 'uf', 'contato_nome', 'cargo', 'email', 'telefone', 'faturamento_mensal', 'etapa', 'responsavel_id', 'parceiro_id', 'observacoes'] as const;
   const sets = campos.filter(c => c in d);
   if (!sets.length) return;
-  const vals: Record<string, unknown> = { id };
-  for (const c of sets) vals[c] = (d as Record<string, unknown>)[c];
-  db().prepare(`UPDATE empresas SET ${sets.map(c => `${c} = @${c}`).join(', ')}, atualizado_em = datetime('now') WHERE id = @id`).run(vals);
+  await executar(`UPDATE empresas SET ${sets.map(c => `${c} = ?`).join(', ')}, atualizado_em = ${AGORA} WHERE id = ?`,
+    [...sets.map(c => (d as Record<string, unknown>)[c] ?? null), id]);
   if (d.nicho_id) {
-    const tem = db().prepare('SELECT COUNT(*) n FROM checklist WHERE empresa_id = ?').get(id) as { n: number };
-    if (!tem.n) popularChecklist(id, d.nicho_id);
+    const tem = await um<{ n: number }>('SELECT COUNT(*)::int n FROM checklist WHERE empresa_id = ?', [id]);
+    if (!tem?.n) await popularChecklist(id, d.nicho_id);
   }
 }
 
-export function excluirEmpresa(id: number) {
-  db().prepare('DELETE FROM empresas WHERE id = ?').run(id);
+export async function excluirEmpresa(id: number) {
+  await executar('DELETE FROM empresas WHERE id = ?', [id]);
 }
 
-export function popularChecklist(empresaId: number, nichoId: string) {
+export async function popularChecklist(empresaId: number, nichoId: string) {
   const n = getNicho(nichoId);
   if (!n) return;
-  const ins = db().prepare('INSERT INTO checklist (empresa_id, tipo, texto, ordem) VALUES (?, ?, ?, ?)');
-  const tx = db().transaction(() => {
-    n.perguntas_diagnostico.forEach((t, i) => ins.run(empresaId, 'pergunta', t, i));
-    n.dados_para_coletar.forEach((t, i) => ins.run(empresaId, 'documento', t, 100 + i));
-  });
-  tx();
+  const itens: [string, string, number][] = [
+    ...n.perguntas_diagnostico.map((t, i) => ['pergunta', t, i] as [string, string, number]),
+    ...n.dados_para_coletar.map((t, i) => ['documento', t, 100 + i] as [string, string, number]),
+  ];
+  if (!itens.length) return;
+  await executar(`INSERT INTO checklist (empresa_id, tipo, texto, ordem) VALUES ${itens.map(() => '(?, ?, ?, ?)').join(', ')}`,
+    itens.flatMap(([tipo, texto, ordem]) => [empresaId, tipo, texto, ordem]));
 }
 
 export interface ItemChecklist { id: number; tipo: 'pergunta' | 'documento' | 'tarefa'; texto: string; feito: number; resposta: string | null; ordem: number }
 export const listarChecklist = (empresaId: number) =>
-  db().prepare('SELECT * FROM checklist WHERE empresa_id = ? ORDER BY ordem, id').all(empresaId) as ItemChecklist[];
+  todos<ItemChecklist>('SELECT * FROM checklist WHERE empresa_id = ? ORDER BY ordem, id', [empresaId]);
 
 export interface Nota { id: number; texto: string; criado_em: string; usuario_nome: string | null }
 export const listarNotas = (empresaId: number) =>
-  db().prepare('SELECT n.*, u.nome AS usuario_nome FROM notas n LEFT JOIN usuarios u ON u.id = n.usuario_id WHERE empresa_id = ? ORDER BY n.criado_em DESC').all(empresaId) as Nota[];
-export function adicionarNota(empresaId: number, usuarioId: number | null, texto: string) {
-  db().prepare('INSERT INTO notas (empresa_id, usuario_id, texto) VALUES (?, ?, ?)').run(empresaId, usuarioId, texto);
-  db().prepare("UPDATE empresas SET atualizado_em = datetime('now') WHERE id = ?").run(empresaId);
+  todos<Nota>('SELECT n.*, u.nome AS usuario_nome FROM notas n LEFT JOIN usuarios u ON u.id = n.usuario_id WHERE n.empresa_id = ? ORDER BY n.criado_em DESC, n.id DESC', [empresaId]);
+export async function adicionarNota(empresaId: number, usuarioId: number | null, texto: string) {
+  await executar('INSERT INTO notas (empresa_id, usuario_id, texto) VALUES (?, ?, ?)', [empresaId, usuarioId, texto]);
+  await executar(`UPDATE empresas SET atualizado_em = ${AGORA} WHERE id = ?`, [empresaId]);
 }
 
 // ---------- simulações ----------
@@ -158,62 +159,60 @@ export function resumir(nichoId: string, valores: Valores, parametros: Parametro
   };
 }
 
-export function salvarSimulacao(d: { id?: number; empresa_id: number | null; nicho_id: string; nome: string; valores: Valores; parametros: ParametrosGlobais; caixa: Caixa; criado_por: number | null }): Simulacao {
+export async function salvarSimulacao(d: { id?: number; empresa_id: number | null; nicho_id: string; nome: string; valores: Valores; parametros: ParametrosGlobais; caixa: Caixa; criado_por: number | null }): Promise<Simulacao> {
   const resumo = resumir(d.nicho_id, d.valores, d.parametros, d.caixa);
   const versao = getBase().versao;
-  if (d.id) {
-    db().prepare(`UPDATE simulacoes SET empresa_id = ?, nome = ?, valores = ?, parametros = ?, caixa = ?, resumo = ?, versao_base = ?, atualizado_em = datetime('now') WHERE id = ?`)
-      .run(d.empresa_id, d.nome, JSON.stringify(d.valores), JSON.stringify(d.parametros), JSON.stringify(d.caixa), JSON.stringify(resumo), versao, d.id);
-    if (d.empresa_id) db().prepare("UPDATE empresas SET atualizado_em = datetime('now') WHERE id = ?").run(d.empresa_id);
-    return getSimulacao(d.id)!;
+  let id = d.id;
+  if (id) {
+    await executar(`UPDATE simulacoes SET empresa_id = ?, nome = ?, valores = ?, parametros = ?, caixa = ?, resumo = ?, versao_base = ?, atualizado_em = ${AGORA} WHERE id = ?`,
+      [d.empresa_id, d.nome, JSON.stringify(d.valores), JSON.stringify(d.parametros), JSON.stringify(d.caixa), JSON.stringify(resumo), versao, id]);
+  } else {
+    const r = await um<{ id: number }>(`INSERT INTO simulacoes (empresa_id, nicho_id, nome, valores, parametros, caixa, resumo, versao_base, token, criado_por)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?) RETURNING id`, [d.empresa_id, d.nicho_id, d.nome, JSON.stringify(d.valores), JSON.stringify(d.parametros),
+      JSON.stringify(d.caixa), JSON.stringify(resumo), versao, tokenAleatorio(18), d.criado_por]);
+    id = r!.id;
   }
-  const r = db().prepare(`INSERT INTO simulacoes (empresa_id, nicho_id, nome, valores, parametros, caixa, resumo, versao_base, token, criado_por)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`).run(d.empresa_id, d.nicho_id, d.nome, JSON.stringify(d.valores), JSON.stringify(d.parametros),
-    JSON.stringify(d.caixa), JSON.stringify(resumo), versao, tokenAleatorio(18), d.criado_por);
-  if (d.empresa_id) db().prepare("UPDATE empresas SET atualizado_em = datetime('now') WHERE id = ?").run(d.empresa_id);
-  return getSimulacao(Number(r.lastInsertRowid))!;
+  if (d.empresa_id) await executar(`UPDATE empresas SET atualizado_em = ${AGORA} WHERE id = ?`, [d.empresa_id]);
+  return (await getSimulacao(id))!;
 }
 
-export function getSimulacao(id: number): Simulacao | undefined {
-  const r = db().prepare('SELECT s.*, e.nome AS empresa_nome FROM simulacoes s LEFT JOIN empresas e ON e.id = s.empresa_id WHERE s.id = ?').get(id) as LinhaSim | undefined;
+const SELECT_SIM = 'SELECT s.*, e.nome AS empresa_nome FROM simulacoes s LEFT JOIN empresas e ON e.id = s.empresa_id';
+export async function getSimulacao(id: number): Promise<Simulacao | undefined> {
+  const r = await um<LinhaSim>(`${SELECT_SIM} WHERE s.id = ?`, [id]);
   return r ? parseSim(r) : undefined;
 }
-export function getSimulacaoPorToken(token: string): Simulacao | undefined {
-  const r = db().prepare('SELECT s.*, e.nome AS empresa_nome FROM simulacoes s LEFT JOIN empresas e ON e.id = s.empresa_id WHERE s.token = ?').get(token) as LinhaSim | undefined;
+export async function getSimulacaoPorToken(token: string): Promise<Simulacao | undefined> {
+  const r = await um<LinhaSim>(`${SELECT_SIM} WHERE s.token = ?`, [token]);
   return r ? parseSim(r) : undefined;
 }
-export function listarSimulacoes(u: Usuario, empresaId?: number): Simulacao[] {
+export async function listarSimulacoes(u: Usuario, empresaId?: number): Promise<Simulacao[]> {
   const w: string[] = [];
   const a: unknown[] = [];
   if (empresaId) { w.push('s.empresa_id = ?'); a.push(empresaId); }
   if (u.papel === 'parceiro') { w.push('(e.parceiro_id = ? OR s.criado_por = ?)'); a.push(u.parceiro_id, u.id); }
-  const rows = db().prepare(`SELECT s.*, e.nome AS empresa_nome FROM simulacoes s LEFT JOIN empresas e ON e.id = s.empresa_id
-    ${w.length ? 'WHERE ' + w.join(' AND ') : ''} ORDER BY s.atualizado_em DESC LIMIT 300`).all(...a) as LinhaSim[];
+  const rows = await todos<LinhaSim>(`${SELECT_SIM} ${w.length ? 'WHERE ' + w.join(' AND ') : ''} ORDER BY s.atualizado_em DESC, s.id DESC LIMIT 300`, a);
   return rows.map(parseSim);
 }
-export function excluirSimulacao(id: number) { db().prepare('DELETE FROM simulacoes WHERE id = ?').run(id); }
+export async function excluirSimulacao(id: number) { await executar('DELETE FROM simulacoes WHERE id = ?', [id]); }
 
 /** Simulações calculadas com parâmetros diferentes dos atuais (ex.: depois que o Senado fixar a CBS). */
-export function simulacaoDesatualizada(s: Simulacao, atuais = getParametros()) {
+export function simulacaoDesatualizada(s: Simulacao, atuais: ParametrosGlobais) {
   return JSON.stringify(s.parametros) !== JSON.stringify(atuais);
 }
-export function recalcularTodas(): number {
-  const p = getParametros();
-  const rows = db().prepare('SELECT * FROM simulacoes').all() as LinhaSim[];
-  const up = db().prepare(`UPDATE simulacoes SET parametros = ?, resumo = ?, atualizado_em = datetime('now') WHERE id = ?`);
-  const tx = db().transaction(() => {
-    for (const r of rows) {
-      const s = parseSim(r);
-      up.run(JSON.stringify(p), JSON.stringify(resumir(s.nicho_id, s.valores, p, s.caixa)), s.id);
-    }
-  });
-  tx();
+export async function recalcularTodas(): Promise<number> {
+  const p = await getParametros();
+  const rows = await todos<LinhaSim>('SELECT * FROM simulacoes');
+  for (const r of rows) {
+    const s = parseSim(r);
+    await executar(`UPDATE simulacoes SET parametros = ?, resumo = ?, atualizado_em = ${AGORA} WHERE id = ?`,
+      [JSON.stringify(p), JSON.stringify(resumir(s.nicho_id, s.valores, p, s.caixa)), s.id]);
+  }
   return rows.length;
 }
 
-export function simulacaoInicial(nichoId: string) {
+export async function simulacaoInicial(nichoId: string) {
   const n = getNicho(nichoId)!;
-  return { valores: valoresPadrao(n), caixa: caixaPadrao(n), parametros: getParametros() };
+  return { valores: valoresPadrao(n), caixa: caixaPadrao(n), parametros: await getParametros() };
 }
 
 // ---------- parceiros ----------
@@ -221,17 +220,20 @@ export interface Parceiro {
   id: number; slug: string; nome: string; cor: string | null; logo_url: string | null; contato_nome: string | null; email: string | null;
   telefone: string | null; cidade: string | null; repasse_pct: number; ativo: number; criado_em: string; total_empresas?: number; em_acompanhamento?: number;
 }
-export const listarParceiros = () => db().prepare(`SELECT p.*, (SELECT COUNT(*) FROM empresas e WHERE e.parceiro_id = p.id) AS total_empresas,
-  (SELECT COUNT(*) FROM empresas e WHERE e.parceiro_id = p.id AND e.etapa IN ('diagnostico','execucao','acompanhamento')) AS em_acompanhamento
-  FROM parceiros p ORDER BY p.nome`).all() as Parceiro[];
-export const getParceiro = (id: number) => db().prepare('SELECT * FROM parceiros WHERE id = ?').get(id) as Parceiro | undefined;
-export const getParceiroPorSlug = (slug: string) => db().prepare('SELECT * FROM parceiros WHERE slug = ? AND ativo = 1').get(slug) as Parceiro | undefined;
+export const listarParceiros = () => todos<Parceiro>(`SELECT p.*, (SELECT COUNT(*)::int FROM empresas e WHERE e.parceiro_id = p.id) AS total_empresas,
+  (SELECT COUNT(*)::int FROM empresas e WHERE e.parceiro_id = p.id AND e.etapa IN ('diagnostico','execucao','acompanhamento')) AS em_acompanhamento
+  FROM parceiros p ORDER BY p.nome`);
+export const getParceiro = (id: number) => um<Parceiro>('SELECT * FROM parceiros WHERE id = ?', [id]);
+export const getParceiroPorSlug = (slug: string) => um<Parceiro>('SELECT * FROM parceiros WHERE slug = ? AND ativo = 1', [slug]);
 
 // ---------- painel ----------
-export function painel(u: Usuario) {
+export async function painel(u: Usuario) {
   const esc = u.papel === 'parceiro' ? 'WHERE parceiro_id = ' + Number(u.parceiro_id) : '';
-  const porEtapa = db().prepare(`SELECT etapa, COUNT(*) n FROM empresas ${esc} GROUP BY etapa`).all() as { etapa: string; n: number }[];
-  const novos30 = db().prepare(`SELECT COUNT(*) n FROM empresas ${esc ? esc + ' AND' : 'WHERE'} criado_em >= datetime('now', '-30 days')`).get() as { n: number };
-  const doSite = db().prepare(`SELECT COUNT(*) n FROM empresas ${esc ? esc + ' AND' : 'WHERE'} origem IN ('site','parceiro') AND criado_em >= datetime('now', '-30 days')`).get() as { n: number };
-  return { porEtapa, novos30: novos30.n, doSite: doSite.n };
+  const e = esc ? esc + ' AND' : 'WHERE';
+  const [porEtapa, novos30, doSite] = await Promise.all([
+    todos<{ etapa: string; n: number }>(`SELECT etapa, COUNT(*)::int n FROM empresas ${esc} GROUP BY etapa`),
+    um<{ n: number }>(`SELECT COUNT(*)::int n FROM empresas ${e} criado_em >= ${HA_30_DIAS}`),
+    um<{ n: number }>(`SELECT COUNT(*)::int n FROM empresas ${e} origem IN ('site','parceiro') AND criado_em >= ${HA_30_DIAS}`),
+  ]);
+  return { porEtapa, novos30: novos30?.n ?? 0, doSite: doSite?.n ?? 0 };
 }

@@ -5,3 +5,4 @@ data/app.db*
 next-env.d.ts
 .env*
 scripts/extratos/lote_*.json
+data/pg/

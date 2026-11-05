@@ -10,8 +10,8 @@ const PASSOS = [
   'No painel, o escritório acompanha cada cliente, as simulações e a etapa da conversa',
 ];
 
-export default function Contadores() {
-  const m = getMarca();
+export default async function Contadores() {
+  const m = await getMarca();
   return (
     <div className="recipiente py-12 md:py-16">
       <div className="grid gap-x-16 gap-y-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)]">

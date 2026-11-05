@@ -11,7 +11,7 @@ export const metadata = { title: 'Clientes' };
 export default async function Empresas({ searchParams }: { searchParams: Promise<{ etapa?: string; q?: string }> }) {
   const u = await exigirUsuario();
   const sp = await searchParams;
-  const lista = listarEmpresas(u, { etapa: sp.etapa, q: sp.q });
+  const lista = await listarEmpresas(u, { etapa: sp.etapa, q: sp.q });
   return (
     <>
       <Cabecalho titulo="Clientes" descricao="Empresas em conversa, com a última simulação de cada uma" acoes={<Link href="/app/empresas/nova" className="btn-primario">Novo cliente</Link>} />

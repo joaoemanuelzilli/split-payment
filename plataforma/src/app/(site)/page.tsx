@@ -3,8 +3,8 @@ import { estatisticas, nichoSlug } from '@/lib/base';
 import { getParametros } from '@/lib/dados';
 import { brl, pct } from '@/lib/format';
 
-export default function Inicio() {
-  const p = getParametros();
+export default async function Inicio() {
+  const p = await getParametros();
   const est = estatisticas();
   const venda = 10000;
   const imp28 = venda * (p.cbs_referencia_pct / 100);
