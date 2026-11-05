@@ -13,7 +13,7 @@ import type { Caixa, FaixaPreco } from '@/lib/calc';
 import type { Valores } from '@/lib/derive/core';
 import type { Nicho, ParametrosGlobais } from '@/lib/types';
 import { slugify } from '@/lib/format';
-import { ipCliente, LIMITES, LOGIN_PENDENTE } from '@/lib/limites';
+import { ipCliente, LIMIAR_ERROS_TOTAL, Limite, LIMITES, LOGIN_PENDENTE } from '@/lib/limites';
 
 // ---------- validação ----------
 const finito = (x: unknown, min = -1e12, max = 1e12) => typeof x === 'number' && Number.isFinite(x) && x >= min && x <= max;
@@ -92,15 +92,18 @@ export async function entrar(_: unknown, fd: FormData) {
   // Por endereço: limite rígido de 30 tentativas erradas a cada 10 minutos.
   const kIp = LIMITES.loginPorIp.reservar(ip);
   if (!kIp) return { erro: 'Muitas tentativas erradas deste endereço. Aguarde 10 minutos e tente de novo.' };
-  // Por conta (hash do e-mail digitado, exista a conta ou não): uma tentativa por vez, e a partir da 5ª errada cada uma
-  // demora mais (até 15 s). Sem bloqueio: a senha certa sempre entra.
+  // Por conta (hash do e-mail digitado, exista a conta ou não): a partir da 5ª tentativa errada cada uma demora mais (até 15 s).
+  // Sem bloqueio: a senha certa sempre entra. Uma tentativa por vez por endereço + e-mail; quem dispara em paralelo é
+  // recusado e a recusa conta no limite do endereço.
   const conta = crypto.createHash('sha256').update(email).digest('hex');
-  if (LOGIN_PENDENTE.has(conta)) { LIMITES.loginPorIp.devolver(kIp); return { erro: 'Já há uma tentativa de entrar nesta conta em andamento. Aguarde alguns segundos.' }; }
-  LOGIN_PENDENTE.add(conta);
+  const fila = `${ip}|${conta}`;
+  if (LOGIN_PENDENTE.has(fila)) return { erro: 'Já há uma tentativa de entrar em andamento. Aguarde alguns segundos.' };
+  LOGIN_PENDENTE.add(fila);
   try {
     const { chave: kConta, antes } = LIMITES.loginPorConta.registrar(conta);
-    let espera = antes >= 5 ? Math.min(15_000, 500 * 2 ** (antes - 5)) : 0;
-    if (LIMITES.loginErrosTotal.usadas('total') > 300) espera += 2_000;
+    // No balde de excedente (memória cheia) a contagem é de várias contas juntas: espera fixa e curta, sem escalar.
+    let espera = kConta === Limite.EXCEDENTE ? 1_000 : antes >= 5 ? Math.min(15_000, 500 * 2 ** (antes - 5)) : 0;
+    if (LIMITES.loginErrosTotal.usadas('total') > LIMIAR_ERROS_TOTAL) espera += 2_000;
     if (espera) await new Promise(r => setTimeout(r, espera));
     const u = db().prepare('SELECT id, senha_hash FROM usuarios WHERE email = ? AND ativo = 1').get(email) as { id: number; senha_hash: string } | undefined;
     if (!u || !conferirSenha(senha, u.senha_hash)) {
@@ -111,7 +114,7 @@ export async function entrar(_: unknown, fd: FormData) {
     LIMITES.loginPorConta.zerar(kConta);
     await criarSessao(u.id);
   } finally {
-    LOGIN_PENDENTE.delete(conta);
+    LOGIN_PENDENTE.delete(fila);
   }
   redirect('/app');
 }

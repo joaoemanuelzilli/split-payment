@@ -14,7 +14,8 @@ const JANELA_MS = 10 * 60 * 1000;
 export class Limite {
   private mapa = new Map<string, number[]>();
   static readonly EXCEDENTE = '__excedente__';
-  constructor(private readonly max: number, private readonly maxChaves: number, private readonly maxExcedente = max * 20) {
+  /** max: vagas por chave na janela; maxChaves: chaves distintas antes do excedente; maxHistorico: quantas marcas guardar por chave em registrar(). */
+  constructor(private readonly max: number, private readonly maxChaves: number, private readonly maxExcedente = max * 20, readonly maxHistorico = 200) {
     const t = setInterval(() => this.varrer(), 60_000);
     t.unref?.();
   }
@@ -45,7 +46,7 @@ export class Limite {
     const lista = this.vivas(efetiva, agora);
     const antes = lista.length;
     lista.push(agora);
-    this.mapa.set(efetiva, lista.slice(-200));
+    this.mapa.set(efetiva, lista.slice(-this.maxHistorico));
     return { chave: efetiva, antes };
   }
   /** Devolve a última vaga reservada (quando a operação não deve contar). Nunca mexe no balde de excedente, que é compartilhado. */
@@ -72,10 +73,11 @@ export const LIMITES = (g.__limites ??= {
   // chave = hash do e-mail digitado, exista a conta ou não (mesmo comportamento nos dois casos); só alimenta a espera crescente
   loginPorConta: new Limite(Number.MAX_SAFE_INTEGER, 50_000),
   // total de senhas erradas: não bloqueia ninguém; acima de 300 na janela, todo login ganha 2 s de espera (desacelera ataque distribuído)
-  loginErrosTotal: new Limite(Number.MAX_SAFE_INTEGER, 1),
+  loginErrosTotal: new Limite(Number.MAX_SAFE_INTEGER, 1, undefined, 1_000),
 });
 
-/** Contas com tentativa de login em andamento: uma por vez por conta, para que tentativas em paralelo não pulem a espera. */
+/** Tentativas de login em andamento, por endereço + e-mail: uma por vez, para que tentativas em paralelo não pulem a espera.
+ *  A chave inclui o endereço de quem tenta, então ninguém ocupa a fila da conta de outra pessoa. */
 type GP = typeof globalThis & { __loginPendente?: Set<string> };
 export const LOGIN_PENDENTE = ((globalThis as GP).__loginPendente ??= new Set<string>());
 
@@ -100,3 +102,7 @@ export async function ipCliente(): Promise<string> {
   const partes = ((await headers()).get('x-forwarded-for') ?? '').split(',').map(x => x.trim()).filter(Boolean);
   return partes.length >= n ? partes[partes.length - n] : 'sem-proxy';
 }
+
+/** Limiar da desaceleração geral do login: acima disso, todo login espera 2 s a mais. Tem de ficar abaixo do histórico guardado. */
+export const LIMIAR_ERROS_TOTAL = 300;
+if (LIMIAR_ERROS_TOTAL >= LIMITES.loginErrosTotal.maxHistorico) throw new Error('LIMIAR_ERROS_TOTAL precisa ser menor que o histórico de loginErrosTotal.');

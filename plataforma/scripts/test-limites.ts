@@ -17,5 +17,8 @@ const x = new Limite(3, 1, 10);
 x.reservar('p'); assert.equal(x.reservar('q'), Limite.EXCEDENTE);
 x.zerar(Limite.EXCEDENTE); x.devolver(Limite.EXCEDENTE);
 assert.equal(x.usadas('q'), 1, 'o balde de excedente não é zerado nem devolvido');
+const t = new Limite(Number.MAX_SAFE_INTEGER, 1, undefined, 1000);
+for (let i = 0; i < 400; i++) t.registrar('total');
+assert.equal(t.usadas('total'), 400, 'o histórico guarda além do limiar de 300, então a desaceleração dispara');
 console.log('limites: ok');
 process.exit(0);
