@@ -13,7 +13,7 @@ import type { Caixa, FaixaPreco } from '@/lib/calc';
 import type { Valores } from '@/lib/derive/core';
 import type { Nicho, ParametrosGlobais } from '@/lib/types';
 import { slugify } from '@/lib/format';
-import { ipCliente, LIMITES } from '@/lib/limites';
+import { ipCliente, LIMITES, LOGIN_PENDENTE } from '@/lib/limites';
 
 // ---------- validação ----------
 const finito = (x: unknown, min = -1e12, max = 1e12) => typeof x === 'number' && Number.isFinite(x) && x >= min && x <= max;
@@ -92,18 +92,30 @@ export async function entrar(_: unknown, fd: FormData) {
   // Por endereço: limite rígido de 30 tentativas erradas a cada 10 minutos.
   const kIp = LIMITES.loginPorIp.reservar(ip);
   if (!kIp) return { erro: 'Muitas tentativas erradas deste endereço. Aguarde 10 minutos e tente de novo.' };
-  // Por conta (hash do e-mail digitado, exista ou não): sem bloqueio. A partir da 5ª tentativa errada a resposta demora
-  // cada vez mais (até 15 s). A senha certa sempre entra. A vaga é registrada antes da espera, então pedidos em paralelo
-  // esperam cada vez mais.
-  const { chave: kConta, antes } = LIMITES.loginPorConta.registrar(crypto.createHash('sha256').update(email).digest('hex'));
-  if (antes >= 5) await new Promise(r => setTimeout(r, Math.min(15_000, 500 * 2 ** (antes - 5))));
-  const u = db().prepare('SELECT id, senha_hash FROM usuarios WHERE email = ? AND ativo = 1').get(email) as { id: number; senha_hash: string } | undefined;
-  if (!u || !conferirSenha(senha, u.senha_hash)) return { erro: 'E-mail ou senha não conferem.' };
-  LIMITES.loginPorIp.devolver(kIp);
-  LIMITES.loginPorConta.zerar(kConta);
-  await criarSessao(u.id);
+  // Por conta (hash do e-mail digitado, exista a conta ou não): uma tentativa por vez, e a partir da 5ª errada cada uma
+  // demora mais (até 15 s). Sem bloqueio: a senha certa sempre entra.
+  const conta = crypto.createHash('sha256').update(email).digest('hex');
+  if (LOGIN_PENDENTE.has(conta)) { LIMITES.loginPorIp.devolver(kIp); return { erro: 'Já há uma tentativa de entrar nesta conta em andamento. Aguarde alguns segundos.' }; }
+  LOGIN_PENDENTE.add(conta);
+  try {
+    const { chave: kConta, antes } = LIMITES.loginPorConta.registrar(conta);
+    let espera = antes >= 5 ? Math.min(15_000, 500 * 2 ** (antes - 5)) : 0;
+    if (LIMITES.loginErrosTotal.usadas('total') > 300) espera += 2_000;
+    if (espera) await new Promise(r => setTimeout(r, espera));
+    const u = db().prepare('SELECT id, senha_hash FROM usuarios WHERE email = ? AND ativo = 1').get(email) as { id: number; senha_hash: string } | undefined;
+    if (!u || !conferirSenha(senha, u.senha_hash)) {
+      LIMITES.loginErrosTotal.registrar('total');
+      return { erro: 'E-mail ou senha não conferem.' };
+    }
+    LIMITES.loginPorIp.devolver(kIp);
+    LIMITES.loginPorConta.zerar(kConta);
+    await criarSessao(u.id);
+  } finally {
+    LOGIN_PENDENTE.delete(conta);
+  }
   redirect('/app');
 }
+
 export async function sair() {
   await encerrarSessao();
   redirect('/entrar');

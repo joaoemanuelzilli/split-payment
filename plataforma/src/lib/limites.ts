@@ -48,14 +48,15 @@ export class Limite {
     this.mapa.set(efetiva, lista.slice(-200));
     return { chave: efetiva, antes };
   }
-  /** Devolve a última vaga reservada (quando a operação não deve contar). */
+  /** Devolve a última vaga reservada (quando a operação não deve contar). Nunca mexe no balde de excedente, que é compartilhado. */
   devolver(chave: string) {
+    if (chave === Limite.EXCEDENTE) return;
     const lista = this.mapa.get(chave);
     if (!lista) return;
     lista.pop();
     if (!lista.length) this.mapa.delete(chave);
   }
-  zerar(chave: string) { this.mapa.delete(chave); }
+  zerar(chave: string) { if (chave !== Limite.EXCEDENTE) this.mapa.delete(chave); }
   private varrer() {
     const agora = Date.now();
     for (const [k] of this.mapa) { const v = this.vivas(k, agora); if (v.length) this.mapa.set(k, v); else this.mapa.delete(k); }
@@ -70,7 +71,13 @@ export const LIMITES = (g.__limites ??= {
   loginPorIp: new Limite(30, 50_000),
   // chave = hash do e-mail digitado, exista a conta ou não (mesmo comportamento nos dois casos); só alimenta a espera crescente
   loginPorConta: new Limite(Number.MAX_SAFE_INTEGER, 50_000),
+  // total de senhas erradas: não bloqueia ninguém; acima de 300 na janela, todo login ganha 2 s de espera (desacelera ataque distribuído)
+  loginErrosTotal: new Limite(Number.MAX_SAFE_INTEGER, 1),
 });
+
+/** Contas com tentativa de login em andamento: uma por vez por conta, para que tentativas em paralelo não pulem a espera. */
+type GP = typeof globalThis & { __loginPendente?: Set<string> };
+export const LOGIN_PENDENTE = ((globalThis as GP).__loginPendente ??= new Set<string>());
 
 /** Número de proxies confiáveis na frente da aplicação. Obrigatório em produção; valor inválido é erro de configuração. */
 function hops(): number {
