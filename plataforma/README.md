@@ -40,11 +40,11 @@ Ou com Docker:
 
 ```bash
 docker build -t caixa-split .
-docker run -d -p 3000:3000 -v caixa-split-dados:/dados caixa-split
+docker run -d -p 127.0.0.1:3000:3000 -e TRUSTED_PROXY_HOPS=1 -v caixa-split-dados:/dados caixa-split   # porta só local; o proxy com HTTPS fica na frente
 docker exec -e ADMIN_EMAIL=voce@empresa.com.br -e ADMIN_SENHA='senha-forte' <container> npm run seed
 ```
 
-Em produção o cookie de sessão é `secure`: publique atrás de HTTPS. Defina também `TRUSTED_PROXY_HOPS` com o número de proxies seus na frente da aplicação (1 com um Nginx ou Caddy; de 1 a 5). Em produção ele é obrigatório: o servidor recusa as ações sem ele, porque é por ele que a plataforma sabe o endereço de quem acessa. Limites, a cada 10 minutos: 8 envios da calculadora por endereço e 300 no total; no login, 30 senhas erradas por endereço, 10 por conta e 200 no total. Uma conta que passa de 10 senhas erradas fica 10 minutos sem entrar: é o preço de impedir tentativa de senha em massa. Os contadores ficam na memória de uma instância; com várias instâncias, troque por um armazenamento compartilhado, e se aparecer abuso na calculadora pública, acrescente um CAPTCHA. Para testar em produção sem HTTPS, use `COOKIE_INSECURE=1`.
+Em produção o cookie de sessão é `secure`: publique atrás de HTTPS. Defina também `TRUSTED_PROXY_HOPS` com o número de proxies seus na frente da aplicação (1 com um Nginx ou Caddy; de 1 a 5). Em produção ele é obrigatório: o servidor recusa as ações sem ele, porque é por ele que a plataforma sabe o endereço de quem acessa. Deixe a porta da aplicação acessível só pelo proxy: quem chegar direto nela pode forjar o endereço. Limites, a cada 10 minutos: 8 envios da calculadora por endereço e 300 no total; no login, 30 senhas erradas por endereço e, por e-mail, espera crescente a partir da 5ª tentativa errada (até 15 segundos por tentativa), sem bloquear a conta: a senha certa sempre entra. Os contadores ficam na memória de uma instância; com várias instâncias, troque por um armazenamento compartilhado, e se aparecer abuso na calculadora pública, acrescente um CAPTCHA. Para testar em produção sem HTTPS, use `COOKIE_INSECURE=1`.
 
 ## Quando sair uma norma nova
 

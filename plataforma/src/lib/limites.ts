@@ -5,30 +5,48 @@ import { headers } from 'next/headers';
 // Regras de desenho:
 // - reservar antes de checar: a vaga é registrada na mesma etapa síncrona da verificação, então pedidos em paralelo se enxergam;
 //   quem termina bem pode devolver a vaga (ex.: login certo não conta como falha);
-// - um mapa por tipo de contador, com tamanho máximo; quando enche, recusa chaves novas (falha fechada) em vez de despejar
-//   contadores ativos, para que um atacante não apague a contagem de outra chave criando chaves novas;
+// - um mapa por tipo de contador, com tamanho máximo; quando enche, as chaves novas caem num balde compartilhado de excedente
+//   (com limite próprio), sem despejar contadores ativos e sem recusar todo mundo;
 // - valem para uma instância do servidor. Com várias instâncias, troque por um armazenamento compartilhado (ex.: Redis).
 
 const JANELA_MS = 10 * 60 * 1000;
 
 export class Limite {
   private mapa = new Map<string, number[]>();
-  constructor(private readonly max: number, private readonly maxChaves: number) {
+  static readonly EXCEDENTE = '__excedente__';
+  constructor(private readonly max: number, private readonly maxChaves: number, private readonly maxExcedente = max * 20) {
     const t = setInterval(() => this.varrer(), 60_000);
     t.unref?.();
   }
   private vivas(chave: string, agora: number) {
     return (this.mapa.get(chave) ?? []).filter(t => agora - t < JANELA_MS);
   }
-  /** Reserva uma vaga. Devolve false se a chave passou do limite ou se o mapa está cheio e a chave é nova. */
-  reservar(chave: string): boolean {
+  /** Chave efetiva: a própria, ou o balde de excedente quando o mapa está cheio e a chave é nova. */
+  chave(chave: string): string {
+    return this.mapa.has(chave) || this.mapa.size < this.maxChaves ? chave : Limite.EXCEDENTE;
+  }
+  /** Quantas vagas a chave já usou na janela. */
+  usadas(chave: string): number { return this.vivas(this.chave(chave), Date.now()).length; }
+  /** Reserva uma vaga e devolve a chave efetiva usada, ou null se passou do limite. */
+  reservar(chave: string): string | null {
+    const efetiva = this.chave(chave);
+    const limite = efetiva === Limite.EXCEDENTE ? this.maxExcedente : this.max;
     const agora = Date.now();
-    const lista = this.vivas(chave, agora);
-    if (lista.length >= this.max) return false;
-    if (!this.mapa.has(chave) && this.mapa.size >= this.maxChaves) return false;
+    const lista = this.vivas(efetiva, agora);
+    if (lista.length >= limite) return null;
     lista.push(agora);
-    this.mapa.set(chave, lista);
-    return true;
+    this.mapa.set(efetiva, lista);
+    return efetiva;
+  }
+  /** Reserva sem teto (para contar tentativas que só aumentam a espera). Devolve a chave efetiva e quantas havia antes. */
+  registrar(chave: string): { chave: string; antes: number } {
+    const efetiva = this.chave(chave);
+    const agora = Date.now();
+    const lista = this.vivas(efetiva, agora);
+    const antes = lista.length;
+    lista.push(agora);
+    this.mapa.set(efetiva, lista.slice(-200));
+    return { chave: efetiva, antes };
   }
   /** Devolve a última vaga reservada (quando a operação não deve contar). */
   devolver(chave: string) {
@@ -50,8 +68,8 @@ export const LIMITES = (g.__limites ??= {
   leadPorIp: new Limite(8, 50_000),
   leadTotal: new Limite(300, 1),
   loginPorIp: new Limite(30, 50_000),
-  loginPorConta: new Limite(10, 10_000), // chave = id do usuário (só contas existentes) ou "desconhecido"
-  loginTotal: new Limite(200, 1),
+  // chave = hash do e-mail digitado, exista a conta ou não (mesmo comportamento nos dois casos); só alimenta a espera crescente
+  loginPorConta: new Limite(Number.MAX_SAFE_INTEGER, 50_000),
 });
 
 /** Número de proxies confiáveis na frente da aplicação. Obrigatório em produção; valor inválido é erro de configuração. */

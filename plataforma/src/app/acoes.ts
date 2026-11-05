@@ -1,4 +1,5 @@
 'use server';
+import crypto from 'node:crypto';
 import { redirect } from 'next/navigation';
 import { revalidatePath } from 'next/cache';
 import { db } from '@/lib/db';
@@ -53,9 +54,11 @@ export async function capturarLead(d: { nicho_id: string; valores: Valores; caix
   const ip = await ipCliente();
   const OCUPADO = { ok: false as const, erro: 'Muitos envios em sequência. Tente de novo em alguns minutos.' };
   // Reserva as vagas antes de validar; devolve se o envio for recusado, para lixo não esgotar a cota.
-  if (!LIMITES.leadPorIp.reservar(ip)) return OCUPADO;
-  if (!LIMITES.leadTotal.reservar('total')) { LIMITES.leadPorIp.devolver(ip); return OCUPADO; }
-  const recusar = (erro: string) => { LIMITES.leadPorIp.devolver(ip); LIMITES.leadTotal.devolver('total'); return { ok: false as const, erro }; };
+  const kIp = LIMITES.leadPorIp.reservar(ip);
+  if (!kIp) return OCUPADO;
+  const kTotal = LIMITES.leadTotal.reservar('total');
+  if (!kTotal) { LIMITES.leadPorIp.devolver(kIp); return OCUPADO; }
+  const recusar = (erro: string) => { LIMITES.leadPorIp.devolver(kIp); LIMITES.leadTotal.devolver(kTotal); return { ok: false as const, erro }; };
   const n = getNicho(String(d.nicho_id));
   if (!n) return recusar('Setor não encontrado.');
   const c = d.contato ?? {};
@@ -86,21 +89,18 @@ export async function entrar(_: unknown, fd: FormData) {
   const email = texto(fd.get('email'), 160).toLowerCase();
   const senha = String(fd.get('senha') ?? '');
   const ip = await ipCliente();
+  // Por endereço: limite rígido de 30 tentativas erradas a cada 10 minutos.
+  const kIp = LIMITES.loginPorIp.reservar(ip);
+  if (!kIp) return { erro: 'Muitas tentativas erradas deste endereço. Aguarde 10 minutos e tente de novo.' };
+  // Por conta (hash do e-mail digitado, exista ou não): sem bloqueio. A partir da 5ª tentativa errada a resposta demora
+  // cada vez mais (até 15 s). A senha certa sempre entra. A vaga é registrada antes da espera, então pedidos em paralelo
+  // esperam cada vez mais.
+  const { chave: kConta, antes } = LIMITES.loginPorConta.registrar(crypto.createHash('sha256').update(email).digest('hex'));
+  if (antes >= 5) await new Promise(r => setTimeout(r, Math.min(15_000, 500 * 2 ** (antes - 5))));
   const u = db().prepare('SELECT id, senha_hash FROM usuarios WHERE email = ? AND ativo = 1').get(email) as { id: number; senha_hash: string } | undefined;
-  const conta = u ? `u${u.id}` : 'desconhecido';
-  // Reserva antes de conferir a senha (pedidos em paralelo se enxergam); devolve as vagas se a senha estiver certa.
-  // Limites: 30 erros por endereço, 10 por conta e 200 no total, a cada 10 minutos.
-  const reservados: [keyof typeof LIMITES, string][] = [];
-  for (const [lim, chave] of [['loginTotal', 'total'], ['loginPorIp', ip], ['loginPorConta', conta]] as [keyof typeof LIMITES, string][]) {
-    if (!LIMITES[lim].reservar(chave)) {
-      for (const [l, k] of reservados) LIMITES[l].devolver(k);
-      return { erro: 'Muitas tentativas erradas. Aguarde 10 minutos e tente de novo.' };
-    }
-    reservados.push([lim, chave]);
-  }
   if (!u || !conferirSenha(senha, u.senha_hash)) return { erro: 'E-mail ou senha não conferem.' };
-  for (const [l, k] of reservados) LIMITES[l].devolver(k);
-  LIMITES.loginPorConta.zerar(conta);
+  LIMITES.loginPorIp.devolver(kIp);
+  LIMITES.loginPorConta.zerar(kConta);
   await criarSessao(u.id);
   redirect('/app');
 }
