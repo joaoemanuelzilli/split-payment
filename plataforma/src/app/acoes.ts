@@ -101,8 +101,9 @@ export async function entrar(_: unknown, fd: FormData) {
   LOGIN_PENDENTE.add(fila);
   try {
     const { chave: kConta, antes } = LIMITES.loginPorConta.registrar(conta);
-    // No balde de excedente (memória cheia) a contagem é de várias contas juntas: espera fixa e curta, sem escalar.
-    let espera = kConta === Limite.EXCEDENTE ? 1_000 : antes >= 5 ? Math.min(15_000, 500 * 2 ** (antes - 5)) : 0;
+    // No balde de excedente (memória cheia, o que só acontece sob ataque) a contagem mistura contas: espera fixa no teto de 15 s,
+    // nem mais barata que a de uma conta comum nem crescente por causa de outras contas.
+    let espera = kConta === Limite.EXCEDENTE ? 15_000 : antes >= 5 ? Math.min(15_000, 500 * 2 ** (antes - 5)) : 0;
     if (LIMITES.loginErrosTotal.usadas('total') > LIMIAR_ERROS_TOTAL) espera += 2_000;
     if (espera) await new Promise(r => setTimeout(r, espera));
     const u = db().prepare('SELECT id, senha_hash FROM usuarios WHERE email = ? AND ativo = 1').get(email) as { id: number; senha_hash: string } | undefined;
